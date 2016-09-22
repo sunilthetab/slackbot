@@ -10,24 +10,24 @@ The meeting bot is a Slack based bot that can simplify burdensome administrative
 
 ###Design Sketches
 ####Storyboard
-![alt text](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/story_board.png)
+![alt text](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/Milestone%201/story_board.png)
 
 ####Wireframe
-![alt text](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/wireframe.gif)
+![alt text](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/Milestone%201/wireframe.gif)
 
 
 ###Architecture Design
 Meeting bot must be connected with the calendar of every person with whom the meeting is to be scheduled and with the main user (Meeting organizer) for the purpose of getting details of meeting and delivering suitable meeting timing solutions. For this functionality, the best-suited architecture would be **Call and Return architecture with Object Oriented approach**.
 
 ####Components in architecture
-![alt text](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/componenet_architecture.png)
+![alt text](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/Milestone%201/componenet_architecture.png)
 
 This project involves the usage of following components:
 * **Slack** - users will chat through slack;
 * **Meeting Bot and Google Calendar** - the bot will get information from the calendars of team members. The main user will ask the bot to schedule a meeting which would include the name (id) of attendees, and the data/time by which the meeting is to be organized. The meeting bot will chat with the main user for any further assistance related to organizing/scheduling the meeting. It will look-up the calendars of all the attendees. These calendars will basically be the Google calendars synchronized with slack.The meeting bot will search for available (idle) time slots of attendees and would find a time when all of them are available. It will also take into consideration any specific instruction by the main user, try to find an optimistic time and location for all the team members, and minimize the cost of organizing meeting to the company. The meeting bot will then notify the main user with the details about the meeting and ask him for an approval to set-up the meeting. So, the platform for using the meeting bot will be slack, and the bot will use third-party services from google calendar.
 
 ####Class Diagram
-![alt text](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/class_diagram.png)
+![alt text](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/Milestone%201/class_diagram.png)
 
 ####Constraints
 1. **Slack** : Slack will be used as the platform to chat with meeting bot. There will be a channel for specific slack team and the meeting bot will manage scheduling meeting.
