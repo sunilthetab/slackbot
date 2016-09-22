@@ -2,7 +2,7 @@
 
 ####Team members
 1. Gautam Verma; gverma@ncsu.edu
-2. Pranav Firake;
+2. Pranav Firake; ppfirake@ncsu.edu
 3. Ajay Chandra Pendyala; apendya@ncsu.edu
 4. Sunil
 5. Sohan
