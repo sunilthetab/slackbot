@@ -21,6 +21,7 @@ Meeting bot must be connected with the calendar of every person with whom the me
 
 ####Components in architecture
 ![alt text](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/Milestone%201/arch1.png)
+Here as solution to our problem is to have a slack bot that can schedule a meeting, we have basically 3 things to consider namely a meeting coordinator, Slackbot and calendars of team members. Team coordinator requests to schedule a meeting to bot and bot replies with asking for team members to consider for this meeting. Then bot will ask for time limit to consider for this meeting and suggest a time for meeting accordingly and confirm it with team coordinator. So this is how bot will be designed.
 
 ![alt text](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/Milestone%201/componenet_architecture.png)
 
