@@ -16,4 +16,4 @@ In engineering, agile methodologies often require frequent meetings in: daily sc
 ##### 1. Storyboard
 A storyboard is a graphic organizer in the form of illustrations or images displayed in sequence for the purpose of understanding the problem and its solution. Our main focus for developing this bot is to address the problem of bad meeting timings which persist in industry for long time. To avoid such conflicts and improve efficiency, business often keep meetings when their employees are more productivity. 
 Below storyboard will describe the story about the meeting bot which will schedule a meeting by taking into consideration all the factors (project cost, work efficiency and productivity of the employees).<br>
-![alt-tag](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/fixdesign/Milestone%201/StoryBoard_New.png)
+![alt-tag](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/fixdesign/Milestone%201/Storyboard_New.png)
