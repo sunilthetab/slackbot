@@ -20,6 +20,8 @@ The meeting bot is a Slack based bot that can simplify burdensome administrative
 Meeting bot must be connected with the calendar of every person with whom the meeting is to be scheduled and with the main user (Meeting organizer) for the purpose of getting details of meeting and delivering suitable meeting timing solutions. For this functionality, the best-suited architecture would be **Call and Return architecture with Object Oriented approach**.
 
 ####Components in architecture
+![alt text](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/Milestone%201/arch1.png)
+
 ![alt text](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/Milestone%201/componenet_architecture.png)
 
 This project involves the usage of following components:
