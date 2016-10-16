@@ -90,6 +90,8 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
     });
   };
 
+  ```
+
   2. The following maintains a persistent user state:
 
   ```javascript
@@ -99,7 +101,7 @@ controller.spawn({
   //token: process.env.ALTCODETOKEN,
   token: 'xcxxxxxxxxxxxxxxxxxxxxxx',
  }).startRTM()
-
+ ```
 
  3. The following example shows that the bot maintains persistent user state. The  adjustMeeting function implies that you now need to have persistent state associated with the Space. It's a matter of making sure that your reply goes to the correct place.
 
@@ -124,6 +126,8 @@ controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,
   var adjustMeeting = function(){
     //
   };
+
+  ```
 
 
 
