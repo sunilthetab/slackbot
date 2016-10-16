@@ -43,4 +43,91 @@ This project involves the usage of following components:
 ####Class Diagram
 ![alt text](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/Milestone%201/class_diagram.png)
 
+### Design Patterns
+
+The design pattern that our bot follows is that of space reactor bot pattern:
+
+Space Reactors, react to incoming messages, and know where they are receiving a message. The bot has memory of the place, and will respond to the user differently depending upon where the conversation was taking place.
+
+1. Reacts to messages on the chat service
+2. Knows where its being addressed
+
+
+1. The following code shows how the bot listens to the messages:
+
+```javascript
+
+controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], function(bot,message) {
+  var approxMeetingDuration_Hours = 0;
+  var approxMeetingDuration_Mins = 0;
+
+  //Contains all email ids
+  var arrayID;
+
+  var byTime_Hour;
+  var byTime_Minute;
+
+  var byDate;
+  var byMonth;
+  var byYear;
+
+  var getIDOfAttendees = function(err, convo){
+    convo.ask('Alright. May I know the email IDs of the attendees, please?',function(response,convo) {
+      var IDofAttendees = response.text;
+      //
+      convo.say('Cool, you said: ' + response.text);
+
+      var arrayID = IDofAttendees.split(" ");
+      if(IDofAttendees.indexOf(',') > -1){
+        arrayID = IDofAttendees.split(",");
+      }
+      for(var i = 0 ; i < arrayID.length ; i++){
+        arrayID[i] = arrayID[i].trim();
+      }
+
+      getApproxMeetingDuration(response, convo);
+      convo.next();
+    });
+  };
+
+  2. The following maintains a persistent user state:
+
+  ```javascript
+
+  // connect the bot to a stream of messages
+controller.spawn({
+  //token: process.env.ALTCODETOKEN,
+  token: 'xcxxxxxxxxxxxxxxxxxxxxxx',
+ }).startRTM()
+
+
+ 3. The following example shows that the bot maintains persistent user state. The  adjustMeeting function implies that you now need to have persistent state associated with the Space. It's a matter of making sure that your reply goes to the correct place.
+
+
+ ```javascript
+
+ //coversation to add new member to a meeting
+controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,message) {
+  var newAttendeeIDs;
+  var meetingID;
+
+  var getIDOfNewAttendee = function(err, convo){
+    convo.ask('May I know the email IDs of the new attendees, please?',function(response,convo) {
+      newAttendeeIDs = response.text.split(" ");
+
+      getIDOfMeeting(response, convo);
+
+      convo.next();
+    })
+  };
+
+  var adjustMeeting = function(){
+    //
+  };
+
+
+
+
+
+
 
