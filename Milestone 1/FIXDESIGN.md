@@ -53,7 +53,7 @@ Space Reactors, react to incoming messages, and know where they are receiving a 
 2. Knows where its being addressed
 
 
-1. The following code shows how the bot listens to the messages:
+i. The following code shows how the bot listens to the messages:
 
 ```javascript
 
@@ -92,7 +92,7 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
 
   ```
 
-  2. The following maintains a persistent user state:
+  ii. The following maintains a persistent user state:
 
   ```javascript
 
@@ -103,10 +103,10 @@ controller.spawn({
  }).startRTM()
  ```
 
- 3. The following example shows that the bot maintains persistent user state. The  adjustMeeting function implies that you now need to have persistent state associated with the Space. It's a matter of making sure that your reply goes to the correct place.
+  iii. The following example shows that the bot maintains persistent user state. The  adjustMeeting function implies that you now need to have persistent state associated with the Space. It's a matter of making sure that your reply goes to the correct place.
 
 
- ```javascript
+  ```javascript
 
  //coversation to add new member to a meeting
 controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,message) {
