@@ -8,21 +8,22 @@ var controller = Botkit.slackbot({
 });
 
 // connect the bot to a stream of messages
-controller.spawn({
+var bot = controller.spawn({
   //token: process.env.ALTCODETOKEN,
   token: 'xoxb-87992197655-VxQuZsKc2LDrur8ENZNwiKT6',
-  incoming_webhook: {
-    url: https://hooks.slack.com/services/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
-  }
+  //incoming_webhook: {
+    //url: https://hooks.slack.com/services/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
+  //}
 }).startRTM()
 
-//bot.configureIncomingWebhook({url: https://hooks.slack.com/services/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});
+bot.configureIncomingWebhook({url: "https://hooks.slack.com/services/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"});
 bot.sendWebhook({
-  text: '@azra setup',
+  text: '<https://seprojbot.slack.com/team/azra|@azra> setup',
+  channel: '#azra_testing'
   
 },function(err,res) {
   // handle error
-});
+}); 
 
 //coversation to schedule new meeting begins here
 controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], function(bot,message) {
@@ -432,3 +433,4 @@ controller.hears(['^reschedule$'],['mention', 'direct_mention'], function(bot,me
 
   bot.reply(message, "Let's cancel the meeting.");
 });
+
