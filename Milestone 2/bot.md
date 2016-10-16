@@ -3,8 +3,8 @@
 ### Use Cases
 The functionality of the bot can be divided into three basic use cases.
 
+**Use case 1: Setting up a meeting**
 ```
-Use case 1: Setting up a meeting
 
 1 Preconditions
    User must have google calendar api tokens in setup in the system.
@@ -28,8 +28,8 @@ Use case 1: Setting up a meeting
 ```
 
 
+**Use case 2: Add a member to the meeting**
 ```
-Use case 2: Add a member to the meeting
 
 1 Preconditions
    User must have google calendar api tokens in setup in the system and there should be a meeting scheduled already.
@@ -50,9 +50,8 @@ Use case 2: Add a member to the meeting
 ```
 
 
-
+**Use case 3: Rescheduling/Cancelling the meeting**
 ```
-Use case 3: Rescheduling/Cancelling the meeting
 
 1 Preconditions
 There should be a meeting scheduled already.
