@@ -13,8 +13,8 @@ controller.spawn({
   token: 'xoxb-87992197655-VxQuZsKc2LDrur8ENZNwiKT6',
 }).startRTM()
 
-//coversation begins here
-controller.hears(['schedule', 'setup'],['mention', 'direct_mention'], function(bot,message) {
+//coversation to schedule new meeting begins here
+controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], function(bot,message) {
   var approxMeetingDuration_Hours = 0;
   var approxMeetingDuration_Mins = 0;
 
@@ -204,6 +204,10 @@ controller.hears(['schedule', 'setup'],['mention', 'direct_mention'], function(b
 
       convo.say("i got " + " " + byTime_Hour + " " + byTime_Minute);
 
+      var meeting = OrganizeOptimalMeeting();
+
+      convo.say("Your meeting details are as follow: " + meeting);
+
       convo.next();
     });
   };
@@ -226,10 +230,194 @@ controller.hears(['schedule', 'setup'],['mention', 'direct_mention'], function(b
     });
   };
 
+  var OrganizeOptimalMeeting = function(){
+
+  }
+
   // start a conversation with the user.
   bot.startConversation(message, getIDOfAttendees);
 
+  bot.reply(message, "Let's organize a new meeting.");
 
-  bot.reply(message, "voila");
+});
 
+//coversation to add new member to a meeting
+controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,message) {
+  var newAttendeeIDs;
+  var meetingID;
+
+  var getIDOfNewAttendee = function(err, convo){
+    convo.ask('May I know the email IDs of the new attendees, please?',function(response,convo) {
+      newAttendeeIDs = response.text.split(" ");
+
+      getIDOfMeeting(response, convo);
+
+      convo.next();
+    })
+  };
+
+  var getIDOfMeeting = function(err, convo){
+    convo.ask('Alright. What is the meeting ID?',function(response,convo) {
+      meetingID = response.text;
+
+      adjustMeeting();
+
+      convo.say("Members Added");
+
+      convo.next();
+    })
+  };
+
+  var adjustMeeting = function(){
+    //
+  };
+
+  // start a conversation with the user.
+  bot.startConversation(message, getIDOfNewAttendee);
+
+  bot.reply(message, "Let's add the new member to the meeting.");
+});
+
+//coversation to remove a member from meeting
+controller.hears(['^remove$'],['mention', 'direct_mention'], function(bot,message) {
+
+  var userRequestingRemoval = message.user;
+
+  var IDOfAttendeesToRemove;
+  var meetingID;
+
+  var getIDOfAttendeeToRemove = function(err, convo){
+    convo.ask('May I know the email ID of the attendee, please?',function(response,convo) {
+      IDOfAttendeesToRemove = response.text.split(' ');
+
+      getIDOfMeeting(response, convo);
+
+      convo.next();
+    })
+  };
+
+  var getIDOfMeeting = function(err, convo){
+    convo.ask('Alright. What is the meeting ID?',function(response,convo) {
+      meetingID = response.text;
+
+      // if(userRequestingRemoval in meeting.getUsers()) //Some type of validaion required here.
+      confirmRemoval(response, convo);
+      // else
+        // convo.say("You are not authorized for this action.");
+
+      convo.next();
+    })
+  };
+
+  var confirmRemoval = function(err, convo){
+    convo.ask('Are you sure you want to remove the member from the meeting?',function(response,convo) {
+      var confirmation = response.text;
+
+      if(confirmation.toUpperCase() === "YES"){
+        removeMembersFromMeeting();
+        covo.say("Members removed.");
+      }else{
+        convo.say("Members NOT removed.");
+      }
+
+      convo.next();
+    })
+  };
+
+  var removeMembersFromMeeting = function(){
+    //
+  };
+
+  // start a conversation with the user.
+  bot.startConversation(message, getIDOfAttendeeToRemove);
+
+  bot.reply(message, "Let's remove the member from the meeting.");
+});
+
+//coversation to cancel the meeting
+controller.hears(['^deschedule$', '^cancel$'],['mention', 'direct_mention'], function(bot,message) {
+
+  var cancellationRequestingUser = message.user;
+
+  var meetingID;
+
+  var getIDOfMeeting = function(err, convo){
+    convo.ask('May I know the meeting ID?',function(response,convo) {
+      meetingID = response.text;
+
+      // if(cancellationRequestingUser in meeting.getUsers()) //Some type of validaion required here.
+      confirmCancellation(response, convo);
+      // else
+        // convo.say("You are not authorized for this action.");
+      convo.next();
+    })
+  };
+
+  var confirmCancellation = function(err, convo){
+    convo.ask('Are you sure you want to cancel the meeting?',function(response,convo) {
+      var confirmation = response.text;
+
+      if(confirmation.toUpperCase() === "YES"){
+        cancelMeeting();
+        convo.say("Meeting has been cancelled.");
+      }else{
+        convo.say("Meeting NOT cancelled.");
+      }
+
+      convo.next();
+    })
+  };
+
+  var cancelMeeting = function(){
+    //
+  };
+
+  // start a conversation with the user.
+  bot.startConversation(message, getIDOfMeeting);
+
+  bot.reply(message, "Let's cancel the meeting.");
+});
+
+//coversation to reschedule the meeting
+controller.hears(['^reschedule$'],['mention', 'direct_mention'], function(bot,message) {
+
+  var rescheduleRequestingUser = message.user;
+
+  var meetingID;
+
+  var getIDOfMeeting = function(err, convo){
+    convo.ask('May I know the meeting ID?',function(response,convo) {
+      meetingID = response.text;
+
+      // if(cancellationRequestingUser in meeting.getUsers()) //Some type of validaion required here.
+      confirmReschedule(response, convo);
+      // else
+        // convo.say("You are not authorized for this action.");
+      convo.next();
+    })
+  };
+
+  var confirmReschedule = function(err, convo){
+    convo.ask('Are you sure you want to reschedule the meeting?',function(response,convo) {
+      var confirmation = response.text;
+
+      if(confirmation.toUpperCase() === "YES"){
+        cancelMeeting();
+        convo.say("Meeting has been rescheduled.");
+      }else{
+        convo.say("Meeting NOT rescheduled.");
+      }
+
+      convo.next();
+    })
+  };
+
+  var cancelMeeting = function(){
+    //
+  };
+
+  // start a conversation with the user.
+  bot.startConversation(message, getIDOfMeeting);
+
+  bot.reply(message, "Let's cancel the meeting.");
 });
