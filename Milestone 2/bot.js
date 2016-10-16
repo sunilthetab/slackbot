@@ -18,11 +18,12 @@ var bot = controller.spawn({
 
 bot.configureIncomingWebhook({url: "https://hooks.slack.com/services/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"});
 bot.sendWebhook({
-  text: '<https://seprojbot.slack.com/team/azra|@azra> setup',
+  text: "<https://seprojbot.slack.com/team/azra|@azra> setup",
   channel: '#azra_testing'
   
 },function(err,res) {
   // handle error
+
 }); 
 
 //coversation to schedule new meeting begins here
