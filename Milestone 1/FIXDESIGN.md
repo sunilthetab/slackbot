@@ -92,7 +92,7 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
 
   ```
 
-  ii. The following maintains a persistent user state:
+  ii. The following spawns an instance of the bot:
 
   ```javascript
 
