@@ -44,6 +44,7 @@ This project involves the usage of following components:
 ![alt text](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/Milestone%201/class_diagram.png)
 
 ### Design Patterns
+#### Space Reactor
 
 The design pattern that our bot follows is that of space reactor bot pattern:
 
@@ -129,7 +130,17 @@ controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,
 
   ```
 
+#### MVVM (Model View View-Model)
 
+MVVM guidelines advocates to separate business logic from appearance and layout. The three main components of MVVM are Model, View and View-Model
+
+Our bot would follow this architectural design pattern in the following way:
+
+1. Models implement data model along with business and validation logic. The models would be attendee, meetingroom etc. 
+
+2. View: The view by default is slack whose appearance can't be changed by us.
+
+3. View-model: Acts as link between View and Models responsible for handling view logic. Our logic that connects slack and the backend of calendar and user data is in bot.js file.
 
 
 
