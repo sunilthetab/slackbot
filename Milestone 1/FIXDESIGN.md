@@ -26,9 +26,7 @@ A storyboard is a graphic organizer in the form of illustrations or images displ
 Below storyboard will describe the story about the meeting bot which will schedule a meeting by taking into consideration all the factors (project cost, work efficiency and productivity of the employees).
 
 
-![alt text](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/Milestone%201/Snip20161017_1.png)
-
-![alt text](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/Milestone%201/Snip20161017_2.png)
+![alt text](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/Milestone%201/Storyboard_New.png)
 
 ####Wireframe
 ![alt text](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/Milestone%201/output_HfRQ3w.gif)
