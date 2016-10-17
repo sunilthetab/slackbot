@@ -10,7 +10,8 @@ var controller = Botkit.slackbot({
 // connect the bot to a stream of messages
 controller.spawn({
   //token: process.env.ALTCODETOKEN,
-  token: 'xoxb-87992197655-VxQuZsKc2LDrur8ENZNwiKT6',
+  //token: 'xoxb-87992197655-VxQuZsKc2LDrur8ENZNwiKT6',//Azra bot in Se_proj
+  token: 'xoxb-92027054758-6XcJEyWU3UcfNvjQlw2Pjm3d',//Azra bot in SunilCorp
 }).startRTM()
 
 //coversation to schedule new meeting begins here
