@@ -10,16 +10,15 @@ var controller = Botkit.slackbot({
 // connect the bot to a stream of messages
 controller.spawn({
   //token: process.env.ALTCODETOKEN,
-  //token: 'xoxb-87992197655-VxQuZsKc2LDrur8ENZNwiKT6',
-  token : 'xoxb-91906944081-KAV86vjqXQ7mQPz1dMRRr4yQ',
+  token: 'xoxb-87992197655-VxQuZsKc2LDrur8ENZNwiKT6',
+  //token : 'xoxb-91906944081-KAV86vjqXQ7mQPz1dMRRr4yQ',
 }).startRTM()
 
 
 
 var config = require('./mock.json');
 
-//var username='pranav';
-//console.log(config.users[username]['2016-26-10'].length +' this is data');
+
 
 
 var Isconstraintonday;
@@ -213,9 +212,9 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
           byTime_Minute = parseInt(timeArray[1]);
 
         if(byDate === today.getDate() || byDate === today.getDate() + 1){
-          // console.log(approxMeetingDuration_Hours + " " + approxMeetingDuration_Mins);
+
           var meetingDurationInMin = approxMeetingDuration_Hours * 60 + approxMeetingDuration_Mins;
-          // console.log(meetingDurationInMin);
+
           var timeLeftInMin = (new Date(1900 + byYear, byMonth, byDate, byTime_Hour, byTime_Minute, 0, 0) - new Date()) / (1000 * 60);
           // console.log(new Date(1900 + byYear, byMonth, byDate, byTime_Hour, byTime_Minute, 0, 0));
           // console.log(new Date());
@@ -280,12 +279,12 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
         slots=slots+2;
       }else if(parseInt(approxMeetingDuration_Mins)<30&&parseInt(approxMeetingDuration_Mins)>0) slots=slots+1;
 
-      console.log(slotthis+"  this "+slots+"total "+hh+" dvdf"+mint+"day today "+dd);
+
 
       var result=calculateCommonTime(arrayID,daythis,slotthis,slots);
       if(result==true){
         convo.say("i got day" +daythis+" slot will"+slotthis);
-        console.log("da "+daythis+"slot "+slotthis);
+
         convo.next();
       }
 
@@ -365,14 +364,14 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
       data = JSON.parse(JSON.stringify(config["users"][username][daythis][i]));
       if(parseInt(data)==0){
         count++;
-        console.log('count here'+count);
+
       }else{
         count=0;
       }
-      console.log('count here'+count+" and i is "+i+"slots is "+slots);
+
     }
     if(count==slots){
-      console.log('here' +(i-slots));
+
       return (i-slots);
     }else return -1;
 
@@ -390,7 +389,7 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
         data = JSON.parse(JSON.stringify(config["users"][username][daythis][slottocheck]));
         if (parseInt(data) == 0) {
           slottocheck++;
-          console.log('slotthis here' + slottocheck);
+
         } else {
           check=false;
           break;
