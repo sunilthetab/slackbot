@@ -11,7 +11,7 @@ var controller = Botkit.slackbot({
 controller.spawn({
   //token: process.env.ALTCODETOKEN,
   //token: 'xoxb-87992197655-VxQuZsKc2LDrur8ENZNwiKT6',
-  token : 'xoxb-75413084788-LQt1Rejkw8HnkCAO1R1DOXxI',
+  token : 'xoxb-91906944081-KAV86vjqXQ7mQPz1dMRRr4yQ',
 }).startRTM()
 
 
@@ -32,6 +32,15 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
 
   //Contains all email ids
   var arrayID;
+  var meetinghh;
+  var meetingmm;
+  var meetingday;
+  var daythis;
+  var meetingID;
+  var slots;
+  var meetingslot;
+  var duration;
+
 
   var byTime_Hour;
   var byTime_Minute;
@@ -65,14 +74,14 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
       }
       if(flag==false)
       {
-       getApproxMeetingDuration(response, convo);
-      convo.next();
-    }
-else{
-  getIDOfAttendees(response, convo);
-  convo.next();
-}
-      
+        getApproxMeetingDuration(response, convo);
+        convo.next();
+      }
+      else{
+        getIDOfAttendees(response, convo);
+        convo.next();
+      }
+
     });
   };
 
@@ -82,27 +91,27 @@ else{
       if(approxMeetingDuration >1 && approxMeetingDuration<3)
       {
 
-      var approxDurationArray = approxMeetingDuration.split("");
-      if(approxMeetingDuration.indexOf(":") > -1){
-        approxDurationArray = approxMeetingDuration.split(":");
+        var approxDurationArray = approxMeetingDuration.split("");
+        if(approxMeetingDuration.indexOf(":") > -1){
+          approxDurationArray = approxMeetingDuration.split(":");
+        }
+
+        approxMeetingDuration_Hours = parseInt(approxDurationArray[0]);
+        if(approxDurationArray.length == 2){
+          approxMeetingDuration_Mins = parseInt(approxDurationArray[1]);
+        }
+
+        //check if valid email addresses are entered
+
+        getLastDateOrDay(response, convo);
+        convo.next();
       }
-
-      approxMeetingDuration_Hours = parseInt(approxDurationArray[0]);
-      if(approxDurationArray.length == 2){
-        approxMeetingDuration_Mins = parseInt(approxDurationArray[1]);
+      else
+      {
+        convo.say('Meeting can not be schedule for more than 3 hrs! Please try again');
+        getApproxMeetingDuration(response, convo);
+        convo.next();
       }
-
-      //check if valid email addresses are entered
-
-      getLastDateOrDay(response, convo);
-      convo.next();
-    }
-    else
-    {
-      convo.say('Meeting can not be schedule for more than 3 hrs! Please try again');
-      getApproxMeetingDuration(response, convo);
-      convo.next();
-    }
     });
   };
 
@@ -260,7 +269,6 @@ else{
       var hh=today.getHours();
       var mint=today.getMinutes();
       var slotthis;
-      console.log("hh print "+hh);
 
       if(hh>17){
         dd=dd+1;
@@ -277,9 +285,9 @@ else{
         slotthis=slotthis+2;
       }
       if(slotthis==15||((slotthis+slots)>=16)){
-          dd=dd+1;
-          slotthis=0;
-        }
+        dd=dd+1;
+        slotthis=0;
+      }
 
 
       if(dd<10) {
@@ -306,31 +314,27 @@ else{
       }else if(parseInt(approxMeetingDuration_Mins)<30&&parseInt(approxMeetingDuration_Mins)>0) slots=slots+1;
 
 
-      var meetinghh=0;
-      var meetingmm='00'
+
       var result=calculateCommonTime(arrayID,daythis,slotthis,slots);
       if(result==true){
-        var meetingday=daythis;
-        if(slotthis%2 == 0)
-        {
-           meetinghh=(10+(slotthis/2));
-           console.log("slotthis "+slotthis);
-           console.log("meetinghh "+meetinghh);
-           meetingmm='00'
+        duration=slots;
+        meetingslot=slotthis;
+        meetingday=daythis;
+        meetinghh=(10+(slotthis/2));
+        meetingmm='00';
+        if((slotthis%2)!=0){
+          meetinghh=(10+(slotthis/2))-0.5;
+          meetingmm='30';
         }
-       else
-       {
-         meetinghh=(10+(slotthis/2)-0.5);
-         console.log("meetinghh "+meetinghh);
-         meetingmm='30';
-
-       }
-
-        convo.say("I got " +daythis+" at "+meetinghh+":"+meetingmm);
-        fixMeeting(response, convo);
-        convo.next();
+        var meeting=daythis.split('-');
+        if(((meeting[0]-1900)>byYear)||((meeting[0]==byYear)&&(meeting[2]>byMonth))||((meeting[0]==byYear)&&(meeting[2]==byMonth)&&(meeting[1]>byDate))){
+          convo.say("Apologies. I could not find any time suitable in given period");
+        }else {
+          convo.say("I got " + meetingday + " at " + meetinghh + ":" + meetingmm);
+          fixMeeting(response, convo);
+          convo.next();
+        }
       }
-
 
       //convo.say("i got day" + " " + meetingday + " at " + meetinghour+ " and  " + meetingmin+" mins");
 
@@ -346,12 +350,33 @@ else{
   var fixMeeting = function(err, convo){
     convo.ask('Do you want to fix this meeting time? Please reply "yes" or "no"',function(response,convo) {
       var answer = response.text;
-      if((answer =='no')){
+      if((answer=='no')||(answer=='No')||(answer=='NO')){
         bot.startConversation(message, getLastTime);
         convo.next();
       }else{
-        convo.say('I am confirming this meeting!Have Nice Day!');
-
+        //convo.say('I am confirming this meeting ');
+        bot.reply(message, 'I am confirming this meeting ');
+        //code for writing meeting id
+        var keys=Object.keys(config["meetings"]);
+        var last=keys[keys.length-1];
+        last++;
+        meetingID=last;
+        //sets meeting ID based on incrementing most recent meeting ID from JSON
+        bot.reply(message, 'This is your meeting ID : '+last);
+        config["meetings"][last]=meetingday+"|"+meetinghh+":"+meetingmm;
+        var i;
+        var j;
+        //set meeting ID to calendar
+        for(i=0;i<arrayID.length;i++){
+          var username=arrayID[i];
+          for(j=meetingslot;j<(meetingslot+duration);j++) {
+            config["users"][username][meetingday][j]=meetingID;
+            console.log("value is : "+config["users"][username][meetingday][j]);
+          }
+        }
+        fs = require('fs');
+        var m = JSON.parse(fs.readFileSync('./mock.json').toString());
+        fs.writeFile('./mock.json', JSON.stringify(config));
       }
       convo.next();
     });
