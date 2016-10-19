@@ -89,7 +89,7 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
   var getApproxMeetingDuration = function(err, convo){
     convo.ask('OK. What will be the approximate duration of the meeting (HH:MM or HH)?',function(response,convo) {
       var approxMeetingDuration = response.text;
-      if(approxMeetingDuration >1 && approxMeetingDuration<3)
+      if(approxMeetingDuration > 0 && approxMeetingDuration<3)
       {
 
         var approxDurationArray = approxMeetingDuration.split("");
