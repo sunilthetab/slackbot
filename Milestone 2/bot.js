@@ -10,8 +10,8 @@ var controller = Botkit.slackbot({
 // connect the bot to a stream of messages
 controller.spawn({
   //token: process.env.ALTCODETOKEN,
-  token: 'xoxb-87992197655-VxQuZsKc2LDrur8ENZNwiKT6',
-  //token : 'xoxb-91906944081-KAV86vjqXQ7mQPz1dMRRr4yQ',
+  //token: 'xoxb-87992197655-VxQuZsKc2LDrur8ENZNwiKT6',
+  token : 'xoxb-91906944081-KAV86vjqXQ7mQPz1dMRRr4yQ',
 }).startRTM()
 
 
@@ -283,8 +283,14 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
 
       var result=calculateCommonTime(arrayID,daythis,slotthis,slots);
       if(result==true){
-        convo.say("i got day" +daythis+" slot will"+slotthis);
-
+        var meetingday=daythis;
+        var meetinghh=(10+(slotthis/2));
+        var meetingmm='00';
+        if((slotthis%2)!=0){
+          meetingmm='30';
+        }
+        convo.say("I got " +daythis+" at "+meetinghh+":"+meetingmm);
+        fixMeeting(response, convo);
         convo.next();
       }
 
@@ -300,6 +306,25 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
     });
   };
 
+  var fixMeeting = function(err, convo){
+    convo.ask('Do you want to fix this meeting time? Please reply "yes" or "no"',function(response,convo) {
+      var answer = response.text;
+      if((answer=='no')||(answer=='No')(answer=='NO')){
+        bot.startConversation(message, getIDOfNewAttendee);
+        convo.next();
+      }else{
+        convo.say('I am confirming this meeting ');
+
+      }
+
+
+
+
+
+      getApproxMeetingDuration(response, convo);
+      convo.next();
+    });
+  };
 
   var calculateCommonTime=function(arrayID,daythis,slotthis,slots){
     if (slotthis == 15 || ((slotthis + slots) >= 16)) {
