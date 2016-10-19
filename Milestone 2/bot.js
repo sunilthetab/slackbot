@@ -11,7 +11,7 @@ var controller = Botkit.slackbot({
 controller.spawn({
   //token: process.env.ALTCODETOKEN,
   //token: 'xoxb-87992197655-VxQuZsKc2LDrur8ENZNwiKT6',
-  token : 'xoxb-91906944081-KAV86vjqXQ7mQPz1dMRRr4yQ',
+  token : 'xoxb-75413084788-LQt1Rejkw8HnkCAO1R1DOXxI',
 }).startRTM()
 
 
@@ -45,7 +45,8 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
     convo.ask('Alright. May I know the email IDs of the attendees, please?',function(response,convo) {
       var IDofAttendees = response.text;
       //
-      convo.say('Cool, you said: ' + response.text);
+      //convo.say('Cool, you said: ' + response.text);
+      var flag=false;
 
       arrayID = IDofAttendees.split(" ");
       if(IDofAttendees.indexOf(',') > -1){
@@ -53,16 +54,32 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
       }
       for(var i = 0 ; i < arrayID.length ; i++){
         arrayID[i] = arrayID[i].trim();
-      }
 
-      getApproxMeetingDuration(response, convo);
+        if(JSON.parse(JSON.stringify(config["users"][arrayID[i]]== null)))
+        {
+          convo.say('Employee '+arrayID[i]+' is not there in the database');
+          flag=true;
+          break;
+
+        }
+      }
+      if(flag==false)
+      {
+       getApproxMeetingDuration(response, convo);
       convo.next();
+    }
+
+  getIDOfAttendees(response, convo);
+  convo.next();
+      
     });
   };
 
   var getApproxMeetingDuration = function(err, convo){
     convo.ask('OK. What will be the approximate duration of the meeting (HH:MM or HH)?',function(response,convo) {
       var approxMeetingDuration = response.text;
+      if(approxMeetingDuration >1 && approxMeetingDuration<3)
+      {
 
       var approxDurationArray = approxMeetingDuration.split("");
       if(approxMeetingDuration.indexOf(":") > -1){
@@ -78,6 +95,13 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
 
       getLastDateOrDay(response, convo);
       convo.next();
+    }
+    else
+    {
+      convo.say('Meeting can not be schedule for more than 3 hrs! Please try again');
+      getApproxMeetingDuration(response, convo);
+      convo.next();
+    }
     });
   };
 
@@ -191,7 +215,7 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
 
   var getLastTime = function(err, convo){
     convo.ask('OK. By what time (HH:MM or HH) should the meeting be organized (24 Hour format)? Say NA if no such constraint',function(response,convo) {
-      if(response.text=='na'||response.text=='Na'||response.text=='NA')
+      if(response.text.toUpperCase='NA')
       {
         Isconstraintonday=false;
       }else{
@@ -235,6 +259,7 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
       var hh=today.getHours();
       var mint=today.getMinutes();
       var slotthis;
+      console.log("hh print "+hh);
 
       if(hh>17){
         dd=dd+1;
@@ -280,15 +305,26 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
       }else if(parseInt(approxMeetingDuration_Mins)<30&&parseInt(approxMeetingDuration_Mins)>0) slots=slots+1;
 
 
-
+      var meetinghh=0;
+      var meetingmm='00'
       var result=calculateCommonTime(arrayID,daythis,slotthis,slots);
       if(result==true){
         var meetingday=daythis;
-        var meetinghh=(10+(slotthis/2));
-        var meetingmm='00';
-        if((slotthis%2)!=0){
-          meetingmm='30';
+        if(slotthis%2 == 0)
+        {
+           meetinghh=(10+(slotthis/2));
+           console.log("slotthis "+slotthis);
+           console.log("meetinghh "+meetinghh);
+           meetingmm='00'
         }
+       else
+       {
+         meetinghh=(10+(slotthis/2)-0.5);
+         console.log("meetinghh "+meetinghh);
+         meetingmm='30';
+
+       }
+
         convo.say("I got " +daythis+" at "+meetinghh+":"+meetingmm);
         fixMeeting(response, convo);
         convo.next();
@@ -309,19 +345,13 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
   var fixMeeting = function(err, convo){
     convo.ask('Do you want to fix this meeting time? Please reply "yes" or "no"',function(response,convo) {
       var answer = response.text;
-      if((answer=='no')||(answer=='No')(answer=='NO')){
+      if((answer.toUpperCase=='NO')){
         bot.startConversation(message, getIDOfNewAttendee);
         convo.next();
       }else{
-        convo.say('I am confirming this meeting ');
+        convo.say('I am confirming this meeting!Have Nice Day!');
 
       }
-
-
-
-
-
-      getApproxMeetingDuration(response, convo);
       convo.next();
     });
   };
