@@ -346,8 +346,8 @@ else{
   var fixMeeting = function(err, convo){
     convo.ask('Do you want to fix this meeting time? Please reply "yes" or "no"',function(response,convo) {
       var answer = response.text;
-      if((answer.toUpperCase=='NO')){
-        bot.startConversation(message, getIDOfNewAttendee);
+      if((answer =='no')){
+        bot.startConversation(message, getLastTime);
         convo.next();
       }else{
         convo.say('I am confirming this meeting!Have Nice Day!');
