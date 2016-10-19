@@ -68,9 +68,10 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
        getApproxMeetingDuration(response, convo);
       convo.next();
     }
-
+else{
   getIDOfAttendees(response, convo);
   convo.next();
+}
       
     });
   };
