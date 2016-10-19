@@ -1,5 +1,14 @@
 #FIX DESIGN
 
+Team Members:
+
+1. Pranav Firake; ppfirake@ncsu.edu
+2. Ajay Chandra Pendyala; apendya@ncsu.edu
+3. Sohan Kunkerkar; sakunker@ncsu.edu
+4. Gautam Verma; gverma@ncsu.edu
+5. Sunil Narasimhamurthy; snarasi5@ncsu.edu
+
+
 ## Actions suggested by Professor
 
 1. Motivate ideal time in the problem statement
