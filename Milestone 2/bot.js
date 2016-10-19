@@ -364,7 +364,7 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
         meetingID=last;
         //sets meeting ID based on incrementing most recent meeting ID from JSON
         bot.reply(message, 'This is your meeting ID : '+last);
-        config["meetings"][last]=meetingday+"|"+meetinghh+":"+meetingmm;
+        config["meetings"][last]=meetingday+"|"+meetinghh+":"+meetingmm+ "|" +arrayID;
         var i;
         var j;
         //set meeting ID to calendar
@@ -643,6 +643,33 @@ controller.hears(['^deschedule$', '^cancel$'],['mention', 'direct_mention'], fun
 
   var cancelMeeting = function(){
     //
+   
+   var cancelval = config["meetings"][meetingID].split("|");
+   for(var i = 0 ; i < cancelval.length ; i++){
+        cancelval[i] = cancelval[i].trim();
+      }
+    var canceldate = cancelval[0];
+    var canceluser = cancelval[2].split(",");
+    //var canceltime = cancelval[1];
+
+    for(var p=0; p< canceluser.length; p++){
+
+    for(var d=0; d<16; d++)
+    {
+      if(config["users"][canceluser[p]][canceldate][d]==meetingID)
+        config["users"][canceluser[p]][canceldate][d]= 0;
+
+    }
+
+    }
+
+    console.log(meetingID);
+
+
+   delete config["meetings"][meetingID];
+   fs = require('fs');
+    var m = JSON.parse(fs.readFileSync('./mock.json').toString());
+    fs.writeFile('./mock.json', JSON.stringify(config));
   };
 
   // start a conversation with the user.
@@ -687,11 +714,12 @@ controller.hears(['^reschedule$'],['mention', 'direct_mention'], function(bot,me
 
   var cancelMeeting = function(){
     //
+   
   };
 
   // start a conversation with the user.
-  bot.startConversation(message, getIDOfMeeting);
+  //bot.startConversation(message, getIDOfMeeting);
 
-  bot.reply(message, "Let's cancel the meeting.");
+  //bot.reply(message, "Let's cancel the meeting.");
 });
 
