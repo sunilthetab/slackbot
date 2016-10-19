@@ -40,6 +40,7 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
   var slots;
   var meetingslot;
   var duration;
+  var slotpassed;
 
 
   var byTime_Hour;
@@ -316,14 +317,14 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
 
 
       var result=calculateCommonTime(arrayID,daythis,slotthis,slots);
-      if(result==true){
+      if(result>=0){
         duration=slots;
-        meetingslot=slotthis;
+        meetingslot=result;
         meetingday=daythis;
-        meetinghh=(10+(slotthis/2));
+        meetinghh=(10+(meetingslot/2));
         meetingmm='00';
-        if((slotthis%2)!=0){
-          meetinghh=(10+(slotthis/2))-0.5;
+        if((meetingslot%2)!=0){
+          meetinghh=(10+(meetingslot/2))-0.5;
           meetingmm='30';
         }
         var meeting=daythis.split('-');
@@ -422,7 +423,7 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
     }
     var check=checkforthistime(arrayID,daythis,slotpassed,slots);
     if(check>=0){
-      return true;
+      return slotpassed;
     }
     else{
       slotthis=slotthis+1;
@@ -445,7 +446,6 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
       data = JSON.parse(JSON.stringify(config["users"][username][daythis][i]));
       if(parseInt(data)==0){
         count++;
-
       }else{
         count=0;
       }
