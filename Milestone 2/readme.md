@@ -20,11 +20,13 @@
 
 ## Selenium testing of each use case
 
-  Please find selenium test script for each use case below : 
+  Please find selenium test script for each use case below :
+	https://github.ncsu.edu/gverma/Azra_MeetingBot/tree/master/Milestone%202/Selenium_Test  
   
 ## Task Tracking -- WORKSHEET.md
 
-  For task tracking we have used trello cards.
+  For task tracking we have used Trello cards.
+  Please find worksheet at https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/WORKSHEET.md
   
 ## Screencast
 
