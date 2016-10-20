@@ -142,8 +142,9 @@ WebDriverWait wait = new WebDriverWait(driver, 30);
 		
 		messageBot.sendKeys("yes");
 		messageBot.sendKeys(Keys.RETURN);
+		Thread.sleep(6000);
 		WebElement msg2 = driver.findElement(By.xpath("//span[contains(@class,'message_body') and text() = 'Meeting has been cancelled.']"));
-        assertNotNull(msg2);
+                assertNotNull(msg2);
 		
 		
 		
