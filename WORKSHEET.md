@@ -73,16 +73,16 @@
 
 ###Week 5: Oct 14-Oct 21 
 
-|   | Week 5: Oct 14-Oct   21  |                                                |              |              |                |             |        |
-|---|--------------------------|------------------------------------------------|--------------|--------------|----------------|-------------|--------|
-|   |                          |                                                |              |              |                |             |        |
-|   | Deliverable              | Item/Status                                    | Issues/Tasks | Team Members | Estimated Date | Actual Date |        |
-| 1 | Mocking                  | Mock json bug fixes                            |              | #5           | Pranav         | 16-Oct      | 18-Oct |
-| 2 | Bot Implementation       | Coding the user conversation flow   and review | #10          | Gautam       | 16-Oct         | 18-Oct      |        |
-|   |                          | Handling meeting slot and review               |              | #11          | Pranav         | 16-Oct      | 18-Oct |
-|   |                          | Add/ Removefunctionality                       |              | #12          | Sunil          | 16-Oct      | 18-Oct |
-|   |                          | Cancel meeting and validations                 |              | #13          | Ajay           | 16-Oct      | 18-Oct |
-| 3 | Selenium Testing         | Use Case 1                                     |              | #1.1         | Sunil          | 16-Oct      | 18-Oct |
-|   |                          | Use Case 2                                     |              | #1.2         | Sohan          | 16-Oct      | 18-Oct |
-|   |                          | Use Case 3                                     |              | #1.3         | Ajay           | 14-Oct      | 14-Oct |
-| 4 | Screencast               |                                                |              | #14          | All            | 20-Oct      | 20-Oct |
+|   | Week 5: Oct 14-Oct   21  |                                              |             |              |              |                |             |
+|---|--------------------------|----------------------------------------------|-------------|--------------|--------------|----------------|-------------|
+|   |                          |                                              |             |              |              |                |             |
+|   | Deliverable              |                                              | Item/Status | Issues/Tasks | Team Members | Estimated Date | Actual Date |
+| 1 | Mocking                  | Mock json bug fixes                          |             | #5           | Pranav       | 16-Oct         | 18-Oct      |
+| 2 | Bot Implementation       | Coding the user conversation flow and review |             | #10          | Gautam       | 16-Oct         | 18-Oct      |
+|   |                          | Handling meeting slot and review             |             | #11          | Pranav       | 16-Oct         | 18-Oct      |
+|   |                          | Add/ Removefunctionality                     |             | #12          | Sunil        | 16-Oct         | 18-Oct      |
+|   |                          | Cancel meeting and validations               |             | #13          | Ajay         | 16-Oct         | 18-Oct      |
+| 3 | Selenium Testing         | Use Case 1                                   |             | #1.1         | Sunil        | 16-Oct         | 18-Oct      |
+|   |                          | Use Case 2                                   |             | #1.2         | Sohan        | 16-Oct         | 18-Oct      |
+|   |                          | Use Case 3                                   |             | #1.3         | Ajay         | 14-Oct         | 14-Oct      |
+| 4 | Screencast               |                                              |             | #14          | All          | 20-Oct         | 20-Oct      |    
