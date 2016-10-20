@@ -76,6 +76,28 @@ private static WebDriver driver;
 				By.xpath("//span[@class='message_body' and text() = ' Let's organize a new meeting']"));
 		assertNotNull(msg);
 
+
+
+		WebElement msg2 = driver.findElement(By.xpath("//span[@class='message_body' and text() = 'OK. What will be the approximate duration of the meeting (HH:MM or HH)?']"));
+		assertNotNull(msg2);
+		
+		messageBot.sendKeys("2");
+		messageBot.sendKeys(Keys.RETURN);
+		
+		WebElement msg3 = driver.findElement(By.xpath("//span[@class='message_body' and text() = 'And by what date(MM/DD/YYYY or MM/DD or DD) or day do you want the meeting to be scheduled? Say NA if no such constraint']"));
+        assertNotNull(msg3);
+        
+        messageBot.sendKeys("10/26");
+		messageBot.sendKeys(Keys.RETURN);
+        
+        
+        
+		WebElement msg4 = driver.findElement(By.xpath("//span[@class='message_body' and text() = 'OK. By what time (HH:MM or HH) should the meeting be organized (24 Hour format)? Say NA if no such constraint']"));
+        assertNotNull(msg4);
+        
+        messageBot.sendKeys("17");
+		messageBot.sendKeys(Keys.RETURN);
+
 	}
 }
 
