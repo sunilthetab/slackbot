@@ -5,7 +5,7 @@
 
 #Worksheet
 
-## Milestome 1 : bot DESIGN
+## Milestone 1 : bot DESIGN
 
 ###Week 1 : Sept 15- Sept   22
 
@@ -24,7 +24,7 @@
 
 
 
-## Milestome 2 : BOT
+## Milestone 2 : BOT
 
 ###Week 2: Sept 23- Sept 30 
 
