@@ -548,7 +548,7 @@ controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,
   // start a conversation with the user.
   bot.startConversation(message, getIDOfNewAttendee);
 
-  bot.reply(message, "Let's add the new member to the meeting.");
+  bot.reply(message, "Let us add the new member to the meeting.");
 });
 
 //coversation to remove a member from meeting
@@ -604,7 +604,7 @@ controller.hears(['^remove$'],['mention', 'direct_mention'], function(bot,messag
   // start a conversation with the user.
   bot.startConversation(message, getIDOfAttendeeToRemove);
 
-  bot.reply(message, "Let's remove the member from the meeting.");
+  bot.reply(message, "Let us remove the member from the meeting.");
 });
 
 //coversation to cancel the meeting
@@ -675,7 +675,7 @@ controller.hears(['^deschedule$', '^cancel$'],['mention', 'direct_mention'], fun
   // start a conversation with the user.
   bot.startConversation(message, getIDOfMeeting);
 
-  bot.reply(message, "Let's cancel the meeting.");
+  bot.reply(message, "Let us cancel the meeting.");
 });
 
 //coversation to reschedule the meeting
@@ -720,6 +720,6 @@ controller.hears(['^reschedule$'],['mention', 'direct_mention'], function(bot,me
   // start a conversation with the user.
   //bot.startConversation(message, getIDOfMeeting);
 
-  //bot.reply(message, "Let's cancel the meeting.");
+  //bot.reply(message, "Let us cancel the meeting.");
 });
 
