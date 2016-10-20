@@ -190,7 +190,7 @@ WebDriverWait wait = new WebDriverWait(driver, 30);
 		WebElement messageBot = driver.findElement(By.id("message-input"));
 		messageBot.sendKeys("@azra cancel");
 		messageBot.sendKeys(Keys.RETURN);
-		Thread.sleep(6000);
+		Thread.sleep(2000);
 		
 		WebElement msg = driver.findElement(By.xpath("//span[contains(@class,'message_body') and text() = 'May I know the meeting ID?']"));
 		//wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[contains(@class,'message_body') and text() = 'May I know the meeting ID?']")));
@@ -198,7 +198,7 @@ WebDriverWait wait = new WebDriverWait(driver, 30);
 		
 		messageBot.sendKeys("102");
 		messageBot.sendKeys(Keys.RETURN);
-		Thread.sleep(6000);
+		Thread.sleep(2000);
 		WebElement msg1 = driver.findElement(By.xpath("//span[contains(@class,'message_body') and text() = 'Are you sure you want to cancel the meeting?']"));
 		//wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[contains(@class,'message_body') and text() = 'Are you sure you want to cancel the meeting?']")));
 		assertNotNull(msg1);
@@ -206,7 +206,7 @@ WebDriverWait wait = new WebDriverWait(driver, 30);
 		
 		messageBot.sendKeys("yes");
 		messageBot.sendKeys(Keys.RETURN);
-		Thread.sleep(6000);
+		Thread.sleep(2000);
 		WebElement msg2 = driver.findElement(By.xpath("//span[contains(@class,'message_body') and text() = 'Meeting has been cancelled.']"));
                 assertNotNull(msg2);
 		
