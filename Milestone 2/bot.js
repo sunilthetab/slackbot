@@ -335,7 +335,7 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
         if(((meeting[0]-1900)>byYear)||((meeting[0]==byYear)&&(meeting[2]>byMonth))||((meeting[0]==byYear)&&(meeting[2]==byMonth)&&(meeting[1]>byDate))){
           convo.say("Apologies. I could not find any time suitable in given period");
         }else {
-          convo.say("I got " + meetingday + " at " + meetinghh + ":" + meetingmm+" at "+roomid;);
+          convo.say("I got " + meetingday + " at " + meetinghh + ":" + meetingmm+" at "+roomid);
           fixMeeting(response, convo);
           convo.next();
         }
