@@ -39,6 +39,7 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
     var mdaythis;
   var meetingID;
   var slots;
+  var roomid;
   var meetingslot;
   var duration;
   var slotpassed;
@@ -323,6 +324,7 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
         duration=slots;
         meetingslot=result;
         meetingday=mdaythis;
+		roomid='room 1021';
         meetinghh=(10+(meetingslot/2));
         meetingmm='00';
         if((meetingslot%2)!=0){
@@ -333,7 +335,7 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
         if(((meeting[0]-1900)>byYear)||((meeting[0]==byYear)&&(meeting[2]>byMonth))||((meeting[0]==byYear)&&(meeting[2]==byMonth)&&(meeting[1]>byDate))){
           convo.say("Apologies. I could not find any time suitable in given period");
         }else {
-          convo.say("I got " + meetingday + " at " + meetinghh + ":" + meetingmm);
+          convo.say("I got " + meetingday + " at " + meetinghh + ":" + meetingmm+" at "+roomid;);
           fixMeeting(response, convo);
           convo.next();
         }
