@@ -36,11 +36,13 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
   var meetingmm;
   var meetingday;
   var daythis;
+    var mdaythis;
   var meetingID;
   var slots;
   var meetingslot;
   var duration;
   var slotpassed;
+
 
 
   var byTime_Hour;
@@ -320,14 +322,14 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
       if(result>=0){
         duration=slots;
         meetingslot=result;
-        meetingday=daythis;
+        meetingday=mdaythis;
         meetinghh=(10+(meetingslot/2));
         meetingmm='00';
         if((meetingslot%2)!=0){
           meetinghh=(10+(meetingslot/2))-0.5;
           meetingmm='30';
         }
-        var meeting=daythis.split('-');
+        var meeting=mdaythis.split('-');
         if(((meeting[0]-1900)>byYear)||((meeting[0]==byYear)&&(meeting[2]>byMonth))||((meeting[0]==byYear)&&(meeting[2]==byMonth)&&(meeting[1]>byDate))){
           convo.say("Apologies. I could not find any time suitable in given period");
         }else {
@@ -387,7 +389,8 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
     if (slotthis == 15 || ((slotthis + slots) >= 16)) {
       var dayhere = daythis.split("-");
       yyyy = dayhere[0];
-      dd = dayhere[1] + 1;
+      dd = dayhere[1];
+        dd=(parseInt(dd)+1).toString();
       mm = dayhere[2];
       if ((dd == '32') || ((dd == '31') && ((mm == '02') || (mm == '06') || (mm == '09') || (mm == '11'))) || ((dd = '29') && (mm == '02'))) {
         dd = 1;
@@ -406,7 +409,8 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
       if (slotthis == 15 || ((slotthis + slots) >= 16)) {
         var dayhere = daythis.split("-");
         yyyy = dayhere[0];
-        dd = dayhere[1] + 1;
+        dd = dayhere[1];
+          dd=(parseInt(dd)+1).toString();
         mm = dayhere[2];
         if ((dd == '32') || ((dd == '31') && ((mm == '02') || (mm == '06') || (mm == '09') || (mm == '11'))) || ((dd = '29') && (mm == '02'))) {
           dd = 1;
@@ -423,6 +427,7 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
     }
     var check=checkforthistime(arrayID,daythis,slotpassed,slots);
     if(check>=0){
+        mdaythis=daythis;
       return slotpassed;
     }
     else{
@@ -510,7 +515,7 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
   // start a conversation with the user.
   bot.startConversation(message, getIDOfAttendees);
 
-  bot.reply(message, "Let us organize a new meeting.");
+  bot.reply(message, "Let's organize a new meeting.");
 
 });
 
@@ -643,31 +648,31 @@ controller.hears(['^deschedule$', '^cancel$'],['mention', 'direct_mention'], fun
 
   var cancelMeeting = function(){
     //
-   
-   var cancelval = config["meetings"][meetingID].split("|");
-   for(var i = 0 ; i < cancelval.length ; i++){
-        cancelval[i] = cancelval[i].trim();
-      }
+
+    var cancelval = config["meetings"][meetingID].split("|");
+    for(var i = 0 ; i < cancelval.length ; i++){
+      cancelval[i] = cancelval[i].trim();
+    }
     var canceldate = cancelval[0];
     var canceluser = cancelval[2].split(",");
     //var canceltime = cancelval[1];
 
     for(var p=0; p< canceluser.length; p++){
 
-    for(var d=0; d<16; d++)
-    {
-      if(config["users"][canceluser[p]][canceldate][d]==meetingID)
-        config["users"][canceluser[p]][canceldate][d]= 0;
+      for(var d=0; d<16; d++)
+      {
+        if(config["users"][canceluser[p]][canceldate][d]==meetingID)
+          config["users"][canceluser[p]][canceldate][d]= 0;
 
-    }
+      }
 
     }
 
     console.log(meetingID);
 
 
-   delete config["meetings"][meetingID];
-   fs = require('fs');
+    delete config["meetings"][meetingID];
+    fs = require('fs');
     var m = JSON.parse(fs.readFileSync('./mock.json').toString());
     fs.writeFile('./mock.json', JSON.stringify(config));
   };
@@ -714,7 +719,7 @@ controller.hears(['^reschedule$'],['mention', 'direct_mention'], function(bot,me
 
   var cancelMeeting = function(){
     //
-   
+
   };
 
   // start a conversation with the user.
