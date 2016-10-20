@@ -353,7 +353,7 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
   };
 
   var fixMeeting = function(err, convo){
-    convo.ask('Do you want to fix this meeting time? Please reply "yes" or "no"',function(response,convo) {
+    convo.ask('Do you want to fix this meeting time? Please reply Yes or No',function(response,convo) {
       var answer = response.text;
       if((answer=='no')||(answer=='No')||(answer=='NO')){
         bot.startConversation(message, getLastTime);
