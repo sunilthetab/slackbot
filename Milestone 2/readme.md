@@ -9,6 +9,8 @@
 ## Mocking
 
   For meeting-bot, we would use google calendar API. For this milestone we have mocked google calendar data using Json objects. We have created Jsons based on users' calendars and we are storing her/his status about availability (busy/available) into it. This Json will consist of users names and meeting rooms. And we have mocked this data and used in our bot.js for read and write purpose. Here we have used array to store slots of user's calendar and availability for each date. We have imported this mocked json into bot.js file and bot can also write to this mocked file.
+  When meeting is scheduled, we are saving the meeting ID, its time slot and users attending this meeting in mock Json file. It will be deleted when user deletes meeting and new record is added when user schedules a new meeting.
+  
   Please find mock.json file here 
   https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/Milestone%202/mock.json
   
@@ -26,7 +28,7 @@
   
 ## Task Tracking -- WORKSHEET.md
 
-  For task tracking we have used Trello cards.
+  For task tracking we have used "Trello" cards.
   Please find worksheet at https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/WORKSHEET.md
   
 ## Screencast
