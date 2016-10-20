@@ -517,7 +517,7 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
   // start a conversation with the user.
   bot.startConversation(message, getIDOfAttendees);
 
-  bot.reply(message, "Let's organize a new meeting.");
+  bot.reply(message, "Let us organize a new meeting.");
 
 });
 
