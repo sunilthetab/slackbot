@@ -366,7 +366,7 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
         meetingID=last;
         //sets meeting ID based on incrementing most recent meeting ID from JSON
         bot.reply(message, 'This is your meeting ID : '+last);
-        config["meetings"][last]=meetingday+"|"+meetinghh+":"+meetingmm+ "|" +arrayID;
+        config["meetings"][last]=meetingday+"|"+meetinghh+":"+meetingmm+ "|" +arrayID +"|" + meetingslot +"|"+ duration;
         var i;
         var j;
         //set meeting ID to calendar
@@ -536,18 +536,59 @@ controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,
 
   var getIDOfMeeting = function(err, convo){
     convo.ask('Alright. What is the meeting ID?',function(response,convo) {
-      meetingID = response.text;
+
+      meetingID = parseInt(response.text);
 
       adjustMeeting();
 
+      var meeting = config["meetings"][meetingID].split("|");
       convo.say("Members Added");
-
+      var display = "Preview: Meeting ID "+ meetingID +" & List of members: " + meeting[2];
+      convo.say(display);
       convo.next();
     })
   };
 
-  var adjustMeeting = function(){
-    //
+  var adjustMeeting = function()
+  {
+    var meeting = config["meetings"][meetingID].split("|");
+    for(var i = 0 ; i < meeting.length ; i++)
+    {
+      meeting[i] = meeting[i].trim();
+    }
+
+    //var meetingday = meeting[0];
+    var meetingAttendees = meeting[2].split(",");
+    //var meetingslot = meeting[3];
+    //var duration = meeting[4];
+
+    var notAlreadyExistingAttendeeIDs= [];
+
+    for (var i=0, iLen=newAttendeeIDs.length; i < iLen; i++)
+    {
+      if(meetingAttendees.indexOf(newAttendeeIDs[i])==-1)
+      {
+        meetingAttendees.push(newAttendeeIDs[i]);
+        notAlreadyExistingAttendeeIDs.push(newAttendeeIDs[i]);
+      }
+    }
+
+    config["meetings"][meetingID]=meeting[0]+"|"+meeting[1]+ "|" +meetingAttendees+"|" + meeting[3] +"|"+ meeting[4];
+
+    for(var i=0;i<notAlreadyExistingAttendeeIDs.length;i++)
+    {
+      var username = notAlreadyExistingAttendeeIDs[i];
+      for(var j=meeting[3];j<(meeting[3]+meeting[4]);j++)
+      {
+        config["users"][username][meeting[0]][j]=meetingID;
+      }
+    }
+
+    fs = require('fs');
+    var m = JSON.parse(fs.readFileSync('./mock.json').toString());
+    fs.writeFile('./mock.json', JSON.stringify(config));
+
+
   };
 
   // start a conversation with the user.
@@ -576,7 +617,8 @@ controller.hears(['^remove$'],['mention', 'direct_mention'], function(bot,messag
 
   var getIDOfMeeting = function(err, convo){
     convo.ask('Alright. What is the meeting ID?',function(response,convo) {
-      meetingID = response.text;
+
+      meetingID = parseInt(response.text) ;
 
       // if(userRequestingRemoval in meeting.getUsers()) //Some type of validaion required here.
       confirmRemoval(response, convo);
@@ -593,23 +635,56 @@ controller.hears(['^remove$'],['mention', 'direct_mention'], function(bot,messag
 
       if(confirmation.toUpperCase() === "YES"){
         removeMembersFromMeeting();
-        covo.say("Members removed.");
+        var meeting = config["meetings"][meetingID].split("|");
+        convo.say("Members removed.");
+        var display = "Preview: Meeting ID "+ meetingID +" & List of members: " + meeting[2];
+        convo.say(display);
       }else{
         convo.say("Members NOT removed.");
       }
-
       convo.next();
     })
   };
 
-  var removeMembersFromMeeting = function(){
-    //
-  };
+  var removeMembersFromMeeting = function() {
+    var meeting = config["meetings"][meetingID].split("|");
+    for (var i = 0; i < meeting.length; i++) {
+      meeting[i] = meeting[i].trim();
+    }
 
-  // start a conversation with the user.
-  bot.startConversation(message, getIDOfAttendeeToRemove);
+    //var meetingday = meeting[0];
+    var meetingAttendees = meeting[2].split(",");
+    //var meetingslot = meeting[3];
+    //var duration = meeting[4];
 
-  bot.reply(message, "Let us remove the member from the meeting.");
+    var actualRemovedAttendees = [];
+
+    for (var i = 0, iLen = IDOfAttendeesToRemove.length; i < iLen; i++) {
+      if (meetingAttendees.indexOf(IDOfAttendeesToRemove[i]) != -1) {
+        meetingAttendees.splice(meetingAttendees.indexOf(IDOfAttendeesToRemove[i]), 1);
+        actualRemovedAttendees.push(IDOfAttendeesToRemove[i]);
+      }
+    }
+
+
+    config["meetings"][meetingID] = meeting[0] + "|" + meeting[1] + "|" + meetingAttendees + "|" + meeting[3] + "|" + meeting[4];
+
+    for (var i = 0; i < actualRemovedAttendees.length; i++) {
+      var username = actualRemovedAttendees[i];
+      for (var j = 0; j < 16; j++) {
+        if (config["users"][username][meeting[0]][j] == meetingID)
+          config["users"][username][meeting[0]][j] = 0;
+      }
+    }
+
+    fs = require('fs');
+    var m = JSON.parse(fs.readFileSync('./mock.json').toString());
+    fs.writeFile('./mock.json', JSON.stringify(config));
+  }
+    // start a conversation with the user.
+    bot.startConversation(message, getIDOfAttendeeToRemove);
+
+    bot.reply(message, "Let us remove the member from the meeting.");
 });
 
 //coversation to cancel the meeting
