@@ -376,7 +376,7 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
           var username=arrayID[i];
           for(j=meetingslot;j<(meetingslot+duration);j++) {
             config["users"][username][meetingday][j]=meetingID;
-            console.log("value is : "+config["users"][username][meetingday][j]);
+            //console.log("value is : "+config["users"][username][meetingday][j]);
           }
         }
         fs = require('fs');
