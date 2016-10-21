@@ -50,22 +50,20 @@ The functionality of the bot can be divided into three basic use cases.
 
 
 
-**Use case 3: Rescheduling/Cancelling the meeting**
+**Use case 3: Cancelling the meeting**
 ```
 1 Preconditions
 There should be a meeting scheduled already.
 
 2 Main Flow
-   User will request bot to reschedule to a later date or cancel meeting and gives appropriate reason [S1]. The bot
-   cancels the meeting and notify all the relevant members [S3].
+   User will request bot to cancel meeting[S1]. The bot cancels the meeting and notify all the relevant members [S3].
 
 3 Sub flows
-•	[S1] The user will tell the bot that he wants to reschedule the meeting to another date or cancel the meeting.
-•	[S2] The bot finds the most suitable time and location for the meeting for this new date or cancels the meeting
-  and notify all relevant members.
+•	[S1] The user will tell the bot that he wants to cancel the meeting and give the bot the meeting id.
+•	[S2] After getting confirmatory yes from the user the bot cancels the meeting and notify all relevant members.
 
 
 4 Alternative Flows
-  [E1] Not able to reschedule the meeting so leading to ultimately cancel the meeting.
+  [E1] Not able to cancel the meeting since meeting id is invalid (meeting does not exist).
 
 ```
