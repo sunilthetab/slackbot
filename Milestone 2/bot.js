@@ -714,18 +714,19 @@ controller.hears(['^deschedule$', '^cancel$'],['mention', 'direct_mention'], fun
 
       if(confirmation.toUpperCase() === "YES"){
         cancelMeeting();
-        convo.say("Meeting has been cancelled.");
+        
       }else{
-        convo.say("Meeting NOT cancelled.");
+        convo.say("Meeting NOT found.");
       }
 
       convo.next();
     })
   };
 
-  var cancelMeeting = function(){
+  var cancelMeeting = function(err, convo){
     //
-
+    if(config["meetings"][meetingID])
+    {
     var cancelval = config["meetings"][meetingID].split("|");
     for(var i = 0 ; i < cancelval.length ; i++){
       cancelval[i] = cancelval[i].trim();
@@ -746,12 +747,24 @@ controller.hears(['^deschedule$', '^cancel$'],['mention', 'direct_mention'], fun
     }
 
     console.log(meetingID);
+    convo.say("Meeting has been cancelled.");
 
 
     delete config["meetings"][meetingID];
     fs = require('fs');
     var m = JSON.parse(fs.readFileSync('./mock.json').toString());
     fs.writeFile('./mock.json', JSON.stringify(config));
+
+    }
+    else
+    {
+      
+      bot.reply(message, "meetingID invalid.");
+      
+
+
+    }
+
   };
 
   // start a conversation with the user.
