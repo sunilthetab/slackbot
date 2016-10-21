@@ -530,6 +530,10 @@ controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,
     convo.ask('May I know the email IDs of the new attendees, please?',function(response,convo) {
       newAttendeeIDs = response.text.split(" ");
 
+      if(response.text.indexOf(",") > -1){
+        newAttendeeIDs = response.text.split(",");
+      }
+
       getIDOfMeeting(response, convo);
 
       convo.next();
@@ -714,7 +718,7 @@ controller.hears(['^deschedule$', '^cancel$'],['mention', 'direct_mention'], fun
 
       if(confirmation.toUpperCase() === "YES"){
         cancelMeeting();
-        
+
       }else{
         convo.say("Meeting NOT found.");
       }
@@ -758,9 +762,9 @@ controller.hears(['^deschedule$', '^cancel$'],['mention', 'direct_mention'], fun
     }
     else
     {
-      
+
       bot.reply(message, "meetingID invalid.");
-      
+
 
 
     }
