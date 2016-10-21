@@ -10,7 +10,7 @@ var controller = Botkit.slackbot({
 // connect the bot to a stream of messages
 controller.spawn({
   //token: process.env.ALTCODETOKEN,
-  token: 'xoxb-87992197655-VxQuZsKc2LDrur8ENZNwiKT6',
+  token: 'xoxb-87992197655-kXagRYyH1SjcDuxei4u9Utpq',
   //token : 'xoxb-91906944081-KAV86vjqXQ7mQPz1dMRRr4yQ',
 }).startRTM()
 
@@ -817,4 +817,3 @@ controller.hears(['^reschedule$'],['mention', 'direct_mention'], function(bot,me
 
   //bot.reply(message, "Let us cancel the meeting.");
 });
-
