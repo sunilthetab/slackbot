@@ -33,4 +33,7 @@
 
 ## Screencast
 
-  Please find link for screencast below
+  Please download the screencasts using the links below:
+  Use Case 1: https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/Milestone%202/screencasts/usecase_2.mp4?raw=true
+  Use Case 2: https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/Milestone%202/screencasts/usecase_1.mp4?raw=true
+  Use Case 3: https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/Milestone%202/screencasts/usecase_3.mp4?raw=true
