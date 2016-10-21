@@ -9,15 +9,15 @@ The functionality of the bot can be divided into three basic use cases.
    User must have google calendar api tokens in setup in the system.
 
 2 Main Flow
-   User will request bot to create a meeting and provides list of attendees, date and duration. [S1]. The bot finds 
+   User will request bot to create a meeting and provides list of attendees, date and duration. [S1]. The bot finds
    the most suitable time and place for meeting and waits for confirmation from the user [S2]. Upon confirmation the
    bot creates the meeting and posts link[S3].
 
 3 Sub flows
-•	[S1] User 1 will alert the bot. Bot requests for the list of attendees which the user provides 
-  (User provides /meeting command with @username1, @username2 list). The user will provide meeting 
+•	[S1] User 1 will alert the bot. Bot requests for the list of attendees which the user provides
+  (User provides /meeting command with @username1, @username2 list). The user will provide meeting
   duration and date of the meeting upon bot’s request (Eg. 1 hour, tomorrow).
-•	[S2] The bot finds the most suitable time and location for the meeting and sets up the meeting 
+•	[S2] The bot finds the most suitable time and location for the meeting and sets up the meeting
   at the most feasible time as per instructions as waits for confirmation from the user.
 •	[S3] Upon confirmation the bot creates the meeting and send emails/posts link.
 
@@ -56,13 +56,12 @@ The functionality of the bot can be divided into three basic use cases.
 There should be a meeting scheduled already.
 
 2 Main Flow
-   User will request bot to reschedule to a later date or cancel meeting and gives appropriate reason [S1]. The bot 
+   User will request bot to reschedule to a later date or cancel meeting and gives appropriate reason [S1]. The bot
    cancels the meeting and notify all the relevant members [S3].
 
 3 Sub flows
-•	[S1] The user will tell the bot that he wants to reschedule the meeting to another date or cancel the meeting and
-  gives reason for his change of mind.
-•	[S2] The bot finds the most suitable time and location for the meeting for this new date or cancels the meeting 
+•	[S1] The user will tell the bot that he wants to reschedule the meeting to another date or cancel the meeting.
+•	[S2] The bot finds the most suitable time and location for the meeting for this new date or cancels the meeting
   and notify all relevant members.
 
 
