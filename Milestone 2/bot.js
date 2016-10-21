@@ -717,6 +717,7 @@ controller.hears(['^deschedule$', '^cancel$'],['mention', 'direct_mention'], fun
 
       if(confirmation.toUpperCase() === "YES"){
         cancelMeeting();
+        convo.say("Meeting has been cancelled.");
 
       }else{
         convo.say("Meeting NOT found.");
@@ -750,10 +751,11 @@ controller.hears(['^deschedule$', '^cancel$'],['mention', 'direct_mention'], fun
     }
 
     console.log(meetingID);
-    convo.say("Meeting has been cancelled.");
+    
 
 
     delete config["meetings"][meetingID];
+    
     fs = require('fs');
     var m = JSON.parse(fs.readFileSync('./mock.json').toString());
     fs.writeFile('./mock.json', JSON.stringify(config));
