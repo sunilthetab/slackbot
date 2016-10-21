@@ -84,7 +84,7 @@ WebDriverWait wait = new WebDriverWait(driver, 30);
 
 	WebElement messageBot1 = driver.findElement(By.id("message-input"));
 
-	messageBot1.sendKeys("@azra pranav,sohan,gautam,sunil,ajay");
+	messageBot1.sendKeys("@azra pranav,sohan,gautam");
 
 
 
@@ -158,6 +158,57 @@ WebDriverWait wait = new WebDriverWait(driver, 30);
 
 	}
 	
+	
+	@Test
+	public void addMembers() throws InterruptedException
+	{
+		driver.get("https://seprojbot.slack.com/");
+
+		// Wait until page loads and we can see a sign in button.
+		WebDriverWait wait = new WebDriverWait(driver, 30);
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("signin_btn")));
+
+		// Find email and password fields.
+		WebElement email = driver.findElement(By.id("email"));
+		WebElement pw = driver.findElement(By.id("password"));
+
+		// Type in our test user login info.
+		email.sendKeys("azrabot@hotmail.com");
+		pw.sendKeys("Qwerty123abc");
+
+		// Click
+		WebElement signin = driver.findElement(By.id("signin_btn"));
+		signin.click();
+
+		// Wait until we go to general channel.
+		wait.until(ExpectedConditions.titleContains("general"));
+
+		// Switch to #bots channel and wait for it to load.
+		driver.get("https://seprojbot.slack.com/messages/azra_testing");
+		wait.until(ExpectedConditions.titleContains("azra_testing"));
+		
+		
+		WebElement messageBot = driver.findElement(By.id("message-input"));
+		messageBot.sendKeys("@azra add");
+		messageBot.sendKeys(Keys.RETURN);
+		Thread.sleep(2000);
+		
+		WebElement msg = driver.findElement(By.xpath("//span[contains(@class,'message_body') and text() = 'May I know the email IDs of the new attendees, please?']"));
+		assertNotNull(msg);
+
+		messageBot.sendKeys("sunil ajay");
+		messageBot.sendKeys(Keys.RETURN);
+		Thread.sleep(2000);
+		WebElement msg1 = driver.findElement(By.xpath("//span[contains(@class,'message_body') and text() = 'Alright. What is the meeting ID?']"));
+		assertNotNull(msg1);
+		
+		messageBot.sendKeys("102");
+		messageBot.sendKeys(Keys.RETURN);
+		Thread.sleep(2000);
+		WebElement msg3 = driver.findElement(By.xpath("//span[contains(@class,'message_body') and text() = 'Members Added']"));
+                assertNotNull(msg3);
+	}
+	
 	@Test
 	public void cancelMeeting() throws InterruptedException
 	{
@@ -210,15 +261,9 @@ WebDriverWait wait = new WebDriverWait(driver, 30);
 		WebElement msg2 = driver.findElement(By.xpath("//span[contains(@class,'message_body') and text() = 'Meeting has been cancelled.']"));
                 assertNotNull(msg2);
 		
-		
-		
-		
-		
-		
-		
 	}
 	
 
-	}
+}
 
 
