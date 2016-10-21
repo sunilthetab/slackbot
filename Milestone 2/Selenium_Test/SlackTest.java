@@ -202,7 +202,7 @@ WebDriverWait wait = new WebDriverWait(driver, 30);
 		WebElement msg1 = driver.findElement(By.xpath("//span[contains(@class,'message_body') and text() = 'Alright. What is the meeting ID?']"));
 		assertNotNull(msg1);
 		
-		messageBot.sendKeys("102");
+		messageBot.sendKeys("104");
 		messageBot.sendKeys(Keys.RETURN);
 		Thread.sleep(2000);
 		WebElement msg3 = driver.findElement(By.xpath("//span[contains(@class,'message_body') and text() = 'Members Added']"));
@@ -247,7 +247,7 @@ WebDriverWait wait = new WebDriverWait(driver, 30);
 		//wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[contains(@class,'message_body') and text() = 'May I know the meeting ID?']")));
 		assertNotNull(msg);
 		
-		messageBot.sendKeys("102");
+		messageBot.sendKeys("103");
 		messageBot.sendKeys(Keys.RETURN);
 		Thread.sleep(2000);
 		WebElement msg1 = driver.findElement(By.xpath("//span[contains(@class,'message_body') and text() = 'Are you sure you want to cancel the meeting?']"));
