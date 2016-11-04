@@ -1,4 +1,4 @@
-
+var _ = require('underscore');
 var Botkit = require('botkit');
 
 var controller = Botkit.slackbot({
@@ -16,9 +16,6 @@ controller.spawn({
 
 
 var config = require('./mock.json');
-
-
-
 
 var Isconstraintonday;
 var Isconstraintontime;
@@ -751,11 +748,11 @@ controller.hears(['^deschedule$', '^cancel$'],['mention', 'direct_mention'], fun
     }
 
     console.log(meetingID);
-    
+
 
 
     delete config["meetings"][meetingID];
-    
+
     fs = require('fs');
     var m = JSON.parse(fs.readFileSync('./mock.json').toString());
     fs.writeFile('./mock.json', JSON.stringify(config));
