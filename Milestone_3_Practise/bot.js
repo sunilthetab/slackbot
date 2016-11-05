@@ -1,6 +1,6 @@
 var _ = require('underscore');
 var fs = require('fs');
-var readline = require('readline');
+var readline = require('readline-sync');
 var google = require('googleapis');
 var googleAuth = require('google-auth-library');
 
@@ -43,9 +43,9 @@ function authorize(credentials, user, callback) {
       var allData = JSON.parse(fileData);
       if(!allData.users.hasOwnProperty(user)){
         getNewToken(oauth2Client, user, callback);
-        break;
+      }else{
+        oauth2Client.credentials = allData.users[user];
       }
-      oauth2Client.credentials = allData.users[user];
       callback(oauth2Client);
     }
   });
@@ -64,22 +64,18 @@ function getNewToken(oauth2Client, user, callback) {
     access_type: 'offline',
     scope: SCOPES
   });
-  console.log('Kindly ask ' + user + 'Authorize this app by visiting this url: ', authUrl);
-  var rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-  });
-  rl.question('Enter the code from that page here: ', function(code) {
-    rl.close();
-    oauth2Client.getToken(code, function(err, token) {
-      if (err) {
-        console.log('Error while trying to retrieve access token', err);
-        return;
-      }
-      oauth2Client.credentials = token;
-      storeToken(user, token);
-      callback(oauth2Client);
-    });
+  console.log('Kindly ask ' + user + ' to authorize this app by visiting this url: ', authUrl);
+
+  var code = readline.question('Enter the code from that page here: ');
+
+  oauth2Client.getToken(code, function(err, token) {
+    if (err) {
+      console.log('Error while trying to retrieve access token', err);
+      return;
+    }
+    oauth2Client.credentials = token;
+    storeToken(user, token);
+    callback(oauth2Client);
   });
 }
 
@@ -89,35 +85,38 @@ function getNewToken(oauth2Client, user, callback) {
  * @param {Object} token The token to store to disk.
  */
 function storeToken(user, token) {
-  try {
-    fs.mkdirSync(TOKEN_DIR);
-  } catch (err) {
-    if (err.code != 'EEXIST') {
-      throw err;
+
+  if (!fs.existsSync(TOKEN_DIR)){
+    try {
+      fs.mkdirSync(TOKEN_DIR);
+    } catch (err) {
+      if (err.code != 'EEXIST') {
+        throw err;
+      }
     }
   }
 
   var obj;
+  var text;
 
-  fs.readFile(TOKEN_PATH, function(err, fileData) {
-    if (err) {//no file found
-      obj = '{"users": {"' + user + '":' + token + '}}';
-    } else {//entry not found
-      var allData = JSON.parse(fileData);
-      allData.users = _.extend(allData.users, token);
-    }
-  });
+  var fileExists = fs.existsSync(TOKEN_PATH);
 
-  fs.writeFile(TOKEN_PATH, JSON.stringify(obj));
-  console.log('Token stored to ' + TOKEN_PATH);
+  if(fileExists){
+    //File exists
+    var fileData = fs.readFileSync(TOKEN_PATH);
+    obj = JSON.parse(fileData);
+    var entry = '{"' + user + '":' + JSON.stringify(token) + '}';
+    obj.users = _.extend(obj.users, JSON.parse(entry));
+  }else{
+    //File does not exist
+    text = '{"users": {"' + user + '":' + JSON.stringify(token) + '}}';
+    obj = JSON.parse(text);
+  }
+
+  fs.writeFileSync(TOKEN_PATH, JSON.stringify(obj));
 }
 
-/**
- * Lists the next 10 events on the user's primary calendar.
- *
- * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
- */
-function listEvents(auth) {
+function listEvents(user, auth) {
   var calendar = google.calendar('v3');
   calendar.events.list({
     auth: auth,
@@ -135,7 +134,7 @@ function listEvents(auth) {
     if (events.length == 0) {
       console.log('No upcoming events found.');
     } else {
-      console.log('Upcoming 10 events:');
+      console.log('Upcoming 10 events for ' + user + ':');
       for (var i = 0; i < events.length; i++) {
         var event = events[i];
         var start = event.start.dateTime || event.start.date;
@@ -144,6 +143,9 @@ function listEvents(auth) {
     }
   });
 }
+
+manageData('gverma');
+manageData('gautam94verma');
 
 
 var Botkit = require('botkit');
