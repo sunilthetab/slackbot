@@ -21,6 +21,7 @@ function manageData(user){
   authorize(JSON.parse(content), user, listEvents);
 });
 }
+
 /**
  * Create an OAuth2 client with the given credentials, and then execute the
  * given callback function.
@@ -45,8 +46,8 @@ function authorize(credentials, user, callback) {
         getNewToken(oauth2Client, user, callback);
       }else{
         oauth2Client.credentials = allData.users[user];
+        callback(oauth2Client, user);
       }
-      callback(oauth2Client);
     }
   });
 }
@@ -75,7 +76,7 @@ function getNewToken(oauth2Client, user, callback) {
     }
     oauth2Client.credentials = token;
     storeToken(user, token);
-    callback(oauth2Client);
+    callback(oauth2Client, user);
   });
 }
 
@@ -116,7 +117,7 @@ function storeToken(user, token) {
   fs.writeFileSync(TOKEN_PATH, JSON.stringify(obj));
 }
 
-function listEvents(user, auth) {
+function listEvents(auth, user) {
   var calendar = google.calendar('v3');
   calendar.events.list({
     auth: auth,
@@ -132,9 +133,9 @@ function listEvents(user, auth) {
     }
     var events = response.items;
     if (events.length == 0) {
-      console.log('No upcoming events found.');
+      console.log('No upcoming events found for user: ' + user + '.');
     } else {
-      console.log('Upcoming 10 events for ' + user + ':');
+      console.log('Upcoming 10 events of ' + user + ':');
       for (var i = 0; i < events.length; i++) {
         var event = events[i];
         var start = event.start.dateTime || event.start.date;
@@ -142,6 +143,7 @@ function listEvents(user, auth) {
       }
     }
   });
+  console.log();
 }
 
 manageData('gverma');
