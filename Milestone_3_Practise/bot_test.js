@@ -45,8 +45,8 @@ function authorize(credentials, user, callback) {
         getNewToken(oauth2Client, user, callback);
       }else{
         oauth2Client.credentials = allData.users[user];
-        callback(user, oauth2Client);
       }
+      callback(oauth2Client);
     }
   });
 }
@@ -99,27 +99,21 @@ function storeToken(user, token) {
   var obj;
   var text;
 
-  //check if file exists
-  fs.stat(TOKEN_PATH, function(err, stat) {
-    if(err == null) {//File exists
-      console.log('file exists');
-      fs.readFileSync(TOKEN_PATH, function(err, fileData) {
-        console.log('-------------fD: ' + fileData);
-        obj = JSON.parse(fileData);
-        console.log('object: ' + JSON.stringify(obj));
-        obj.users = _.extend(obj.users, token);
-        console.log('object: ' + JSON.stringify(obj));
-      });
-    } else if(err.code == 'ENOENT') {
-        // file does not exist
-        console.log('file not exists');
-        text = '{"users": {"' + user + '":' + JSON.stringify(token) + '}}';
-        obj = JSON.parse(text);
-    } else {
-      //ERROR
-    }
-    fs.writeFileSync(TOKEN_PATH, JSON.stringify(obj));
-  });
+  var fileExists = fs.existsSync(TOKEN_PATH);
+
+  if(fileExists){
+    //File exists
+    var fileData = fs.readFileSync(TOKEN_PATH);
+    obj = JSON.parse(fileData);
+    var entry = '{"' + user + '":' + JSON.stringify(token) + '}';
+    obj.users = _.extend(obj.users, JSON.parse(entry));
+  }else{
+    //File does not exist
+    text = '{"users": {"' + user + '":' + JSON.stringify(token) + '}}';
+    obj = JSON.parse(text);
+  }
+
+  fs.writeFileSync(TOKEN_PATH, JSON.stringify(obj));
 }
 
 function listEvents(user, auth) {
