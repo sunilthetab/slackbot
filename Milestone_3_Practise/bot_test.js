@@ -6,8 +6,15 @@ var googleAuth = require('google-auth-library');
 
 var SCOPES = ['https://www.googleapis.com/auth/calendar'];
 var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
-    process.env.USERPROFILE) + '/.credentials/';
-var TOKEN_PATH = TOKEN_DIR + 'calendar-nodejs-AZRA-bot.json';
+    //process.env.USERPROFILE) + '/.credentials/';
+    process.env.USERPROFILE) + '/Azra_MeetingBot/Milestone_3_Practise/';
+var TOKEN_PATH = TOKEN_DIR + 'store.json';
+
+/**var CAL_DIR = (process.env.HOME || process.env.HOMEPATH ||
+    //process.env.USERPROFILE) + '/.credentials/';
+    process.env.USERPROFILE) + '/Azra_MeetingBot/Milestone_3_Practise/';
+var CAL_PATH = CAL_DIR + 'cal.json';
+console.log(TOKEN_PATH); **/
 
 // Load client secrets from a local file.
 function manageData(user){
@@ -117,6 +124,38 @@ function storeToken(user, token) {
   fs.writeFileSync(TOKEN_PATH, JSON.stringify(obj));
 }
 
+/**function storeCal(user, start, end, event) {
+
+  if (!fs.existsSync(CAL_DIR)){
+    try {
+      fs.mkdirSync(CAL_DIR);
+    } catch (err) {
+      if (err.code != 'EEXIST') {
+        throw err;
+      }
+    }
+  }
+
+  var obj;
+  var text;
+
+  var fileExists = fs.existsSync(CAL_PATH);
+
+  if(fileExists){
+    //File exists
+    var fileData = fs.readFileSync(CAL_PATH);
+    obj = JSON.parse(fileData);
+    var entry = '{"' + user + '": "'+ start +"|" + end + "|"  + event.summary +'"}';
+    obj.users = _.extend(obj.users, JSON.parse(entry));
+  }else{
+    //File does not exist
+    text = '{"users": {"' + user + '": "'+ start +"|" + end +"|" + event.summary +'"}}';
+    obj = JSON.parse(text);
+  }
+
+  fs.writeFileSync(CAL_PATH, JSON.stringify(obj));
+} **/
+
 function listEvents(auth, user) {
   var calendar = google.calendar('v3');
   calendar.events.list({
@@ -139,7 +178,9 @@ function listEvents(auth, user) {
       for (var i = 0; i < events.length; i++) {
         var event = events[i];
         var start = event.start.dateTime || event.start.date;
-        console.log('%s - %s', start, event.summary);
+        var end= event.end.dateTime || event.end.date;
+        console.log('%s - %s - %s', start, event.summary,end);
+        //storeCal(user, start, end, event);
       }
     }
   });
@@ -148,3 +189,5 @@ function listEvents(auth, user) {
 
 manageData('gverma');
 manageData('gautam94verma');
+manageData('sunil');
+manageData('pranav');
