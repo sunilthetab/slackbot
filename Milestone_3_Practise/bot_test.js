@@ -6,15 +6,15 @@ var googleAuth = require('google-auth-library');
 
 var SCOPES = ['https://www.googleapis.com/auth/calendar'];
 var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
-    //process.env.USERPROFILE) + '/.credentials/';
-    process.env.USERPROFILE) + '/Azra_MeetingBot/Milestone_3_Practise/';
+    process.env.USERPROFILE) + '/.credentials/';
+    // process.env.USERPROFILE) + '/Azra_MeetingBot/Milestone_3_Practise/';
 var TOKEN_PATH = TOKEN_DIR + 'store.json';
 
 var CAL_DIR = (process.env.HOME || process.env.HOMEPATH ||
-    //process.env.USERPROFILE) + '/.credentials/';
-    process.env.USERPROFILE) + '/Azra_MeetingBot/Milestone_3_Practise/';
+    process.env.USERPROFILE) + '/.credentials/';
+    // process.env.USERPROFILE) + '/Azra_MeetingBot/Milestone_3_Practise/';
 var CAL_PATH = CAL_DIR + 'cal.json';
-console.log(TOKEN_PATH); 
+// console.log(TOKEN_PATH);
 
 // Load client secrets from a local file.
 function manageData(user){
@@ -124,7 +124,8 @@ function storeToken(user, token) {
   fs.writeFileSync(TOKEN_PATH, JSON.stringify(obj));
 }
 
-function storeCal(user, start, end, event,count) {
+function storeCal(user, start, end, events,count) {
+  if(events.length < 1) return;
   if (!fs.existsSync(CAL_DIR)){
     try {
       fs.mkdirSync(CAL_DIR);
@@ -134,36 +135,46 @@ function storeCal(user, start, end, event,count) {
       }
     }
   }
+
   var obj;
   var text;
-  var temp=[];
+
   var fileExists = fs.existsSync(CAL_PATH);
+
+  var logData = '["' + events[0].start.dateTime || events[0].start.date + '|';
+  logData += events[0].end.dateTime || events[0].end.date + '|';
+  logData += events[0].summary + '"';
+
+  for (var i = 1; i < events.length; i++) {
+    var event = events[i];
+    var start = event.start.dateTime || event.start.date;
+    var end= event.end.dateTime || event.end.date;
+    logData = logData + ', "' + start + '|' + end + '|' + event.summary + '"';
+  }
+  logData += ']';
+
+  // console.log(logData);
+
   if(fileExists){
     //File exists
     var fileData = fs.readFileSync(CAL_PATH);
     obj = JSON.parse(fileData);
-    var entry = '{"' + user + '": "'+ start +"|" + end + "|"  + event.summary +'"}';
-    //obj.users = _.extend(obj.users, JSON.parse(entry));
-    obj = JSON.parse(entry);
-    temp.push(obj);
-    
+    if(obj.users.hasOwnProperty(user)){
+      obj.users[user] = JSON.parse(logData);
+    }else{
+      var entry = '{"' + user + '":' + logData + '}';
+      obj.users = _.extend(obj.users, JSON.parse(entry));
+    }
+
   }else{
     //File does not exist
-    text = '{"users": {"' + user + '": "'+ start +"|" + end +"|" + event.summary +'"}}';
+    text = '{"users": {"' + user + '":' + logData + '}}';
+
     obj = JSON.parse(text);
   }
- var record=JSON.stringify(temp);
-  console.log("record "+record);
-  fs.writeFileSync(CAL_PATH,record);
-  //fs.writeFile(CAL_PATH, record , 'utf-8');
-  /*for(i=0;i<count;i++)
-  {
-    u=temp[i];
-    console.log("Temp "+u);
-    fs.writeFileSync(CAL_PATH, JSON.stringify(u));
-  }*/
-  
-} 
+
+  fs.writeFileSync(CAL_PATH, JSON.stringify(obj));
+}
 
 function listEvents(auth, user) {
   var calendar = google.calendar('v3');
@@ -189,15 +200,13 @@ function listEvents(auth, user) {
         var event = events[i];
         var start = event.start.dateTime || event.start.date;
         var end= event.end.dateTime || event.end.date;
-        //console.log('%s - %s - %s', start, event.summary,end);
-        storeCal(user, start, end, event,count);
+        // console.log('EVENT::::\n%s - %s - %s', start, event.summary,end);
       }
+      storeCal(user, start, end, events, count);
     }
   });
   console.log();
 }
 
-manageData('gverma');
 manageData('gautam94verma');
-manageData('sunil');
-manageData('pranav');
+manageData('ajay');
