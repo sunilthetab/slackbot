@@ -7,7 +7,14 @@ var googleAuth = require('google-auth-library');
 var SCOPES = ['https://www.googleapis.com/auth/calendar'];
 var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
     process.env.USERPROFILE) + '/.credentials/';
-var TOKEN_PATH = TOKEN_DIR + 'calendar-nodejs-AZRA-bot.json';
+    // process.env.USERPROFILE) + '/Azra_MeetingBot/Milestone_3_Practise/';
+var TOKEN_PATH = TOKEN_DIR + 'store.json';
+
+var CAL_DIR = (process.env.HOME || process.env.HOMEPATH ||
+    process.env.USERPROFILE) + '/.credentials/';
+    // process.env.USERPROFILE) + '/Azra_MeetingBot/Milestone_3_Practise/';
+var CAL_PATH = CAL_DIR + 'cal.json';
+// console.log(TOKEN_PATH);
 
 // Load client secrets from a local file.
 function manageData(user){
@@ -21,6 +28,7 @@ function manageData(user){
   authorize(JSON.parse(content), user, listEvents);
 });
 }
+
 /**
  * Create an OAuth2 client with the given credentials, and then execute the
  * given callback function.
@@ -45,8 +53,8 @@ function authorize(credentials, user, callback) {
         getNewToken(oauth2Client, user, callback);
       }else{
         oauth2Client.credentials = allData.users[user];
+        callback(oauth2Client, user);
       }
-      callback(oauth2Client);
     }
   });
 }
@@ -75,7 +83,7 @@ function getNewToken(oauth2Client, user, callback) {
     }
     oauth2Client.credentials = token;
     storeToken(user, token);
-    callback(oauth2Client);
+    callback(oauth2Client, user);
   });
 }
 
@@ -116,7 +124,59 @@ function storeToken(user, token) {
   fs.writeFileSync(TOKEN_PATH, JSON.stringify(obj));
 }
 
-function listEvents(user, auth) {
+function storeCal(user, start, end, events,count) {
+  if(events.length < 1) return;
+  if (!fs.existsSync(CAL_DIR)){
+    try {
+      fs.mkdirSync(CAL_DIR);
+    } catch (err) {
+      if (err.code != 'EEXIST') {
+        throw err;
+      }
+    }
+  }
+
+  var obj;
+  var text;
+
+  var fileExists = fs.existsSync(CAL_PATH);
+
+  var logData = '["' + events[0].start.dateTime || events[0].start.date + '|';
+  logData += events[0].end.dateTime || events[0].end.date + '|';
+  logData += events[0].summary + '"';
+
+  for (var i = 1; i < events.length; i++) {
+    var event = events[i];
+    var start = event.start.dateTime || event.start.date;
+    var end= event.end.dateTime || event.end.date;
+    logData = logData + ', "' + start + '|' + end + '|' + event.summary + '"';
+  }
+  logData += ']';
+
+  // console.log(logData);
+
+  if(fileExists){
+    //File exists
+    var fileData = fs.readFileSync(CAL_PATH);
+    obj = JSON.parse(fileData);
+    if(obj.users.hasOwnProperty(user)){
+      obj.users[user] = JSON.parse(logData);
+    }else{
+      var entry = '{"' + user + '":' + logData + '}';
+      obj.users = _.extend(obj.users, JSON.parse(entry));
+    }
+
+  }else{
+    //File does not exist
+    text = '{"users": {"' + user + '":' + logData + '}}';
+
+    obj = JSON.parse(text);
+  }
+
+  fs.writeFileSync(CAL_PATH, JSON.stringify(obj));
+}
+
+function listEvents(auth, user) {
   var calendar = google.calendar('v3');
   calendar.events.list({
     auth: auth,
@@ -132,21 +192,21 @@ function listEvents(user, auth) {
     }
     var events = response.items;
     if (events.length == 0) {
-      console.log('No upcoming events found.');
+      console.log('No upcoming events found for user: ' + user + '.');
     } else {
-      console.log('Upcoming 10 events for ' + user + ':');
+      console.log('Upcoming 10 events of ' + user + ':');
+      var count=events.length;
       for (var i = 0; i < events.length; i++) {
         var event = events[i];
         var start = event.start.dateTime || event.start.date;
-        console.log('%s - %s', start, event.summary);
+        var end= event.end.dateTime || event.end.date;
+        console.log('EVENT::::\n%s - %s - %s', start, event.summary,end);
       }
+      storeCal(user, start, end, events, count);
     }
   });
+  console.log();
 }
-
-manageData('gverma');
-manageData('gautam94verma');
-
 
 
 var Botkit = require('botkit');
@@ -159,13 +219,14 @@ var controller = Botkit.slackbot({
 
 // connect the bot to a stream of messages
 controller.spawn({
-  token: process.env.ALTCODETOKEN,
+  //token: process.env.ALTCODETOKEN,
+  token: 'xoxb-87992197655-kXagRYyH1SjcDuxei4u9Utpq',
   //slack bot token here
 }).startRTM()
 
 
 
-var config = require('./mock.json');
+var config = require(TOKEN_PATH);
 
 var Isconstraintonday;
 var Isconstraintontime;
@@ -190,8 +251,6 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
   var duration;
   var slotpassed;
 
-
-
   var byTime_Hour;
   var byTime_Minute;
 
@@ -203,9 +262,11 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
   var getIDOfAttendees = function(err, convo){
     convo.ask('Alright. May I know the email IDs of the attendees, please?',function(response,convo) {
       var IDofAttendees = response.text;
-      //
-      //convo.say('Cool, you said: ' + response.text);
+
       var flag=false;
+
+      // testing
+      // manageData('gautam94verma');
 
       arrayID = IDofAttendees.split(" ");
       if(IDofAttendees.indexOf(',') > -1){
@@ -216,8 +277,8 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
 
         if(JSON.parse(JSON.stringify(config["users"][arrayID[i]]== null)))
         {
-          convo.say('Employee '+arrayID[i]+' is not there in the database');
-          flag=true;
+          // convo.say('Employee '+arrayID[i]+' is not there in the database');
+          // flag = true;
           break;
 
         }
