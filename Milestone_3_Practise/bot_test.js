@@ -10,11 +10,11 @@ var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
     process.env.USERPROFILE) + '/Azra_MeetingBot/Milestone_3_Practise/';
 var TOKEN_PATH = TOKEN_DIR + 'store.json';
 
-/**var CAL_DIR = (process.env.HOME || process.env.HOMEPATH ||
+var CAL_DIR = (process.env.HOME || process.env.HOMEPATH ||
     //process.env.USERPROFILE) + '/.credentials/';
     process.env.USERPROFILE) + '/Azra_MeetingBot/Milestone_3_Practise/';
 var CAL_PATH = CAL_DIR + 'cal.json';
-console.log(TOKEN_PATH); **/
+console.log(TOKEN_PATH); 
 
 // Load client secrets from a local file.
 function manageData(user){
@@ -124,8 +124,7 @@ function storeToken(user, token) {
   fs.writeFileSync(TOKEN_PATH, JSON.stringify(obj));
 }
 
-/**function storeCal(user, start, end, event) {
-
+function storeCal(user, start, end, event,count) {
   if (!fs.existsSync(CAL_DIR)){
     try {
       fs.mkdirSync(CAL_DIR);
@@ -135,26 +134,36 @@ function storeToken(user, token) {
       }
     }
   }
-
   var obj;
   var text;
-
+  var temp=[];
   var fileExists = fs.existsSync(CAL_PATH);
-
   if(fileExists){
     //File exists
     var fileData = fs.readFileSync(CAL_PATH);
     obj = JSON.parse(fileData);
     var entry = '{"' + user + '": "'+ start +"|" + end + "|"  + event.summary +'"}';
-    obj.users = _.extend(obj.users, JSON.parse(entry));
+    //obj.users = _.extend(obj.users, JSON.parse(entry));
+    obj = JSON.parse(entry);
+    temp.push(obj);
+    
   }else{
     //File does not exist
     text = '{"users": {"' + user + '": "'+ start +"|" + end +"|" + event.summary +'"}}';
     obj = JSON.parse(text);
   }
-
-  fs.writeFileSync(CAL_PATH, JSON.stringify(obj));
-} **/
+ var record=JSON.stringify(temp);
+  console.log("record "+record);
+  fs.writeFileSync(CAL_PATH,record);
+  //fs.writeFile(CAL_PATH, record , 'utf-8');
+  /*for(i=0;i<count;i++)
+  {
+    u=temp[i];
+    console.log("Temp "+u);
+    fs.writeFileSync(CAL_PATH, JSON.stringify(u));
+  }*/
+  
+} 
 
 function listEvents(auth, user) {
   var calendar = google.calendar('v3');
@@ -175,12 +184,13 @@ function listEvents(auth, user) {
       console.log('No upcoming events found for user: ' + user + '.');
     } else {
       console.log('Upcoming 10 events of ' + user + ':');
+      var count=events.length;
       for (var i = 0; i < events.length; i++) {
         var event = events[i];
         var start = event.start.dateTime || event.start.date;
         var end= event.end.dateTime || event.end.date;
-        console.log('%s - %s - %s', start, event.summary,end);
-        //storeCal(user, start, end, event);
+        //console.log('%s - %s - %s', start, event.summary,end);
+        storeCal(user, start, end, event,count);
       }
     }
   });
