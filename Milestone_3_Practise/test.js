@@ -1,12 +1,8 @@
-var _ = require('underscore');
+var fs = require('fs');
 
-var text = '{"users": {"gverma": {"name":"John Johnson","street":"Oslo West 16","phone":"555 1234567"}, "sohan" : {"name":"John Johnson","street":"Oslo West 16","phone":"555 1234567"}}}';
 
-var obj = JSON.parse(text);
+var f = require('Y:/Masters/Sem-1/SE/Project/Azra_MeetingBot/Milestone_3_Practise/a.json');
+var arr = [];
 
-obj.users = _.extend(obj.users, {"sunil":{"name":"John Johnson","street":"Oslo West 16","phone":"555 1234567"}});
-console.log(obj);
-
-console.log(JSON.stringify(obj));
-
-console.log(obj.users["sunil"]["name"]);
+arr[0] = 2;
+console.log(arr[0]);

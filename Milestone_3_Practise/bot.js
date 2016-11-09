@@ -1,6 +1,29 @@
+/* Please make the files first at the TOKEN_PATH:
+1. usersData.json
+Content: The authorization tokens of all users.
+Syntax: {'users':{
+          'userName':{
+              tokenDetails
+            }
+          }
+        }
+
+2. meetings.json
+Syntax: {'meetings':{
+          'meetingID':{
+            'users': 'user1, user2, ...';
+            'summary': 'meeting Agenda';
+            'startDateTime': 'dateTime';
+            'duration': 'HH:MM';
+            'admin':'meeting organizer';
+            }
+          }
+        }
+
+*/
+
 var _ = require('underscore');
 var fs = require('fs');
-var readline = require('readline-sync');
 var google = require('googleapis');
 var googleAuth = require('google-auth-library');
 
@@ -8,16 +31,13 @@ var SCOPES = ['https://www.googleapis.com/auth/calendar'];
 var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
     process.env.USERPROFILE) + '/.credentials/';
     // process.env.USERPROFILE) + '/Azra_MeetingBot/Milestone_3_Practise/';
-var TOKEN_PATH = TOKEN_DIR + 'store.json';
+var TOKEN_PATH = TOKEN_DIR + 'usersData.json';
 
-var CAL_DIR = (process.env.HOME || process.env.HOMEPATH ||
-    process.env.USERPROFILE) + '/.credentials/';
-    // process.env.USERPROFILE) + '/Azra_MeetingBot/Milestone_3_Practise/';
-var CAL_PATH = CAL_DIR + 'cal.json';
-// console.log(TOKEN_PATH);
+var MEETING_PATH = TOKEN_DIR + 'meetings.json';
+
 
 // Load client secrets from a local file.
-function manageData(user){
+function getEventsOf(user){
   fs.readFile('client_secret.json', function processClientSecrets(err, content) {
   if (err) {
     console.log('Error loading client secret file: ' + err);
@@ -46,7 +66,7 @@ function authorize(credentials, user, callback) {
   // Check if we have previously stored a token.
   fs.readFile(TOKEN_PATH, function(err, fileData) {
     if (err) {
-      getNewToken(oauth2Client, user, callback);
+
     } else {
       var allData = JSON.parse(fileData);
       if(!allData.users.hasOwnProperty(user)){
@@ -59,122 +79,6 @@ function authorize(credentials, user, callback) {
   });
 }
 
-/**
- * Get and store new token after prompting for user authorization, and then
- * execute the given callback with the authorized OAuth2 client.
- *
- * @param {google.auth.OAuth2} oauth2Client The OAuth2 client to get token for.
- * @param {getEventsCallback} callback The callback to call with the authorized
- *     client.
- */
-function getNewToken(oauth2Client, user, callback) {
-  var authUrl = oauth2Client.generateAuthUrl({
-    access_type: 'offline',
-    scope: SCOPES
-  });
-  console.log('Kindly ask ' + user + ' to authorize this app by visiting this url: ', authUrl);
-
-  var code = readline.question('Enter the code from that page here: ');
-
-  oauth2Client.getToken(code, function(err, token) {
-    if (err) {
-      console.log('Error while trying to retrieve access token', err);
-      return;
-    }
-    oauth2Client.credentials = token;
-    storeToken(user, token);
-    callback(oauth2Client, user);
-  });
-}
-
-/**
- * Store token to disk be used in later program executions.
- *
- * @param {Object} token The token to store to disk.
- */
-function storeToken(user, token) {
-
-  if (!fs.existsSync(TOKEN_DIR)){
-    try {
-      fs.mkdirSync(TOKEN_DIR);
-    } catch (err) {
-      if (err.code != 'EEXIST') {
-        throw err;
-      }
-    }
-  }
-
-  var obj;
-  var text;
-
-  var fileExists = fs.existsSync(TOKEN_PATH);
-
-  if(fileExists){
-    //File exists
-    var fileData = fs.readFileSync(TOKEN_PATH);
-    obj = JSON.parse(fileData);
-    var entry = '{"' + user + '":' + JSON.stringify(token) + '}';
-    obj.users = _.extend(obj.users, JSON.parse(entry));
-  }else{
-    //File does not exist
-    text = '{"users": {"' + user + '":' + JSON.stringify(token) + '}}';
-    obj = JSON.parse(text);
-  }
-
-  fs.writeFileSync(TOKEN_PATH, JSON.stringify(obj));
-}
-
-function storeCal(user, start, end, events,count) {
-  if(events.length < 1) return;
-  if (!fs.existsSync(CAL_DIR)){
-    try {
-      fs.mkdirSync(CAL_DIR);
-    } catch (err) {
-      if (err.code != 'EEXIST') {
-        throw err;
-      }
-    }
-  }
-
-  var obj;
-  var text;
-
-  var fileExists = fs.existsSync(CAL_PATH);
-
-  var logData = '["' + events[0].start.dateTime || events[0].start.date + '|';
-  logData += events[0].end.dateTime || events[0].end.date + '|';
-  logData += events[0].summary + '"';
-
-  for (var i = 1; i < events.length; i++) {
-    var event = events[i];
-    var start = event.start.dateTime || event.start.date;
-    var end= event.end.dateTime || event.end.date;
-    logData = logData + ', "' + start + '|' + end + '|' + event.summary + '"';
-  }
-  logData += ']';
-
-  // console.log(logData);
-
-  if(fileExists){
-    //File exists
-    var fileData = fs.readFileSync(CAL_PATH);
-    obj = JSON.parse(fileData);
-    if(obj.users.hasOwnProperty(user)){
-      obj.users[user] = JSON.parse(logData);
-    }else{
-      var entry = '{"' + user + '":' + logData + '}';
-      obj.users = _.extend(obj.users, JSON.parse(entry));
-    }
-
-  }else{
-    //File does not exist
-    text = '{"users": {"' + user + '":' + logData + '}}';
-
-    obj = JSON.parse(text);
-  }
-
-  fs.writeFileSync(CAL_PATH, JSON.stringify(obj));
-}
 
 function listEvents(auth, user) {
   var calendar = google.calendar('v3');
@@ -220,99 +124,110 @@ var controller = Botkit.slackbot({
 // connect the bot to a stream of messages
 controller.spawn({
   //token: process.env.ALTCODETOKEN,
+  token: 'xoxb-87992197655-kXagRYyH1SjcDuxei4u9Utpq',
   //slack bot token here
 }).startRTM()
 
 
 
 var config = require(TOKEN_PATH);
-
-var Isconstraintonday;
-var Isconstraintontime;
-
+var meetingsData = require(MEETING_PATH);
 
 //coversation to schedule new meeting begins here
 controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], function(bot,message) {
+
+  // Asks the users and stores.
   var approxMeetingDuration_Hours = 0;
   var approxMeetingDuration_Mins = 0;
 
   //Contains all email ids
-  var arrayID;
+  var users;
+
+  // New meeting details that Azra calculates.
+  var newMeetingStartHour;
+  var newMeetingStartMinute;
+  var newMeetingStartDay;
+  var newMeetingStartMonth;
+  var newMeetingStartYear;
+
+  // flags to check whether there is any maximum period for meeting to be scheduled.
+  var constraintOnDay = true;
+  var constraintOnTime = true;
+
+  // Maximum Time by which new Meeting should be organized.
+  var byTime_Hour;
+  var byTime_Minute;
+  var byDate;
+  var byMonth;
+  var byYear;
+
+  // Agenda of the new Meeting.
+  var meetingGoal;
+
+  //
   var meetinghh;
   var meetingmm;
   var meetingday;
+
+  //
   var daythis;
   var mdaythis;
   var meetingID;
   var slots;
   var roomid;
   var meetingslot;
-  var duration;
   var slotpassed;
 
-  var byTime_Hour;
-  var byTime_Minute;
-
-  var byDate;
-  var byMonth;
-  var byYear;
-  var arrayID;
-
+  // Gets all the ids. If any is invalid, asks again. If succesfull, azra asks about approximate meeting duration.
   var getIDOfAttendees = function(err, convo){
     convo.ask('Alright. May I know the email IDs of the attendees, please?',function(response,convo) {
       var IDofAttendees = response.text;
 
-      var flag=false;
-
       // testing
-      // manageData('gautam94verma');
+      // storeDetailsOf('gautam94verma');
 
-      arrayID = IDofAttendees.split(" ");
+      users = IDofAttendees.split(" ");
       if(IDofAttendees.indexOf(',') > -1){
-        arrayID = IDofAttendees.split(",");
+        users = IDofAttendees.split(",");
       }
-      for(var i = 0 ; i < arrayID.length ; i++){
-        arrayID[i] = arrayID[i].trim();
 
-        if(JSON.parse(JSON.stringify(config["users"][arrayID[i]]== null)))
-        {
-          // convo.say('Employee '+arrayID[i]+' is not there in the database');
-          // flag = true;
-          break;
-
+      for(var i = 0 ; i < users.length ; i++){
+        users[i] = users[i].trim();
+        var user = users[i];
+        if(!config["users"].hasOwnProperty(user)){
+          convo.say('Employee ' + user +' is not a member of this team. Please limit to the members only and try again.');
+          getIDOfAttendees(response, convo);
+          convo.next();
+          return;
         }
       }
-      if(flag==false)
-      {
-        getApproxMeetingDuration(response, convo);
-        convo.next();
-      }
-      else{
-        getIDOfAttendees(response, convo);
-        convo.next();
-      }
 
+      getApproxMeetingDuration(response, convo);
+      convo.next();
     });
   };
 
+  // Asks the user about the new meeting Duration.
   var getApproxMeetingDuration = function(err, convo){
     convo.ask('OK. What will be the approximate duration of the meeting (HH:MM or HH)?',function(response,convo) {
       var approxMeetingDuration = response.text;
+
+      var approxDurationArray = [];
+      approxDurationArray[0] = approxMeetingDuration;
+      if(approxMeetingDuration.indexOf(":") > -1){
+        approxDurationArray = approxMeetingDuration.split(":");
+      }
+
+      approxMeetingDuration_Hours = parseInt(approxDurationArray[0]);
+      if(approxDurationArray.length == 2){
+        approxMeetingDuration_Mins = parseInt(approxDurationArray[1]);
+      }
+
+      approxMeetingDuration = approxMeetingDuration_Hours + approxMeetingDuration_Mins/60;
+
+      // maximum valid meeting duration can be 3 hours.
       if(approxMeetingDuration > 0 && approxMeetingDuration<3)
       {
-
-        var approxDurationArray = approxMeetingDuration.split("");
-        if(approxMeetingDuration.indexOf(":") > -1){
-          approxDurationArray = approxMeetingDuration.split(":");
-        }
-
-        approxMeetingDuration_Hours = parseInt(approxDurationArray[0]);
-        if(approxDurationArray.length == 2){
-          approxMeetingDuration_Mins = parseInt(approxDurationArray[1]);
-        }
-
-        //check if valid email addresses are entered
-
         getLastDateOrDay(response, convo);
         convo.next();
       }
@@ -325,15 +240,15 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
     });
   };
 
+  // Asks the user about the date/day by which meeting should be scheduled.
   var getLastDateOrDay = function(err, convo){
     convo.ask('And by what date(MM/DD/YYYY or MM/DD or DD) or day do you want the meeting to be scheduled? Say NA if no such constraint',function(response,convo) {
+      // If there is no such constraint.
       if(response.text=='na'||response.text=='Na'||response.text=='NA')
       {
-        Isconstraintonday=false;
+        constraintOnDay=false;
       }else{
-        Isconstraintonday=true;
         lastDate = response.text;
-
 
         //today's date and time
         var today = new Date();
@@ -425,7 +340,6 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
           }
         }
       }
-      // convo.say("i got " + byDate + " " + byMonth + " " + byYear);
 
       getLastTime(response, convo);
 
@@ -433,11 +347,12 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
     });
   };
 
+  // Asks the user whether ther is any time by which the meeting should be organized.
   var getLastTime = function(err, convo){
     convo.ask('OK. By what time (HH:MM or HH) should the meeting be organized (24 Hour format)? Say NA if no such constraint',function(response,convo) {
       if(response.text.toUpperCase='NA')
       {
-        Isconstraintonday=false;
+        constraintOnTime=false;
       }else{
 
         lastTime = response.text;
@@ -462,7 +377,9 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
           var timeLeftInMin = (new Date(1900 + byYear, byMonth, byDate, byTime_Hour, byTime_Minute, 0, 0) - new Date()) / (1000 * 60);
           // console.log(new Date(1900 + byYear, byMonth, byDate, byTime_Hour, byTime_Minute, 0, 0));
           // console.log(new Date());
-          convo.say("Time Left: " + timeLeftInMin);
+          // convo.say("Time Left: " + timeLeftInMin);
+
+          // If there is no sufficient time, ask the user to give the details again. Hadnled in HandleInsufficientTime.
           if(timeLeftInMin < meetingDurationInMin){
             HandleInsufficientTime(response, convo);
             convo.next();
@@ -471,81 +388,106 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
         }
       }
 
+/*
+Now we have all the data that we need.
+Please write the code to find the best meeting time.
 
-      var today = new Date();
-      var dd = today.getDate();
-      var mm = today.getMonth()+1; //January is 0!
-      var yyyy = today.getFullYear();
-      var hh=today.getHours();
-      var mint=today.getMinutes();
-      var slotthis;
+Call getEventsOf method here.
 
-      if(hh>17){
-        dd=dd+1;
-        slotthis=0;
-      }else if(hh<10){
-        slotthis=0;
-      }else{
-        hh=hh-10;
-        slotthis=hh*2;
-      }
-      if((mint>0)&&(mint<30)){
-        slotthis++;
-      }else{
-        slotthis=slotthis+2;
-      }
-      if(slotthis==15||((slotthis+slots)>=16)){
-        dd=dd+1;
-        slotthis=0;
-      }
+Please do validation with by_*** variables if respective constraint exist.
+
+Store the final data in the following variables:
+var newMeetingStartHour;
+var newMeetingStartMinute;
+var newMeetingStartDay;
+var newMeetingStartMonth;
+var newMeetingStartYear;
+
+And then call getAgenda.
+*/
+      // var today = new Date();
+      // var dd = today.getDate();
+      // var mm = today.getMonth()+1; //January is 0!
+      // var yyyy = today.getFullYear();
+      // var hh=today.getHours();
+      // var mint=today.getMinutes();
+      // var slotthis;
+      //
+      // if(hh>17){
+      //   dd=dd+1;
+      //   slotthis=0;
+      // }else if(hh<10){
+      //   slotthis=0;
+      // }else{
+      //   hh=hh-10;
+      //   slotthis=hh*2;
+      // }
+      // if((mint>0)&&(mint<30)){
+      //   slotthis++;
+      // }else{
+      //   slotthis=slotthis+2;
+      // }
+      // if(slotthis==15||((slotthis+slots)>=16)){
+      //   dd=dd+1;
+      //   slotthis=0;
+      // }
+      //
+      //
+      // if(dd<10) {
+      //   dd='0'+dd;
+      // }
+      //
+      // if(mm<10) {
+      //   mm='0'+mm;
+      // }
+      //
+      // if((byYear<yyyy)||(byYear==yyyy&byMonth<mm)||(byYear==yyyy&&byMonth==mm&&byDay<dd)){
+      //   //not possible
+      // }
+      // today = yyyy+'-'+dd+'-'+mm;
+      // var daythis=today;
+      // var slots=parseInt(approxMeetingDuration_Hours)*2;
+      // var basepos=0;
+      // var tempbasepos;
+      // if(parseInt(approxMeetingDuration_Mins)>30)
+      // {
+      //   slots=slots+2;
+      // }else if(parseInt(approxMeetingDuration_Mins)<30&&parseInt(approxMeetingDuration_Mins)>0) slots=slots+1;
+      //
+      //
+      //
+      // var result = calculateCommonTime(users,daythis,slotthis,slots);
+      // if(result>=0){
+      //   duration=slots;
+      //   meetingslot=result;
+      //   meetingday=mdaythis;
+		  //   roomid='room 1021';
+      //   meetinghh=(10+(meetingslot/2));
+      //   meetingmm='00';
+      //   if((meetingslot%2)!=0){
+      //     meetinghh=(10+(meetingslot/2))-0.5;
+      //     meetingmm='30';
+      //   }
+      //   var meeting=mdaythis.split('-');
+      //   if(((meeting[0]-1900)>byYear)||((meeting[0]==byYear)&&(meeting[2]>byMonth))||((meeting[0]==byYear)&&(meeting[2]==byMonth)&&(meeting[1]>byDate))){
+      //     convo.say("Apologies. I could not find any time suitable in given period");
+      //   }else {
+      //     convo.say("I got " + meetingday + " at " + meetinghh + ":" + meetingmm+" at "+roomid);
+      //     getAgenda(response, convo);
+      //     convo.next();
+      //   }
+      // }
 
 
-      if(dd<10) {
-        dd='0'+dd;
-      }
-
-      if(mm<10) {
-        mm='0'+mm;
-      }
-
+      // Initialized just for testing.
+      newMeetingStartDay = 13;
+      newMeetingStartHour = 2;
+      newMeetingStartYear = 2016;
+      newMeetingStartMonth = 11;
+      newMeetingStartMinute = 0;
 
 
-      if((byYear<yyyy)||(byYear==yyyy&byMonth<mm)||(byYear==yyyy&&byMonth==mm&&byDay<dd)){
-        //not possible
-      }
-      today = yyyy+'-'+dd+'-'+mm;
-      var daythis=today;
-      var slots=parseInt(approxMeetingDuration_Hours)*2;
-      var basepos=0;
-      var tempbasepos;
-      if(parseInt(approxMeetingDuration_Mins)>30)
-      {
-        slots=slots+2;
-      }else if(parseInt(approxMeetingDuration_Mins)<30&&parseInt(approxMeetingDuration_Mins)>0) slots=slots+1;
-
-
-
-      var result=calculateCommonTime(arrayID,daythis,slotthis,slots);
-      if(result>=0){
-        duration=slots;
-        meetingslot=result;
-        meetingday=mdaythis;
-		roomid='room 1021';
-        meetinghh=(10+(meetingslot/2));
-        meetingmm='00';
-        if((meetingslot%2)!=0){
-          meetinghh=(10+(meetingslot/2))-0.5;
-          meetingmm='30';
-        }
-        var meeting=mdaythis.split('-');
-        if(((meeting[0]-1900)>byYear)||((meeting[0]==byYear)&&(meeting[2]>byMonth))||((meeting[0]==byYear)&&(meeting[2]==byMonth)&&(meeting[1]>byDate))){
-          convo.say("Apologies. I could not find any time suitable in given period");
-        }else {
-          convo.say("I got " + meetingday + " at " + meetinghh + ":" + meetingmm+" at "+roomid);
-          fixMeeting(response, convo);
-          convo.next();
-        }
-      }
+      getAgenda(response, convo);
 
       //convo.say("i got day" + " " + meetingday + " at " + meetinghour+ " and  " + meetingmin+" mins");
 
@@ -558,42 +500,68 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
     });
   };
 
-  var fixMeeting = function(err, convo){
-    convo.ask('Do you want to fix this meeting time? Please reply Yes or No',function(response,convo) {
-      var answer = response.text;
-      if((answer=='no')||(answer=='No')||(answer=='NO')){
-        bot.startConversation(message, getLastTime);
-        convo.next();
-      }else{
-        //convo.say('I am confirming this meeting ');
-        bot.reply(message, 'I am confirming this meeting ');
-        //code for writing meeting id
-        var keys=Object.keys(config["meetings"]);
-        var last=keys[keys.length-1];
-        last++;
-        meetingID=last;
-
-        //sets meeting ID based on incrementing most recent meeting ID from JSON
-        bot.reply(message, 'This is your meeting ID : '+last);
-        config["meetings"][last]=meetingday+"|"+meetinghh+":"+meetingmm+ "|" +arrayID +"|" + meetingslot +"|"+ duration;
-        var i;
-        var j;
-        //set meeting ID to calendar
-        for(i=0;i<arrayID.length;i++){
-          var username=arrayID[i];
-          for(j=meetingslot;j<(meetingslot+duration);j++) {
-            config["users"][username][meetingday][j]=meetingID;
-            //console.log("value is : "+config["users"][username][meetingday][j]);
-          }
-        }
-        var m = JSON.parse(fs.readFileSync('./mock.json').toString());
-        fs.writeFile('./mock.json', JSON.stringify(config));
-      }
+  var getAgenda = function(err, convo){
+    convo.ask('What is the goal of this meeting?',function(response,convo) {
+      meetingGoal = response.text;
+      fixMeeting(response, convo);
       convo.next();
     });
   };
 
-  var calculateCommonTime=function(arrayID,daythis,slotthis,slots){
+  var fixMeeting = function(err, convo){
+    convo.ask('Do you want to fix this meeting time? Please reply Yes or No',function(response,convo) {
+      var answer = response.text;
+      if((answer==='no')||(answer==='No')||(answer==='NO')){
+        // bot.startConversation(message, getLastTime);
+        bot.reply(message, 'The meeting was NOT organized. Thank you for using Azra.');
+        convo.next();
+      }else{
+        bot.reply(message, 'I am confirming this meeting/');
+
+        // Azra will store the meeting details in the file meetings.json at MEETING_PATH.
+        var allMeetingKeys = Object.keys(meetingsData["meetings"]);
+        var newMeetingID = -1;
+        if(allMeetingKeys.length > 0)
+          newMeetingID = allMeetingKeys[allMeetingKeys.length - 1];
+        newMeetingID++;
+        meetingID = newMeetingID;
+
+        //sets meeting ID based on incrementing most recent meeting ID from JSON
+        bot.reply(message, 'This is your meeting ID : ' + newMeetingID);
+
+        var usersInMeeting = users[0];
+
+        for(var i = 1 ; i < users.length ; i++)
+          usersInMeeting += ', ' + users[i];
+
+        meetingsData["meetings"][newMeetingID] = {};
+        meetingsData["meetings"][newMeetingID]["users"] = usersInMeeting;
+        meetingsData["meetings"][newMeetingID]["summary"] = meetingGoal;
+        meetingsData["meetings"][newMeetingID]["startDateTime"] = new Date(newMeetingStartYear, newMeetingStartMonth, newMeetingStartDay, newMeetingStartHour, newMeetingStartMinute, 0, 0);
+        meetingsData["meetings"][newMeetingID]["duration"] = approxMeetingDuration_Hours + ':' + approxMeetingDuration_Mins;
+        meetingsData["meetings"][newMeetingID]["admin"] = message.user;
+
+        fs.writeFile(MEETING_PATH, JSON.stringify(meetingsData)); // asynchronous write.
+
+// Add to the calendar of all users.
+//////////////////////// WRITE THE CODE
+        // var i;
+        // var j;
+        // //set meeting ID to calendar
+        // for(i=0;i<users.length;i++){
+        //   var username=users[i];
+        //   for(j=meetingslot;j<(meetingslot+duration);j++) {
+        //     // config["users"][username][meetingday][j]=meetingID;
+        //     //console.log("value is : "+config["users"][username][meetingday][j]);
+        //   }
+        // }
+      }
+//////////////////////////////////
+      convo.next();
+    });
+  };
+
+  var calculateCommonTime=function(users,daythis,slotthis,slots){
     if (slotthis == 15 || ((slotthis + slots) >= 16)) {
       var dayhere = daythis.split("-");
       yyyy = dayhere[0];
@@ -611,7 +579,7 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
       slotthis = 0;
       daythis = yyyy + '-' + dd + '-' + mm;
     }
-    var slotpassed=calculateFreeTime(arrayID[0],daythis,slotthis,slots);
+    var slotpassed=calculateFreeTime(users[0],daythis,slotthis,slots);
     while(slotpassed<0) {
       slotthis = slotthis + 1;
       if (slotthis == 15 || ((slotthis + slots) >= 16)) {
@@ -631,16 +599,16 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
         slotthis = 0;
         daythis = yyyy + '-' + dd + '-' + mm;
       }
-      slotpassed = calculateFreeTime(arrayID[0], daythis, slotthis, slots);
+      slotpassed = calculateFreeTime(users[0], daythis, slotthis, slots);
     }
-    var check=checkforthistime(arrayID,daythis,slotpassed,slots);
+    var check=checkforthistime(users,daythis,slotpassed,slots);
     if(check>=0){
         mdaythis=daythis;
       return slotpassed;
     }
     else{
       slotthis=slotthis+1;
-      calculateCommonTime(arrayID,daythis,slotthis,slots);
+      calculateCommonTime(users,daythis,slotthis,slots);
     }
 
 
@@ -671,15 +639,15 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
 
   }
 
-  var checkforthistime=function(arrayID,daythis,slotpassed,slots){
+  var checkforthistime=function(users,daythis,slotpassed,slots){
     var check=true;
     var i;
     var k;
     var slottocheck;
-    for(k=0;k<(arrayID.length-1);k++) {
+    for(k=0;k<(users.length-1);k++) {
       slottocheck=slotpassed;
       for (i = 0; i < slots; i++) {
-        var username = arrayID[k + 1];
+        var username = users[k + 1];
         data = JSON.parse(JSON.stringify(config["users"][username][daythis][slottocheck]));
         if (parseInt(data) == 0) {
           slottocheck++;
