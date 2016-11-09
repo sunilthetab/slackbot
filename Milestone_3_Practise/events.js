@@ -33,18 +33,36 @@ var events = {
         });
     },
 
-    event_patch: function (event) {
+    event_patch: function (calendarID) {
         // var range = moment.parseZone(event.start.dateTime || event.start.date)
         //     .twix(moment.parseZone(event.end.dateTime || event.end.date));
         // return range.format();
+        /*calendar.events.insert({
+            auth: auth,
+            calendarId: 'primary',
+            resource: event,
+        }, function (err, event) {
+            if (err) {
+                console.log('There was an error contacting the Calendar service: ' + err);
+                return;
+            }
+            console.log('Event created: %s', event.htmlLink);
+        });*/
     },
 
-    event_delete: function (event) {
-        // var range = moment.parseZone(event.start.dateTime || event.start.date)
-        //     .twix(moment.parseZone(event.end.dateTime || event.end.date));
-        // return range.format();
-    }
-
+    event_delete: function (calendar,auth, eventID) {
+       calendar.events.delete({
+           auth: auth,
+           calendarId: 'primary',
+           eventId: eventID,
+       }, function (err, eventID) {
+           if (err) {
+               console.log('There was an error deleting the Event with ID: ' + err);
+               return;
+           }
+           console.log('Event deleted  EventID: ' + eventID);
+       });
+   }
 }
 
 module.exports = events;
