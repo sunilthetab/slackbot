@@ -47,6 +47,7 @@ var events = {
                 return;
             }
             console.log('Event created: %s', event.htmlLink);
+            return event.id;
         });
     },
 
