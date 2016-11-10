@@ -50,8 +50,10 @@ var events = {
             }
             console.log('Event created: %s', event.htmlLink);
 
+
             console.log('Event ID: %s', event.id);
             //callback(event.id);
+
         });
         //return event.id;
     },
