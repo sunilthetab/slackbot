@@ -10,13 +10,17 @@ var calendar = google.calendar('v3');
 
 var events = {
 
+    /* dummy function. do not delete */
+    
     event_quickAdd: function (event) {
         // var range = moment.parseZone(event.start.dateTime || event.start.date)
         //     .twix(moment.parseZone(event.end.dateTime || event.end.date));
         // //return range.format();
-
     },
-
+    
+    
+    
+    /* Call this function if you want to Create a new event. Should Pass OAuth & event object */
     event_insert: function (auth, event) {
         calendar.events.insert({
             auth: auth,
@@ -31,6 +35,9 @@ var events = {
         });
     },
 
+
+    /* Call this function if you want to add new set of users to already existing event.
+       Should Pass OAuth(String), EventID(String) of the event & emailIDs list (String) (Eg emails_list: "apendya@ncsu.edu ppfirake@ncsu.edu") */
     event_patch_add_users: function (auth, eventID, emails_list) {
 
         //TODO: add logic to extract emailid if only username or name of users are provided.
@@ -70,6 +77,8 @@ var events = {
         });
     },
 
+    /* Call this function if you want to remove a set of users to already existing event.
+       Should Pass OAuth(String), EventID(String) of the event & emailIDs list (String) (Eg emails_list: "apendya@ncsu.edu ppfirake@ncsu.edu") */
     event_patch_remove_users: function (auth, eventID, emails_list) {
         //TODO: add logic to extract emailid if only username or name of users are provided.
         // now we are expecting user to input in format "apendya@ncsu.edu ppfirake@ncsu.edu"
@@ -118,6 +127,8 @@ var events = {
         });
     },
 
+    /* Call this function if you want to delete an already existing event.
+       Should Pass OAuth(String), EventID(String) of the event*/
     event_delete: function (auth, eventID) {
        calendar.events.delete({
            auth: auth,
