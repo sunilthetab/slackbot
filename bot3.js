@@ -22,15 +22,13 @@
 
 var _ = require('underscore');
 var fs = require('fs');
-var async = require('asyncawait/async');
 
-var await = require('asyncawait/await');
 var google = require('googleapis');
 var googleAuth = require('google-auth-library');
 var lastDay;
 var lastTime;
 
-var moment=require('moment');
+// var moment=require('moment');
 
 var SCOPES = ['https://www.googleapis.com/auth/calendar'];
 var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
@@ -40,19 +38,6 @@ var TOKEN_PATH = TOKEN_DIR + 'store.json';
 
 var MEETING_PATH = TOKEN_DIR + 'meetings.json';
 
-
-// Load client secrets from a local file.
-function getEventsOf(user){
-    fs.readFile('client_secret.json', function processClientSecrets(err, content) {
-        if (err) {
-            console.log('Error loading client secret file: ' + err);
-            return;
-        }
-        // Authorize a client with the loaded credentials, then call the
-        // Google Calendar API.
-        authorize(JSON.parse(content), user, listEvents);
-    });
-}
 
 /**
  * Create an OAuth2 client with the given credentials, and then execute the
@@ -89,39 +74,6 @@ function authorize(credentials, user, callback) {
 */
 
 
-function listEvents(auth, user) {
-    var calendar = google.calendar('v3');
-    calendar.events.list({
-        auth: auth,
-        calendarId: 'primary',
-        timeMin: (new Date()).toISOString(),
-        maxResults: 10,
-        singleEvents: true,
-        orderBy: 'startTime'
-    }, function(err, response) {
-        if (err) {
-            console.log('The API returned an error: ' + err);
-            return;
-        }
-        var events = response.items;
-        if (events.length == 0) {
-            console.log('No upcoming events found for user: ' + user + '.');
-        } else {
-            console.log('Upcoming 10 events of ' + user + ':');
-            var count=events.length;
-            for (var i = 0; i < events.length; i++) {
-                var event = events[i];
-                var start = event.start.dateTime || event.start.date;
-                var end= event.end.dateTime || event.end.date;
-                console.log('EVENT::::\n%s - %s - %s', start, event.summary,end);
-            }
-            storeCal(user, start, end, events, count);
-        }
-    });
-
-    //console.log();
-}
-
 var daythis;
 var mdaythis;
 var meetingID;
@@ -141,8 +93,8 @@ var controller = Botkit.slackbot({
 
 // connect the bot to a stream of messages
 controller.spawn({
-    //token: process.env.ALTCODETOKEN,
-    token : 'xoxb-91906944081-hDZ6yhSgzHCwdScbabgBFcka',
+    token: process.env.ALTCODETOKEN,
+    // token : 'xoxb-91906944081-hDZ6yhSgzHCwdScbabgBFcka',
     //slack bot token here
 }).startRTM()
 
@@ -203,11 +155,6 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
                 users = IDofAttendees.split(",");
             }
 
-
-
-
-
-
             for(var i = 0 ; i < users.length ; i++){
                 users[i] = users[i].trim();
                 var user = users[i];
@@ -223,152 +170,8 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
             convo.next();
         });
     };
-    var calculateFreeTime = function(user,daythis,approxMeetingHours){
-        fs.readFile('client_secret.json', function processClientSecrets(err, content) {
-            if (err) {
-                console.log('Error loading client secret file: ' + err);
-                return;
-            }
-            // Authorize a client with the loaded credentials, then call the
-            // Google Calendar API.
-          //  console.log(daythis+"in calca"+JSON.parse(content));
-            authorize(JSON.parse(content),user,daythis,approxMeetingHours,freeTime);
-        });
 
-    }
-    var checkforthistime = function(user,daythis,meetingStartTime,approxMeetingDuration_Hours){
-        fs.readFile('client_secret.json', function processClientSecrets(err, content) {
-            if (err) {
-                console.log('Error loading client secret file: ' + err);
-                return;
-            }
-            // Authorize a client with the loaded credentials, then call the
-            // Google Calendar API.
-            //  console.log(daythis+"in calca"+JSON.parse(content));
-            authorize(JSON.parse(content),user,daythis,meetingStartTime,approxMeetingDuration_Hours,checkTime);
-        });
-
-    }
-
-
-    function authorize(credentials,user,daythis,approxMeetingHours,callback) {
-       // console.log(daythis+'step 2');
-        var clientSecret = credentials.installed.client_secret;
-        var clientId = credentials.installed.client_id;
-        var redirectUrl = credentials.installed.redirect_uris[0];
-        var auth = new googleAuth();
-        var oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl);
-
-        // Check if we have previously stored a token.
-        fs.readFile(TOKEN_PATH, function(err, fileData) {
-            if (err) {
-
-            } else {
-                var allData = JSON.parse(fileData);
-                if(!allData.users.hasOwnProperty(user)){
-                    getNewToken(oauth2Client, user, callback);
-                }else{
-                    oauth2Client.credentials = allData.users[user];
-                    callback(oauth2Client,user,daythis,approxMeetingHours);
-                }
-            }
-        });
-    }
-
-
-    function freeTime(auth,user,daythis,approxMeetingHours,callback) {
-       // console.log("step  1  daythis pesn"+user+" day  "+daythis+" hh "+hh+"dfsfds"+approxMeetingHours);
-        console.log(lastDay);
-        Q=require('q');
-        var calendar = google.calendar('v3');
-        var deferred=Q.defer();
-        //daythis.setHours(hh);
-        var timenow=moment(daythis.toISOString()).format();
-        calendar.events.list({
-            auth: auth,
-            calendarId: 'primary',
-            timeMin: timenow,
-            maxResults: 10,
-            singleEvents: true,
-            timeZoneId: 'America/New_York',
-            timeZone: 'America/New_York',
-            orderBy: 'startTime'
-        }, function(err, response) {
-            if (err) {
-                console.log('The API returned an error: ' + err);
-                return;
-            }
-            var events = response.items;
-            if (events.length == 0) {
-                console.log('No upcoming events found for user: ' + user + '.');
-
-                return ;
-            } else {
-              //  console.log('Upcoming 10 events of ' + user + ':');
-                var count=events.length;
-                if(timenow+approxMeetingDuration_Hours<events[0].start.dateTime)
-                {
-                    meetingStartTime=moment(meetingStartTime.toISOString()).format();
-                    //console.log(meetingStartTime + "dsad");
-
-                    //callback(meetingStartTime);
-                   return deferred.meetingStartTime;
-                }
-                for (var i = 1; i < events.length; i++) {
-                    if(events[i-1].end.dateTime+approxMeetingDuration_Hours<event[i].start.dateTime){
-                        meetingStartTime=events[i-1].end.dateTime;
-                       // console.log(meetingStartTime+ " here ");
-
-
-                        //callback(meetingStartTime);
-                        return deferred.meetingStartTime;
-                    }
-                }
-               // return meetingStartTime;
-                //storeCal(user, start, end, events, count);
-            }
-        });
-
-        console.log(meetingStartTime);
-    }
-
-    function checkTime(auth,user,daythis,meetingStartTime,approxMeetingDuration_Hours) {
-        // console.log("step  1  daythis pesn"+user+" day  "+daythis+" hh "+hh+"dfsfds"+approxMeetingHours);
-        var calendar = google.calendar('v3');
-
-        var timenow=moment(meetingStartTime.toISOString()).format();
-        var timelast=moment(timenow).add(approxMeetingDuration_Hours, 'hours');
-        //console.log(timelast);
-        calendar.events.list({
-            auth: auth,
-            calendarId: 'primary',
-            timeMin: timenow,
-            timeMax: timelast,
-            maxResults: 10,
-            singleEvents: true,
-            timeZoneId: 'America/New_York',
-            timeZone: 'America/New_York',
-            orderBy: 'startTime'
-        }, function(err, response) {
-            if (err) {
-                console.log('The API returned an error: ' + err);
-                return;
-            }
-            var events = response.items;
-            if (events.length == 0) {
-                //success
-
-                return;
-            } else {
-                //  console.log('Upcoming 10 events of ' + user + ':');
-                //flag false find again
-            }
-        });
-
-
-    }
-    // Asks the user about the new meeting Duration.
-    var getApproxMeetingDuration = function(err, convo){
+var getApproxMeetingDuration = function(err, convo){
         convo.ask('OK. What will be the approximate duration of the meeting (HH:MM or HH)?',function(response,convo) {
             var approxMeetingDuration = response.text;
 
@@ -563,37 +366,36 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
              var newMeetingStartYear;
              And then call getAgenda.
              */
-            var today = new Date();
-            var dd = today.getDate();
-            var mm = today.getMonth()+1; //January is 0!
-             var yyyy = today.getFullYear();
-             var hh=today.getHours();
-             var mint=today.getMinutes();
-
-
-
-             if((byYear<yyyy)||(byYear==yyyy&byMonth<mm)||(byYear==yyyy&&byMonth==mm&&byDay<dd)){
-              //not possible
-             }
-
-             //var slots=parseInt(approxMeetingDuration_Hours)*2;
-             if(parseInt(approxMeetingDuration_Mins)>0)
-             {
-                 approxMeetingDuration_Hours+1;
-             }
-
-            if(hh+approxMeetingDuration_Hours>17||hh>17){
-                hh=10;
-                today.setHours(10);
-                dd=dd+1;
-                today.setDate(today.getDate()+1);
-            }
-
-                 var meetingStartTime=new Date(today);
-                //daythis.setHours(hh);
-                console.log(meetingStartTime+" input");
-
-             calculateCommonTime(users,meetingStartTime,approxMeetingDuration_Hours);
+            // var today = new Date();
+            // var dd = today.getDate();
+            // var mm = today.getMonth()+1; //January is 0!
+            //  var yyyy = today.getFullYear();
+            //  var hh=today.getHours();
+            //  var mint=today.getMinutes();
+            //
+            //
+            //
+            //  if((byYear<yyyy)||(byYear==yyyy&byMonth<mm)||(byYear==yyyy&&byMonth==mm&&byDay<dd)){
+            //   //not possible
+            //  }
+            //
+            //  //var slots=parseInt(approxMeetingDuration_Hours)*2;
+            //  if(parseInt(approxMeetingDuration_Mins)>0)
+            //  {
+            //      approxMeetingDuration_Hours+1;
+            //  }
+            //
+            // if(hh+approxMeetingDuration_Hours>17||hh>17){
+            //     hh=10;
+            //     today.setHours(10);
+            //     dd=dd+1;
+            //     today.setDate(today.getDate()+1);
+            // }
+            //
+            //      var meetingStartTime = new Date(today);
+            //     //daythis.setHours(hh);
+            //     console.log(meetingStartTime+" input");
+            //
              //if(result>=0){
                //duration=slots;
             //   meetingslot=result;
@@ -616,13 +418,6 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
             // }
 
 
-            // Initialized just for testing.
-            newMeetingStartDay = 13;
-            newMeetingStartHour = 2;
-            newMeetingStartYear = 2016;
-            newMeetingStartMonth = 11;
-            newMeetingStartMinute = 0;
-
 
             getAgenda(response, convo);
 
@@ -640,10 +435,202 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
     var getAgenda = function(err, convo){
         convo.ask('What is the goal of this meeting?',function(response,convo) {
             meetingGoal = response.text;
-            fixMeeting(response, convo);
-            convo.next();
+
+
+            // Initialized just for testing.
+            // newMeetingStartDay = 13;
+            // newMeetingStartHour = 2;
+            // newMeetingStartYear = 2016;
+            // newMeetingStartMonth = 11;
+            // newMeetingStartMinute = 0;
+
+            if(approxMeetingDuration_Mins > 0) approxMeetingDuration_Hours++;
+
+            calculateFreeTime(users, newMeetingStartDay, approxMeetingDuration_Hours, function(){
+              fixMeeting(response, convo);
+              convo.next();
+            });
         });
     };
+
+    var calculateFreeTime = function(user, onDay, approxMeetingHours, callback){
+        fs.readFile('client_secret.json', function processClientSecrets(err, content) {
+            if (err) {
+                console.log('Error loading client secret file: ' + err);
+                return;
+            }
+            authorize(JSON.parse(content), function(allEventsData){
+              console.log('All Events Data: ' + JSON.stringify(allEventsData));
+              // Find the time here now...
+              // We have all users event data in a JSON object.
+
+
+
+
+            });
+        });
+
+    }
+
+    function authorize(credentials, callback) {
+       // console.log(daythis+'step 2');
+        var clientSecret = credentials.installed.client_secret;
+        var clientId = credentials.installed.client_id;
+        var redirectUrl = credentials.installed.redirect_uris[0];
+        var auth = new googleAuth();
+        var oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl);
+
+        // Check if we have previously stored a token.
+        fs.readFile(TOKEN_PATH, function(err, fileData) {
+            if (err) {
+
+            } else {
+                var allData = JSON.parse(fileData);
+                var allEventsInfo = {};
+                for(var i = 0 ; i < users.length ; i++){
+                  oauth2Client.credentials = allData.users[users[i]];
+                  getEventsOf(oauth2Client, users[i], function(response){
+                    var entry = '{"' + users[i] + '":' + JSON.stringify(response) + '}';
+                    console.log('Entry: ' + entry);
+                    allEventsInfo = _.extend(allEventsInfo, JSON.parse(entry));
+                  });
+                }
+
+                callback(allEventsInfo);
+
+            }
+        });
+    }
+
+    function getEventsOf(auth, user, callback) {
+        var calendar = google.calendar('v3');
+        calendar.events.list({
+            auth: auth,
+            calendarId: 'primary',
+            timeMin: (new Date()).toISOString(),
+            maxResults: 10,
+            singleEvents: true,
+            orderBy: 'startTime'
+        }, function(err, response) {
+            if (err) {
+                console.log('The API returned an error: ' + err);
+                return;
+            }
+            var events = response.items;
+            if (events.length == 0) {
+                console.log('No upcoming events found for user: ' + user + '.');
+            } else {
+                console.log('Found events for user: ' + user);
+            }
+            callback(events);
+        });
+    }
+
+    // var checkforthistime = function(user,daythis,meetingStartTime,approxMeetingDuration_Hours){
+    //     fs.readFile('client_secret.json', function processClientSecrets(err, content) {
+    //         if (err) {
+    //             console.log('Error loading client secret file: ' + err);
+    //             return;
+    //         }
+    //         // Authorize a client with the loaded credentials, then call the
+    //         // Google Calendar API.
+    //         //  console.log(daythis+"in calca"+JSON.parse(content));
+    //         authorize(JSON.parse(content),user,daythis,meetingStartTime,approxMeetingDuration_Hours,checkTime);
+    //     });
+    //
+    // }
+
+    // function freeTime(auth,user,daythis,approxMeetingHours,callback) {
+    //    // console.log("step  1  daythis pesn"+user+" day  "+daythis+" hh "+hh+"dfsfds"+approxMeetingHours);
+    //     console.log(lastDay);
+    //     Q=require('q');
+    //     var calendar = google.calendar('v3');
+    //     var deferred=Q.defer();
+    //     //daythis.setHours(hh);
+    //     var timenow=moment(daythis.toISOString()).format();
+    //     calendar.events.list({
+    //         auth: auth,
+    //         calendarId: 'primary',
+    //         timeMin: timenow,
+    //         maxResults: 10,
+    //         singleEvents: true,
+    //         timeZoneId: 'America/New_York',
+    //         timeZone: 'America/New_York',
+    //         orderBy: 'startTime'
+    //     }, function(err, response) {
+    //         if (err) {
+    //             console.log('The API returned an error: ' + err);
+    //             return;
+    //         }
+    //         var events = response.items;
+    //         if (events.length == 0) {
+    //             console.log('No upcoming events found for user: ' + user + '.');
+    //
+    //             return ;
+    //         } else {
+    //           //  console.log('Upcoming 10 events of ' + user + ':');
+    //             var count=events.length;
+    //             if(timenow+approxMeetingDuration_Hours<events[0].start.dateTime)
+    //             {
+    //                 meetingStartTime=moment(meetingStartTime.toISOString()).format();
+    //                 //console.log(meetingStartTime + "dsad");
+    //
+    //                 //callback(meetingStartTime);
+    //                return deferred.meetingStartTime;
+    //             }
+    //             for (var i = 1; i < events.length; i++) {
+    //                 if(events[i-1].end.dateTime+approxMeetingDuration_Hours<event[i].start.dateTime){
+    //                     meetingStartTime=events[i-1].end.dateTime;
+    //                    // console.log(meetingStartTime+ " here ");
+    //
+    //
+    //                     //callback(meetingStartTime);
+    //                     return deferred.meetingStartTime;
+    //                 }
+    //             }
+    //            // return meetingStartTime;
+    //             //storeCal(user, start, end, events, count);
+    //         }
+    //     });
+    //
+    //     console.log(meetingStartTime);
+    // }
+
+    // function checkTime(auth,user,daythis,meetingStartTime,approxMeetingDuration_Hours) {
+    //     // console.log("step  1  daythis pesn"+user+" day  "+daythis+" hh "+hh+"dfsfds"+approxMeetingHours);
+    //     var calendar = google.calendar('v3');
+    //
+    //     var timenow=moment(meetingStartTime.toISOString()).format();
+    //     var timelast=moment(timenow).add(approxMeetingDuration_Hours, 'hours');
+    //     //console.log(timelast);
+    //     calendar.events.list({
+    //         auth: auth,
+    //         calendarId: 'primary',
+    //         timeMin: timenow,
+    //         timeMax: timelast,
+    //         maxResults: 10,
+    //         singleEvents: true,
+    //         timeZoneId: 'America/New_York',
+    //         timeZone: 'America/New_York',
+    //         orderBy: 'startTime'
+    //     }, function(err, response) {
+    //         if (err) {
+    //             console.log('The API returned an error: ' + err);
+    //             return;
+    //         }
+    //         var events = response.items;
+    //         if (events.length == 0) {
+    //             //success
+    //
+    //             return;
+    //         } else {
+    //             //  console.log('Upcoming 10 events of ' + user + ':');
+    //             //flag false find again
+    //         }
+    //     });
+    //
+    //
+    // }
 
     var fixMeeting = function(err, convo){
         convo.ask('Do you want to fix this meeting time? Please reply Yes or No',function(response,convo) {
@@ -698,42 +685,38 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
         });
     };
 
-    var calculateCommonTime=function(users,meetingStartTime,approxMeetingDuration_Hours){
-        console.log(" 1 here ");
-        var hh=meetingStartTime.getHours();
-        if(hh+approxMeetingDuration_Hours>17||hh>17){
-            meetingStartTime.setHours(10);
-            meetingStartTime.setDate(today.getDate()+1);
-        }
-        meetingStartTime=calculateFreeTime(users[0],meetingStartTime,approxMeetingDuration_Hours);
-
-        console.log('should be second'+meetingStartTime);
-
-        checkforthistime(users,meetingStartTime,approxMeetingDuration_Hours);
-
-
-
-
-    }
+    // var calculateCommonTime=function(users,meetingStartTime,approxMeetingDuration_Hours){
+    //     console.log(" 1 here ");
+    //     var hh=meetingStartTime.getHours();
+    //     if(hh+approxMeetingDuration_Hours>17||hh>17){
+    //         meetingStartTime.setHours(10);
+    //         meetingStartTime.setDate(today.getDate()+1);
+    //     }
+    //     meetingStartTime=calculateFreeTime(users[0],meetingStartTime,approxMeetingDuration_Hours);
+    //
+    //     console.log('should be second'+meetingStartTime);
+    //
+    //     checkforthistime(users,meetingStartTime,approxMeetingDuration_Hours);
+    // }
 
 
-    var checkforthistime=function(users,meetingStartTime,approxMeetingDuration_Hours){
-        var check=true;
-        var i;
-        var k;
-        for(k=0;k<(users.length-1);k++) {
-            checkTime(user[k+1],meetingStartTime,approxMeetingDuration_Hours);
-            if(check==false){
-                meetingStartTime=moment(meetingStartTime).add(1,'hours');
-                calculateCommonTime(users,meetingStartTime,approxMeetingDuration_Hours);
-            }
-        }
-        if(check==true){
-            //got the values
-        }
-
-
-    }
+    // var checkforthistime=function(users,meetingStartTime,approxMeetingDuration_Hours){
+    //     var check=true;
+    //     var i;
+    //     var k;
+    //     for(k=0;k<(users.length-1);k++) {
+    //         checkTime(user[k+1],meetingStartTime,approxMeetingDuration_Hours);
+    //         if(check==false){
+    //             meetingStartTime=moment(meetingStartTime).add(1,'hours');
+    //             calculateCommonTime(users,meetingStartTime,approxMeetingDuration_Hours);
+    //         }
+    //     }
+    //     if(check==true){
+    //         //got the values
+    //     }
+    //
+    //
+    // }
 
     var HandleInsufficientTime = function(err, convo){
         convo.ask("Not enough time! Please select one of the two choices: \n1. Enter new Date\n2. Enter new time.",function(response,convo) {
