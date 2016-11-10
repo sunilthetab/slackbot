@@ -9,7 +9,8 @@ var controller = Botkit.slackbot({
 
 // connect the bot to a stream of messages
 controller.spawn({
-  token: process.env.ALTCODETOKEN,
+  // token: process.env.ALTCODETOKEN,
+  token: 'xoxb-87992197655-kXagRYyH1SjcDuxei4u9Utpq',
   //slack bot token here
 }).startRTM()
 
@@ -40,7 +41,7 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
   var duration;
   var slotpassed;
 
-
+  // console.log('msg: ' + JSON.stringify(message));
 
   var byTime_Hour;
   var byTime_Minute;
@@ -521,6 +522,8 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
 controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,message) {
   var newAttendeeIDs;
   var meetingID;
+
+  console.log(message);
 
   var getIDOfNewAttendee = function(err, convo){
     convo.ask('May I know the email IDs of the new attendees, please?',function(response,convo) {
