@@ -305,6 +305,8 @@ var getApproxMeetingDuration = function(err, convo){
 
             }
             lastDay=lastDate;
+            console.log('bY:' + (byYear + 1900) + ' bM: ' + byMonth + 'bD' + byDate);
+
             getLastTime(response, convo);
 
             convo.next();
@@ -314,13 +316,12 @@ var getApproxMeetingDuration = function(err, convo){
     // Asks the user whether ther is any time by which the meeting should be organized.
     var getLastTime = function(err, convo){
         convo.ask('OK. By what time (HH:MM or HH) should the meeting be organized (24 Hour format)? Say NA if no such constraint',function(response,convo) {
-            if(response.text.toUpperCase='NA')
+            if(response.text.toUpperCase === 'NA')
             {
                 constraintOnTime=false;
             }else{
-
                 lastTime = response.text;
-
+                console.log('igottaby '+lastTime);
                 //today's date and time
                 var today = new Date();
                 //user's specified date
@@ -418,15 +419,8 @@ var getApproxMeetingDuration = function(err, convo){
             // }
 
 
-
+            console.log('byM:' + byTime_Minute + ' bH: ' + byTime_Hour);
             getAgenda(response, convo);
-
-            //convo.say("i got day" + " " + meetingday + " at " + meetinghour+ " and  " + meetingmin+" mins");
-
-            //var meeting = OrganizeOptimalMeeting();
-
-            //convo.say("Your meeting details are as follow: " + meeting);
-
             convo.next();
 
         });
@@ -463,9 +457,9 @@ var getApproxMeetingDuration = function(err, convo){
               console.log('All Events Data: ' + JSON.stringify(allEventsData));
               // Find the time here now...
               // We have all users event data in a JSON object.
+              // userName : [event]
 
-
-
+              
 
             });
         });
@@ -487,17 +481,19 @@ var getApproxMeetingDuration = function(err, convo){
             } else {
                 var allData = JSON.parse(fileData);
                 var allEventsInfo = {};
+
                 for(var i = 0 ; i < users.length ; i++){
                   oauth2Client.credentials = allData.users[users[i]];
-                  getEventsOf(oauth2Client, users[i], function(response){
-                    var entry = '{"' + users[i] + '":' + JSON.stringify(response) + '}';
-                    console.log('Entry: ' + entry);
-                    allEventsInfo = _.extend(allEventsInfo, JSON.parse(entry));
-                  });
+                  !function x(j){
+                    getEventsOf(oauth2Client, users[j], function(response){
+                      console.log('----un: ' + users[j] + ' & j: ' + j);
+                      var entry = '{"' + users[j] + '":' + JSON.stringify(response) + '}';
+                      // console.log('Entry: ' + entry);
+                      allEventsInfo = _.extend(allEventsInfo, JSON.parse(entry));
+                      if(j == users.length - 1) callback(allEventsInfo);
+                    });
+                  }(i)
                 }
-
-                callback(allEventsInfo);
-
             }
         });
     }
@@ -508,7 +504,8 @@ var getApproxMeetingDuration = function(err, convo){
             auth: auth,
             calendarId: 'primary',
             timeMin: (new Date()).toISOString(),
-            maxResults: 10,
+            // maxResults: 10,
+            timeMax: (new Date(byYear + 1900, byMonth, byDate, byTime_Hour, byTime_Minute, 0, 0)).toISOString(),
             singleEvents: true,
             orderBy: 'startTime'
         }, function(err, response) {
