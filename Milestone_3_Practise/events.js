@@ -33,6 +33,8 @@ var events = {
             return event;
         });
     },
+
+
     
     /* Call this function if you want to Create a new event. Should Pass OAuth & event object */
     
@@ -47,7 +49,11 @@ var events = {
                 return;
             }
             console.log('Event created: %s', event.htmlLink);
+
+            console.log('Event ID: %s', event.id);
+            //callback(event.id);
         });
+        //return event.id;
     },
 
 
@@ -71,7 +77,7 @@ var events = {
                 return;
             }
             var emailsObj = _.map(emails, function (a) {
-                return {email: a};
+                return {email: a+"@ncsu.edu"};
             });
 
             var current_emails = _.map(event.attendees, function (a) {
