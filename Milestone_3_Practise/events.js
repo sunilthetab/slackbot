@@ -4,7 +4,9 @@
 //     //CALLBACK_URL= process.env.HUBOT_URL + "/google/calendar/webhook",
 //     uuid = require('node-uuid'),
 //     moment = require("moment");
-var _ = require('underscore'),
+var _ = require('underscore');
+var google = require('googleapis');
+var calendar = google.calendar('v3');
 
 var events = {
 
@@ -15,7 +17,7 @@ var events = {
 
     },
 
-    event_insert: function (calendar, auth, event) {
+    event_insert: function (auth, event) {
         calendar.events.insert({
             auth: auth,
             calendarId: 'primary',
@@ -29,7 +31,7 @@ var events = {
         });
     },
 
-    event_patch_add_users: function (calendar, auth, eventID, emails_list) {
+    event_patch_add_users: function (auth, eventID, emails_list) {
 
         //TODO: add logic to extract emailid if only username or name of users are provided.
         // now we are expecting user to input in format "apendya@ncsu.edu ppfirake@ncsu.edu"
@@ -68,7 +70,7 @@ var events = {
         });
     },
 
-    event_patch_remove_users: function (calendar, auth, eventID, emails_list) {
+    event_patch_remove_users: function (auth, eventID, emails_list) {
         //TODO: add logic to extract emailid if only username or name of users are provided.
         // now we are expecting user to input in format "apendya@ncsu.edu ppfirake@ncsu.edu"
         var emails = _.compact(_.map(_.compact(emails_list.split(' '))));
@@ -116,7 +118,7 @@ var events = {
         });
     },
 
-    event_delete: function (calendar,auth, eventID) {
+    event_delete: function (auth, eventID) {
        calendar.events.delete({
            auth: auth,
            calendarId: 'primary',
