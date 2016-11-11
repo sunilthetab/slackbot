@@ -28,6 +28,7 @@ The functionality of the bot can be divided into three parts:
 
 
 Meeting organizer can add a member to the existing meeting by providing bot with meeting event ID and members’ name/email ID.
+
 1. Meeting organizer requests bot to add a new member to an already existing meeting
 2. The bot will update the Meeting Event with this member and send a new invite to this person.
 
