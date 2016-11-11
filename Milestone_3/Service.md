@@ -16,7 +16,7 @@ The functionality of the bot can be divided into three parts:
 
 
 **2: Update a meeting**<br>
- a. Adding a new member to existing meeting 
+ Adding a new member to existing meeting 
  ![alt tag](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/milestone_3_practise/Milestone_3_Practise/images/UpdateMember.png)</br>
 ```
 Meeting organizer can add a member to the existing meeting by providing bot with meeting event ID and members’ name/email ID.
@@ -25,15 +25,6 @@ Meeting organizer can add a member to the existing meeting by providing bot with
 
 
 ```
-
-
- b. Deleting a member entry from existing meeting 
- ![alt tag](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/milestone_3_practise/Milestone_3_Practise/images/DeleteMember.png)</br>
-```
-Meeting organizer can delete a member from the existing meeting by providing bot with meeting event ID and members’ name/email ID. 
-
-1. Meeting organizer requests bot to remove member/s to an already existing meeting.
-2. The bot will update the Meeting Event with this member and send a new invite to this person.
 
 ```
 
