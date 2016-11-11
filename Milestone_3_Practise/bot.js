@@ -28,7 +28,7 @@ var fs = require('fs');
 var google = require('googleapis');
 var googleAuth = require('google-auth-library');
 var calendar = google.calendar('v3');
-//var moment = require('moment');
+var moment = require('moment');
 
 var SCOPES = ['https://www.googleapis.com/auth/calendar'];
 var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
@@ -42,9 +42,6 @@ var NewEvent = {};
 var primaryUserAuth ="";
 var NewEventID = '';
 
-/*var sdate = "";
-var etime = "";
-var approxdur = ""; */
 // SET PRIMARY USER AUTH TOKEN
 SetPrimaryUserAuth('ppfirake');
 var meet = require(MEETING_PATH);
@@ -291,23 +288,20 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
       for(var i = 0 ; i < users.length ; i++){
         users[i] = users[i].trim();
         var user = users[i];
-        // if(!config["users"].hasOwnProperty(user)){
-        //   convo.say('Employee ' + user +' is not a member of this team. Please limit to the members only and try again.');
-        //   getIDOfAttendees(response, convo);
-        //   convo.next();
-        //   return;
-        // }
-
-        // if(user.indexOf('@') > 0)
-        // {
-        //   email['email'] = user;
-        // }
-        // else
-        // {
+        if(!config["users"].hasOwnProperty(user)){
+           convo.say('Employee ' + user +' is not a member of this team. Please limit to the members only and try again.');
+           getIDOfAttendees(response, convo);
+           convo.next();
+           return;
+         }
+         if(user.indexOf('@') > 0) {
+           email['email'] = user;
+         }
+         else {
           email['email'] = user + '@ncsu.edu';
           console.log("printing the email id of attendees");
           console.log(email['email']);
-        //}
+        }
           emails.push(email);
       }
       NewEvent['attendees'] = emails;
@@ -548,96 +542,6 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
 
 
 
-/*
-Now we have all the data that we need.
-Please write the code to find the best meeting time.
-
-Call getEventsOf method here.
-
-
-Please do validation with by_*** variables if respective constraint exist.
-
-Store the final data in the following variables:
-var newMeetingStartHour;
-var newMeetingStartMinute;
-var newMeetingStartDay;
-var newMeetingStartMonth;
-var newMeetingStartYear;
-
-And then call getAgenda.
-*/
-      // var today = new Date();
-      // var dd = today.getDate();
-      // var mm = today.getMonth()+1; //January is 0!
-      // var yyyy = today.getFullYear();
-      // var hh=today.getHours();
-      // var mint=today.getMinutes();
-      // var slotthis;
-      //
-      // if(hh>17){
-      //   dd=dd+1;
-      //   slotthis=0;
-      // }else if(hh<10){
-      //   slotthis=0;
-      // }else{
-      //   hh=hh-10;
-      //   slotthis=hh*2;
-      // }
-      // if((mint>0)&&(mint<30)){
-      //   slotthis++;
-      // }else{
-      //   slotthis=slotthis+2;
-      // }
-      // if(slotthis==15||((slotthis+slots)>=16)){
-      //   dd=dd+1;
-      //   slotthis=0;
-      // }
-      //
-      //
-      // if(dd<10) {
-      //   dd='0'+dd;
-      // }
-      //
-      // if(mm<10) {
-      //   mm='0'+mm;
-      // }
-      //
-      // if((byYear<yyyy)||(byYear==yyyy&byMonth<mm)||(byYear==yyyy&&byMonth==mm&&byDay<dd)){
-      //   //not possible
-      // }
-      // today = yyyy+'-'+dd+'-'+mm;
-      // var daythis=today;
-      // var slots=parseInt(approxMeetingDuration_Hours)*2;
-      // var basepos=0;
-      // var tempbasepos;
-      // if(parseInt(approxMeetingDuration_Mins)>30)
-      // {
-      //   slots=slots+2;
-      // }else if(parseInt(approxMeetingDuration_Mins)<30&&parseInt(approxMeetingDuration_Mins)>0) slots=slots+1;
-      //
-      //
-      //
-      // var result = calculateCommonTime(users,daythis,slotthis,slots);
-      // if(result>=0){
-      //   duration=slots;
-      //   meetingslot=result;
-      //   meetingday=mdaythis;
-		  //   roomid='room 1021';
-      //   meetinghh=(10+(meetingslot/2));
-      //   meetingmm='00';
-      //   if((meetingslot%2)!=0){
-      //     meetinghh=(10+(meetingslot/2))-0.5;
-      //     meetingmm='30';
-      //   }
-      //   var meeting=mdaythis.split('-');
-      //   if(((meeting[0]-1900)>byYear)||((meeting[0]==byYear)&&(meeting[2]>byMonth))||((meeting[0]==byYear)&&(meeting[2]==byMonth)&&(meeting[1]>byDate))){
-      //     convo.say("Apologies. I could not find any time suitable in given period");
-      //   }else {
-      //     convo.say("I got " + meetingday + " at " + meetinghh + ":" + meetingmm+" at "+roomid);
-      //     getAgenda(response, convo);
-      //     convo.next();
-      //   }
-      // }
 
 
       // Initialized just for testing.
