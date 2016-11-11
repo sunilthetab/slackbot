@@ -3,7 +3,7 @@
 ### Week 1
 
 
-| Deliverable |                               | Item/Status                              | Issues/Tasks                     | Team Members | Estimated Date              | Actual Date |        |
+|  |            Deliverable                   |                               | Item/Status                    | Issues/ Tasks | Team members              | Estimated Date | Actual Date       |
 |-------------|-------------------------------|------------------------------------------|----------------------------------|--------------|-----------------------------|-------------|--------|
 | 1           | Google Calendar API conn      | Fetch Calendar events for a user         | Branstorming and implementation  | #1.1         | Gautam                      | 21-Oct      | 22-Oct |
 |             |                               | Fetch Calendar events for multiple users | Brainstorming and implementation | #1.2         | Ajay, Sohan, Pranav         | 22-Oct      | 22-Oct |
@@ -16,7 +16,7 @@
 
 ### Week 2
 
-| Deliverable |                            | Item/Status                | Issues/Tasks               | Team Members | Estimated Date   | Actual Date |        |
+|| Deliverable |                            | Item/Status                | Issues/Tasks               | Team Members | Estimated Date   | Actual Date |        
 |-------------|----------------------------|----------------------------|----------------------------|--------------|------------------|-------------|--------|
 | 1           | Event creation in Calendar | Write into user's calendar | make event                 | #5           | Sunil, Ajay      | 31-Oct      | 31-Oct |
 |             |                            | bug fixes                  |                            | #5           | Gautam,Sunil            | 2-Nov       | 2-Nov  |
@@ -28,7 +28,7 @@
 
 ### Week 3
 
-| Deliverable |                             | Item/Status             | Issues/Tasks | Team Members | Estimated Date        | Actual Date |        |
+| |Deliverable |                             | Item/Status             | Issues/Tasks | Team Members | Estimated Date        | Actual Date |        
 |-------------|-----------------------------|-------------------------|--------------|--------------|-----------------------|-------------|--------|
 | 1           | fixing bugs in storing data | bug fixes               |              | #5           | Ajay, Sunil           | 5-Nov       | 5-Nov  |
 | 2           | Bot Implementation          | user conversation code  |              | #10          | Gautam, Sohan         | 5-Nov       | 6-Oct  |
