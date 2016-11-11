@@ -12,6 +12,7 @@ Syntax: {'users':{
 Syntax: {'meetings':{
           'meetingID':{
             'users': 'user1, user2, ...';
+
             'summary': 'meeting Agenda';
             'startDateTime': 'dateTime';
             'duration': 'HH:MM';
@@ -26,14 +27,29 @@ var _ = require('underscore');
 var fs = require('fs');
 var google = require('googleapis');
 var googleAuth = require('google-auth-library');
+var calendar = google.calendar('v3');
+//var moment = require('moment');
 
 var SCOPES = ['https://www.googleapis.com/auth/calendar'];
 var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
-    process.env.USERPROFILE) + '/.credentials/';
-    // process.env.USERPROFILE) + '/Azra_MeetingBot/Milestone_3_Practise/';
-var TOKEN_PATH = TOKEN_DIR + 'usersData.json';
+    //process.env.USERPROFILE) + '/.credentials/';
+     process.env.USERPROFILE) + '/Azra_MeetingBot/Milestone_3_Practise/';
+var TOKEN_PATH = TOKEN_DIR + 'store.json';
 
 var MEETING_PATH = TOKEN_DIR + 'meetings.json';
+var eventsHelper = require('./events.js');
+var NewEvent = {};
+var primaryUserAuth ="";
+var NewEventID = '';
+
+/*var sdate = "";
+var etime = "";
+var approxdur = ""; */
+// SET PRIMARY USER AUTH TOKEN
+SetPrimaryUserAuth('ppfirake');
+var meet = require(MEETING_PATH);
+var obj=[];
+var MeetingDuration = 0;
 
 
 // Load client secrets from a local file.
@@ -48,6 +64,84 @@ function getEventsOf(user){
   authorize(JSON.parse(content), user, listEvents);
 });
 }
+
+function eventIDstore(eventID)
+{
+        NewEventID = eventID;
+ console.log("********************************************************");
+ console.log("received NewEventID in bot.js %s", NewEventID );
+ console.log("********************************************************");
+
+        var keys=Object.keys(meet["meetings"]);
+
+        var last=keys[keys.length-1];
+        last++;
+        meetingID=last;
+        //console.log(last+ "sfdfffssssssss");
+        
+        meet["meetings"][last]= NewEventID + "|" + NewEvent['summary'];
+        
+
+        fs = require('fs');
+        var m = JSON.parse(fs.readFileSync('./meetings.json').toString());
+        fs.writeFile('./meetings.json', JSON.stringify(meet));
+}
+
+ function event_insert(auth, event,callback) {
+        calendar.events.insert({
+            auth: auth,
+            calendarId: 'primary',
+            resource: event,
+        }, function (err, event) {
+            if (err) {
+                console.log('There was an error contacting the Calendar service: ' + err);
+                return;
+            }
+            console.log('Event created: %s', event.htmlLink);
+
+
+            console.log('Event ID: %s', event.id);
+
+            callback(event.id);
+
+        });
+        
+}
+
+function SetPrimaryUserAuth(user)
+{
+  fs.readFile('client_secret.json', function processClientSecrets(err, content) {
+  if (err) {
+    console.log('Error loading client secret file: ' + err);
+    return;
+  }
+  // Authorize a client with the loaded credentials, then call the
+  // Google Calendar API.
+  var credentials = JSON.parse(content);
+  var clientSecret = credentials.installed.client_secret;
+  var clientId = credentials.installed.client_id;
+  var redirectUrl = credentials.installed.redirect_uris[0];
+  var gAuth = new googleAuth();
+  var oauth2Client = new gAuth.OAuth2(clientId, clientSecret, redirectUrl);
+
+  // Check if we have previously stored a token.
+  fs.readFile(TOKEN_PATH, function(err, fileData) {
+    if (err) {
+
+    } else {
+      var allData = JSON.parse(fileData);
+      if(!allData.users.hasOwnProperty(user)){
+        getNewToken(oauth2Client, user, callback);
+      }else{
+        oauth2Client.credentials = allData.users[user];
+        primaryUserAuth = oauth2Client;
+      }
+    }
+  });
+});
+}
+
+
 
 /**
  * Create an OAuth2 client with the given credentials, and then execute the
@@ -123,8 +217,8 @@ var controller = Botkit.slackbot({
 
 // connect the bot to a stream of messages
 controller.spawn({
-  //token: process.env.ALTCODETOKEN,
-  token: 'xoxb-87992197655-kXagRYyH1SjcDuxei4u9Utpq',
+  token: process.env.ALTCODETOKEN,
+  
   //slack bot token here
 }).startRTM()
 
@@ -191,16 +285,33 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
         users = IDofAttendees.split(",");
       }
 
+      var email = {};
+      var emails = [];
+
       for(var i = 0 ; i < users.length ; i++){
         users[i] = users[i].trim();
         var user = users[i];
-        if(!config["users"].hasOwnProperty(user)){
-          convo.say('Employee ' + user +' is not a member of this team. Please limit to the members only and try again.');
-          getIDOfAttendees(response, convo);
-          convo.next();
-          return;
-        }
+        // if(!config["users"].hasOwnProperty(user)){
+        //   convo.say('Employee ' + user +' is not a member of this team. Please limit to the members only and try again.');
+        //   getIDOfAttendees(response, convo);
+        //   convo.next();
+        //   return;
+        // }
+
+        // if(user.indexOf('@') > 0)
+        // {
+        //   email['email'] = user;
+        // }
+        // else
+        // {
+          email['email'] = user + '@ncsu.edu';
+          console.log("printing the email id of attendees");
+          console.log(email['email']);
+        //}
+          emails.push(email);
       }
+      NewEvent['attendees'] = emails;
+     
 
       getApproxMeetingDuration(response, convo);
       convo.next();
@@ -211,6 +322,8 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
   var getApproxMeetingDuration = function(err, convo){
     convo.ask('OK. What will be the approximate duration of the meeting (HH:MM or HH)?',function(response,convo) {
       var approxMeetingDuration = response.text;
+
+      approxdur = approxMeetingDuration;
 
       var approxDurationArray = [];
       approxDurationArray[0] = approxMeetingDuration;
@@ -228,6 +341,8 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
       // maximum valid meeting duration can be 3 hours.
       if(approxMeetingDuration > 0 && approxMeetingDuration<3)
       {
+        MeetingDuration = approxMeetingDuration;
+
         getLastDateOrDay(response, convo);
         convo.next();
       }
@@ -341,6 +456,22 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
         }
       }
 
+      var start = {};
+      var end = {};
+
+      start['dateTime'] = "2016-11-"+ byDate+"T12:00:00-07:00";
+      //start['dateTime'] = "2016-12-"+ byDate + "T15:00:00-07:00";
+      NewEvent['start'] = start;
+      //sdate = byDate;
+      //var dn = moment(start.toISOString).format();
+
+
+
+      // TODO: get end time by => endtime = starttime + meetingDuration;
+      end['dateTime'] = "2016-11-"+ byDate+"T13:00:00-07:00";
+
+      NewEvent['end'] = end;
+
       getLastTime(response, convo);
 
       convo.next();
@@ -357,6 +488,11 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
 
         lastTime = response.text;
 
+        /*etime = lastTime;
+
+        console.log("********************************");
+        console.log("etime = lastTime" + etime + lastTime); */
+
         //today's date and time
         var today = new Date();
         //user's specified date
@@ -365,6 +501,25 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
           timeArray = lastTime.split(":");
 
         byTime_Hour = parseInt(timeArray[0]);
+        //approxdur = parseInt(approxMeetingDuration);
+
+        /*var bytimeh = lastTime +approxMeetingDuration;
+
+        console.log("bytimeh"+bytimeh);
+
+
+        start['dateTime'] += "T"+byTime_Hour+":00:00-07:00";
+
+        //console.log(start);
+
+        NewEvent['start'] = start;
+        end['dateTime'] += "T"+bytimeh+":00:00-07:00"; 
+        
+
+        NewEvent['end'] = end; */
+
+        
+
         byTime_Minute = 0;
 
         if(timeArray.length == 2)
@@ -388,11 +543,17 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
         }
       }
 
+// TODO: Get primary user name, ie if I am scheduling the meeting I am the primary user. The code has to
+// know that I am creating meeting and only my auth tokens are to be used to create the meeting
+
+
+
 /*
 Now we have all the data that we need.
 Please write the code to find the best meeting time.
 
 Call getEventsOf method here.
+
 
 Please do validation with by_*** variables if respective constraint exist.
 
@@ -503,6 +664,7 @@ And then call getAgenda.
   var getAgenda = function(err, convo){
     convo.ask('What is the goal of this meeting?',function(response,convo) {
       meetingGoal = response.text;
+      NewEvent['summary'] = response.text;
       fixMeeting(response, convo);
       convo.next();
     });
@@ -516,10 +678,10 @@ And then call getAgenda.
         bot.reply(message, 'The meeting was NOT organized. Thank you for using Azra.');
         convo.next();
       }else{
-        bot.reply(message, 'I am confirming this meeting/');
+        bot.reply(message, 'meeting is confirmed');
 
         // Azra will store the meeting details in the file meetings.json at MEETING_PATH.
-        var allMeetingKeys = Object.keys(meetingsData["meetings"]);
+        /*var allMeetingKeys = Object.keys(meetingsData["meetings"]);
         var newMeetingID = -1;
         if(allMeetingKeys.length > 0)
           newMeetingID = allMeetingKeys[allMeetingKeys.length - 1];
@@ -541,7 +703,34 @@ And then call getAgenda.
         meetingsData["meetings"][newMeetingID]["duration"] = approxMeetingDuration_Hours + ':' + approxMeetingDuration_Mins;
         meetingsData["meetings"][newMeetingID]["admin"] = message.user;
 
-        fs.writeFile(MEETING_PATH, JSON.stringify(meetingsData)); // asynchronous write.
+        fs.writeFile(MEETING_PATH, JSON.stringify(meetingsData)); // asynchronous write. */
+
+        /*Call event.js functions*/
+        //get auth from somewhere and put below
+        //eventsHelper.event_insert(primaryUserAuth, NewEvent, eventIDstore);
+
+        //start['dateTime'] = "2016-12-"+ byDate+"T15:00:00-07:00";
+
+
+
+      /*start['dateTime'] = "2016-12-"+ sdate + "T"+etime+":00:00-07:00";
+      NewEvent['start'] = start;
+      var endtimeK = parseInt(etime) + parseInt(approxdur);
+      var etime2 = endtimeK.toString();
+
+
+      end['dateTime'] = "2016-12-"+ sdate + "T"+etime2+":00:00-07:00";
+
+      NewEvent['end']= end; */
+
+        event_insert(primaryUserAuth, NewEvent, eventIDstore);
+        
+
+
+
+
+        
+
 
 // Add to the calendar of all users.
 //////////////////////// WRITE THE CODE
@@ -698,12 +887,15 @@ And then call getAgenda.
 //coversation to add new member to a meeting
 controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,message) {
   var newAttendeeIDs;
+  var attendeesString = "";
   var meetingID;
 
   var getIDOfNewAttendee = function(err, convo){
     convo.ask('May I know the email IDs of the new attendees, please?',function(response,convo) {
-      newAttendeeIDs = response.text.split(" ");
-
+      
+      attendeesString = response.text;
+      newAttendeeIDs = attendeesString.split(" ");
+      
       if(response.text.indexOf(",") > -1){
         newAttendeeIDs = response.text.split(",");
       }
@@ -715,16 +907,41 @@ controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,
   };
 
   var getIDOfMeeting = function(err, convo){
+    var keys=Object.keys(meet["meetings"]);
+        
+        //var last=keys[keys.length-1];
+        console.log("here are the events");
+        console.log(keys);
+        convo.say("these are the meeting details preceding with IDs");
+
+      for(var i=0;i<keys.length; i++)
+      {
+        convo.say(keys[i]+" "+meet["meetings"][keys[i]].split('|')[1]);
+      }
+
+
+
     convo.ask('Alright. What is the meeting ID?',function(response,convo) {
 
-      meetingID = parseInt(response.text);
+      //meetingID = parseInt(response.text);
+      //var eventID = "somehardcodestring";
 
-      adjustMeeting();
+      var meetingID1 = response.text;
+      console.log("somehardcodestring");
+      console.log("wtf %s", NewEventID);
 
-      var meeting = config["meetings"][meetingID].split("|");
+      var editevent = meet["meetings"][meetingID1].split("|");
+
+
+      eventsHelper.event_patch_add_users(primaryUserAuth, editevent[0], attendeesString)
+
+
+      //adjustMeeting();
+
+      //var meeting = config["meetings"][meetingID].split("|");
       convo.say("Members Added");
-      var display = "Preview: Meeting ID "+ meetingID +" & List of members: " + meeting[2];
-      convo.say(display);
+      //var display = "Preview: Meeting ID "+ meetingID +" & List of members: " + meeting[2];
+      //convo.say(display);
       convo.next();
     })
   };
@@ -787,6 +1004,7 @@ controller.hears(['^remove$'],['mention', 'direct_mention'], function(bot,messag
 
   var getIDOfAttendeeToRemove = function(err, convo){
     convo.ask('May I know the email ID of the attendee, please?',function(response,convo) {
+      attendeesString = response.text;
       IDOfAttendeesToRemove = response.text.split(' ');
 
       getIDOfMeeting(response, convo);
@@ -796,6 +1014,24 @@ controller.hears(['^remove$'],['mention', 'direct_mention'], function(bot,messag
   };
 
   var getIDOfMeeting = function(err, convo){
+
+      var keys=Object.keys(meet["meetings"]);
+        
+        //var last=keys[keys.length-1];
+        console.log("here are the events");
+        console.log(keys);
+        convo.say("these are the meeting details preceding with IDs");
+
+      for(var i=0;i<keys.length; i++)
+      {
+        var meet1 = meet["meetings"][keys[i]].split('|');
+        //convo.say(meet1[0]);
+        //convo.say(meet1[1]);
+        var prinhim = keys[i]+" "+meet1[1];
+        console.log("*******************&&&&&&");
+        console.log(prinhim);
+        //convo.say(prinhim);
+      }
     convo.ask('Alright. What is the meeting ID?',function(response,convo) {
 
       meetingID = parseInt(response.text) ;
@@ -875,7 +1111,23 @@ controller.hears(['^deschedule$', '^cancel$'],['mention', 'direct_mention'], fun
   var meetingID;
 
   var getIDOfMeeting = function(err, convo){
+
+        var keys=Object.keys(meet["meetings"]);
+        
+        //var last=keys[keys.length-1];
+        console.log("here are the events");
+        console.log(keys);
+        convo.say("these are the meeting details preceding with IDs");
+
+      for(var i=0;i<keys.length; i++) {
+              convo.say(keys[i]+" "+meet["meetings"][keys[i]].split('|')[1]);
+      }
+
+
+
     convo.ask('May I know the meeting ID?',function(response,convo) {
+
+
       meetingID = response.text;
 
       // if(cancellationRequestingUser in meeting.getUsers()) //Some type of validaion required here.
@@ -904,7 +1156,7 @@ controller.hears(['^deschedule$', '^cancel$'],['mention', 'direct_mention'], fun
 
   var cancelMeeting = function(err, convo){
     //
-    if(config["meetings"][meetingID])
+    /*if(config["meetings"][meetingID])
     {
     var cancelval = config["meetings"][meetingID].split("|");
     for(var i = 0 ; i < cancelval.length ; i++){
@@ -923,34 +1175,38 @@ controller.hears(['^deschedule$', '^cancel$'],['mention', 'direct_mention'], fun
 
       }
 
-    }
+    }*/
+    var delevent = meet["meetings"][meetingID].split("|");
+     //var ID_todel = delevent[0];
+    eventsHelper.event_delete(primaryUserAuth, delevent[0]);
 
-    console.log(meetingID);
+    //console.log(meetingID);
 
 
 
-    delete config["meetings"][meetingID];
+    delete meet["meetings"][meetingID];
 
     fs = require('fs');
-    var m = JSON.parse(fs.readFileSync('./mock.json').toString());
-    fs.writeFile('./mock.json', JSON.stringify(config));
+    var m = JSON.parse(fs.readFileSync('./meetings.json').toString());
+    fs.writeFile('./meetings.json', JSON.stringify(meet));
 
-    }
-    else
+    
+    /*else
     {
 
       bot.reply(message, "meetingID invalid.");
 
 
 
-    }
+    }*/
 
-  };
+  }
 
   // start a conversation with the user.
   bot.startConversation(message, getIDOfMeeting);
 
   bot.reply(message, "Let us cancel the meeting.");
+  
 });
 
 //coversation to reschedule the meeting

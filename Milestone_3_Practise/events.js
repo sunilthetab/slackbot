@@ -159,6 +159,7 @@ var events = {
        Should Pass OAuth(String), EventID(String) of the event*/
     
     event_delete: function (auth, eventID) {
+        var dummy = eventID;
        calendar.events.delete({
            auth: auth,
            calendarId: 'primary',
@@ -168,7 +169,7 @@ var events = {
                console.log('There was an error deleting the Event with ID: ' + err);
                return;
            }
-           console.log('Event deleted  EventID: ' + eventID);
+           console.log('Event deleted  EventID: ' + dummy);
        });
    }
 }
