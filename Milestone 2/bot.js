@@ -1,4 +1,4 @@
-
+var _ = require('underscore');
 var Botkit = require('botkit');
 
 var controller = Botkit.slackbot({
@@ -9,16 +9,14 @@ var controller = Botkit.slackbot({
 
 // connect the bot to a stream of messages
 controller.spawn({
-  token: process.env.ALTCODETOKEN,
+  // token: process.env.ALTCODETOKEN,
+  token: 'xoxb-87992197655-kXagRYyH1SjcDuxei4u9Utpq',
   //slack bot token here
 }).startRTM()
 
 
 
 var config = require('./mock.json');
-
-
-
 
 var Isconstraintonday;
 var Isconstraintontime;
@@ -43,7 +41,7 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
   var duration;
   var slotpassed;
 
-
+  // console.log('msg: ' + JSON.stringify(message));
 
   var byTime_Hour;
   var byTime_Minute;
@@ -525,6 +523,8 @@ controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,
   var newAttendeeIDs;
   var meetingID;
 
+  console.log(message);
+
   var getIDOfNewAttendee = function(err, convo){
     convo.ask('May I know the email IDs of the new attendees, please?',function(response,convo) {
       newAttendeeIDs = response.text.split(" ");
@@ -751,11 +751,11 @@ controller.hears(['^deschedule$', '^cancel$'],['mention', 'direct_mention'], fun
     }
 
     console.log(meetingID);
-    
+
 
 
     delete config["meetings"][meetingID];
-    
+
     fs = require('fs');
     var m = JSON.parse(fs.readFileSync('./mock.json').toString());
     fs.writeFile('./mock.json', JSON.stringify(config));
