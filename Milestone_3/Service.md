@@ -5,7 +5,9 @@
 Screencast of the three Use cases:<br>
 [Click here to view Use Case-1](https://www.youtube.com/watch?v=iJKLi3-7bOU)<br>
 [Click here to view Use case-2](https://www.youtube.com/watch?v=yPi18m9Goi8)<br>
-[Click here to view Use case-3](https://www.youtube.com/watch?v=1usrPGGv914)
+[Click here to view Use case-3](https://www.youtube.com/watch?v=1usrPGGv914) <br>
+
+[The link to the worksheet](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/Milestone_3/worksheet.md)
 
 The functionality of the bot can be divided into three parts:
 
