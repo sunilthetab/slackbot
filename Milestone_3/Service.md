@@ -9,6 +9,8 @@ Screencast of the three Use cases:<br>
 
 [The link to the worksheet](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/Milestone_3/worksheet.md)
 
+You can view the use cases [here](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/Milestone%202/Use%20Cases.md)
+
 The functionality of the bot can be divided into three parts:
 
 **1: Create a meeting**<br>
