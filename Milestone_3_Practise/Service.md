@@ -4,7 +4,7 @@
 ### Service
 The functionality of the bot can be divided into three parts:
 
-**1: Create a meeting**
+**1: Create a meeting**<br>
 ![alt tag](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/milestone_3_practise/Milestone_3_Practise/images/CreateMeeting.png)</br>
 ```
 1. Meeting organizer requests bot to schedule a meeting by providing list of attendees, preferable due date and time(optional).
