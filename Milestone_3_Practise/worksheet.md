@@ -19,7 +19,7 @@
 | Deliverable |                            | Item/Status                | Issues/Tasks               | Team Members | Estimated Date   | Actual Date |        |
 |-------------|----------------------------|----------------------------|----------------------------|--------------|------------------|-------------|--------|
 | 1           | Event creation in Calendar | Write into user's calendar | make event                 | #5           | Sunil, Ajay      | 31-Oct      | 31-Oct |
-|             |                            | bug fixes                  |                            | #5           | Sunil            | 2-Nov       | 2-Nov  |
+|             |                            | bug fixes                  |                            | #5           | Gautam,Sunil            | 2-Nov       | 2-Nov  |
 | 2           | Bot Implementation         | Logic Development          | Basic control flow         | #6           | All              | 4-Nov       | 4-Nov  |
 |             |                            | Finding meeting time       |                            | #7           | Pranav, Sohan    | 4-Nov       | 4-Nov  |
 |             |                            | Error Handling             |                            | #8           | All              | 4-Nov       | 4-Nov  |
