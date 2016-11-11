@@ -39,7 +39,7 @@ Meeting organizer can delete a member from the existing meeting by providing bot
 
 
 
-**3: Cancel a meeting**
+**3: Cancel a meeting**<br>
 ![alt tag](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/milestone_3_practise/Milestone_3_Practise/images/CancelMeeting.png)</br>
 ```
 Meeting organizer can cancel a meeting by providing bot with meeting event ID.Bot will access the auth token of meeting organizer and deletes the event from the calendar, which will be automatically reflect on all member’s calendar.
