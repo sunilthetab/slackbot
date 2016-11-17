@@ -66,8 +66,7 @@ var controller = Botkit.slackbot({
 
 // connect the bot to a stream of messages
 controller.spawn({
-    // token: process.env.ALTCODETOKEN,
-    token : 'xoxb-102636740736-2cK5dXthHBoEpvVtnvy9wxZ1',
+    token: process.env.ALTCODETOKEN,
     //slack bot token here
 }).startRTM()
 
@@ -366,95 +365,8 @@ var getApproxMeetingDuration = function(err, convo){
               // We have all users event data in a JSON object.
               // userName : [event]
 
-              var unavailableUser = users[0];
-              var lastEventNumberExtracted = {};
-              for(var i = 0 ; i < users.length ; i++){
-                lastEventNumberExtracted = _.extend(lastEventNumberExtracted, JSON.parse('{"' + users[i] + '":"0"}'));
-              }
+              // Write code to find optimal timing. Below code is not working.
 
-              var meetingCanBeOrganized = false;
-              var checkingTime = 0;
-
-              while(!meetingCanBeOrganized){
-                console.log('unavailableUser: ' + unavailableUser);
-                var lastEventNumber = parseInt(lastEventNumberExtracted[unavailableUser]);
-                console.log('LEN: ' + lastEventNumber + ' LLL: ' + allEventsData[unavailableUser].length);
-                var availableForHours = -1;
-                var startingNextDay = false;
-                while (availableForHours < approxMeetingDuration_Hours && !startingNextDay) {
-                  console.log('--LEN:  ' + lastEventNumber);
-                  if(lastEventNumber >= allEventsData[unavailableUser].length - 1){
-                    // Out of time!! Meeting cannot be setup
-                    console.log('11111cannot schedule');
-                    meetingCanBeOrganized = false;
-                    break;
-                  }else{
-                    // console.log('checking for unavailable User: ' + unavailableUser);
-                    // console.log('\tEvent Summary: ' + allEventsData[unavailableUser][lastEventNumber].summary);
-                    // console.log('\tlastEnd: ' + moment(allEventsData[unavailableUser][lastEventNumber].end.dateTime).format());
-                    // console.log('\tstartEnd: ' + moment(allEventsData[unavailableUser][lastEventNumber].start.dateTime).format());
-
-                    var startDate = moment(allEventsData[unavailableUser][lastEventNumber + 1].start.dateTime);
-                    var endDate = moment(allEventsData[unavailableUser][lastEventNumber].end.dateTime);
-                    console.log('ED: ' + endDate.format());
-                    availableForHours = moment.duration(startDate.diff(endDate)).asHours();
-
-                    var dateTimeFor5 = moment(new Date(endDate.year(), endDate.month(), endDate.day(), 17, 0, 0, 0));
-
-                    // console.log('\t\t\tAvailable for: ' + availableForHours);
-
-                    if(availableForHours >= approxMeetingDuration_Hours && moment.duration(dateTimeFor5.diff(endDate)).asHours() < (approxMeetingDuration_Hours)){
-                      var nextDay = endDate;
-                      nextDay.add(1, 'days');
-                      nextDay.set('hour', 8);
-                      availableForHours = moment.duration(startDate.diff(nextDay)).asHours();
-                      // console.log('ND: ' + nextDay.format());
-                      // console.log('SD: ' + startDate.format());
-                      console.log('ED: ' + endDate.format());
-                      // console.log('\t\t\t\t\tAvailable for: ' + availableForHours);
-                      if(availableForHours >= approxMeetingDuration_Hours){
-                        startingNextDay = true;
-                        break;
-                      }
-                    }
-                    // console.log('\tAvailable for: ' + availableForHours);
-                    lastEventNumber++;
-                  }
-                }
-
-                lastEventNumberExtracted[unavailableUser] = lastEventNumber;
-
-                if(lastEventNumber == 0 || startingNextDay){
-                  checkingTime = endDate;
-                }else{
-                  checkingTime = moment(new Date(allEventsData[unavailableUser][lastEventNumber - 1].end.dateTime));
-                }
-
-                console.log('CT: ' + checkingTime.format());
-
-                if(users.length == 1) break;
-
-                // check if all other users are avaialable at this time.
-                for(var userNum in users){
-                  var user = users[userNum];
-                  if(user !== unavailableUser){
-                    // console.log('uname: ' + user + '\n///////////////');
-                    var lastEventNumberOfThisUser = parseInt(lastEventNumberExtracted[user]);
-                    // console.log(lastEventNumberOfThisUser);
-                    if(lastEventNumberOfThisUser < allEventsData[user][lastEventNumberOfThisUser].length - 1){
-                      // check at this time
-                      if(moment.duration(moment(allEventsData[user][lastEventNumberOfThisUser].end.dateTime).diff(checkingTime)) >= 0 && moment.duration(checkingTime.diff(moment(allEventsData[user][lastEventNumberOfThisUser + 1].start.dateTime)), 'hours') >= approxMeetingDuration_Hours){
-                        // free at this checking time.
-                        continue;
-                      }else{
-                        unavailableUser = user;
-                      }
-                    }
-                  }
-                }
-              }
-              // got the time at which all are available for this duration.
-              console.log('Got time: ' + checkingTime);
 
             });
         });
