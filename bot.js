@@ -142,17 +142,45 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
               users[i] = users[i].substring(indCol + 1, barInd);
             }
 
-            for(var i = 0 ; i < users.length ; i++){
-                var user = users[i];
-                if(!config["users"].hasOwnProperty(user)){
-                    bot.reply(message, 'I am not authorized to access calendar of ' + user +'. Please ask him to give permission to access calendar and try again.');
-                    convo.next();
-                    return;
-                }
-            }
+            var slackTeamMembersEmail = [];
 
-            getApproxMeetingDuration(response, convo);
-            convo.next();
+            bot.api.users.list({}, (error, response) => {
+                if(error){
+                  console.log('error!');
+                }
+                for(var i = 0, j = 0; i < response.members.length; i++){
+                  if(response.members[i].profile.hasOwnProperty('email')){
+                    slackTeamMembersEmail[j] = JSON.stringify(response.members[i].profile.email);
+                    console.log('--' + slackTeamMembersEmail[j]);
+                    console.log(slackTeamMembersEmail.length);
+                    j++;
+                  }
+                }
+
+                for(var i = 0 ; i < users.length ; i++){
+                    var user = users[i];
+                    if(!config["users"].hasOwnProperty(user)){
+                        bot.reply(message, 'I am not authorized to access calendar of ' + user +'. Please ask him to give permission to access calendar and try again.');
+                        convo.next();
+                        return;
+                    }
+                    for(var j = 0 ; j < slackTeamMembersEmail.length ; j++){
+                      if(user === slackTeamMembersEmail[j]){
+                        break;
+                      }
+                      // This user is not a member of this team!
+                      // Comment these lines for testing.
+                      if(j === slackTeamMembersEmail.length - 1){
+                        bot.reply(message, 'User ' + user + ' is not a member of this team. Please limit to only the members of the team and try again.');
+                        convo.next();
+                        return;
+                      }
+                    }
+                }
+
+                getApproxMeetingDuration(response, convo);
+                convo.next();
+            });
         });
     };
 
