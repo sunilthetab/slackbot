@@ -1319,3 +1319,158 @@ controller.hears(['^deschedule$', '^cancel$'],['mention', 'direct_mention'], fun
 //
 //     //bot.reply(message, "Let us cancel the meeting.");
 // });
+controller.hears(['^Authorize$', '^Authorise$','^Auth$'],['mention', 'direct_mention','direct_message'], function(bot,message) {
+    var user;
+    var code;
+    var getIDOfUser = function(err, convo){
+        convo.ask('May I know your email ID please?',function(response,convo) {
+            user = response.text.substring(8);
+            var temp;
+            temp=user.split('|');
+            user=temp[0];
+            for(var j = 0 ; j < slackTeamMembersEmail.length ; j++){
+                if(user === slackTeamMembersEmail[j]){
+                    break;
+                }
+                // This user is not a member of this team!
+                // Comment these lines for testing.
+                if(j === slackTeamMembersEmail.length - 1){
+                    bot.reply(message, 'User ' + user + ' is not a member of this team. Please limit to only the members of the team and try again.');
+                    convo.next();
+                    return;
+                }
+            }
+
+
+
+            fs.readFile('client_secret.json', function processClientSecrets(err, content) {
+                if (err) {
+                    console.log('Error loading client secret file: ' + err);
+                    return;
+                }
+
+                authorize(JSON.parse(content), user, err,convo,function(){
+                    bot.reply("Successfully authorised");
+                    convo.next();
+                });
+
+            });
+
+            convo.next();
+        })
+    };
+
+    function authorize(credentials, user,err,convo, callback) {
+        var clientSecret = credentials.installed.client_secret;
+        var clientId = credentials.installed.client_id;
+        var redirectUrl = credentials.installed.redirect_uris[0];
+        var auth = new googleAuth();
+        var oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl);
+
+
+
+        // Check if we have previously stored a token.
+        fs.readFile(TOKEN_PATH, function(err, fileData) {
+            if (err) {
+                getNewToken(oauth2Client, user,err,convo, callback);
+            } else {
+                var allData = JSON.parse(fileData);
+                if(!allData.users.hasOwnProperty(user)){
+                    getNewToken(oauth2Client, user,err,convo, callback);
+                }else{
+                    oauth2Client.credentials = allData.users[user];
+                    callback(user, oauth2Client);
+                }
+            }
+        });
+    }
+    function getNewToken(oauth2Client, user,err,convo, callback) {
+        var authUrl = oauth2Client.generateAuthUrl({
+            access_type: 'offline',
+            scope: SCOPES
+        });
+
+        convo.ask(user+'Kindly visit this url : '+authUrl+'  and Enter the code from that page here:',function(response,convo) {
+            code = response.text;
+            console.log(code + 'code here');
+            checkAuth(oauth2Client,code, err,convo,function(){
+                //Reply(response, convo);
+                convo.next();
+            });
+
+        })
+
+
+    }
+
+    var checkAuth = function(oauth2Client,code,err, convo,callback){
+        oauth2Client.getToken(code, function(err, token) {
+            console.log('user : '+oauth2Client+'    and token '+token+" anc coe"+code);
+            if (err) {
+                console.log('Error while trying to retrieve access token', err);
+                return;
+            }
+            oauth2Client.credentials = token;
+            storeToken(user, token,err,convo,function(){
+                bot.reply(message,"Successfully authorized");
+                convo.next();
+            });
+
+            callback(oauth2Client);
+        });
+
+    }
+    var storeToken=function(user, token,err,convo,callback) {
+
+        if (!fs.existsSync(TOKEN_DIR)){
+            try {
+                fs.mkdirSync(TOKEN_DIR);
+            } catch (err) {
+                if (err.code != 'EEXIST') {
+                    throw err;
+                }
+            }
+        }
+        console.log('token here'+token);
+        var obj;
+        var text;
+
+        //check if file exists
+        fs.stat(TOKEN_PATH, function(err, stat) {
+            if(err == null) {//File exists
+                console.log('file exists');
+                fileData=fs.readFileSync(TOKEN_PATH);
+
+                obj = JSON.parse(fileData);
+
+                console.log(" text here "+text);
+
+                var entry = '{"' + user + '":' + JSON.stringify(token) + '}';
+                obj.users = _.extend(obj.users, JSON.parse(entry));
+                bot.reply(message,'authorized successfully! you can return to slack channel');
+            }
+            else if(err.code == 'ENOENT') {
+                // file does not exist
+                console.log('file not exists');
+                text = '{"users": {"' + user + '":' + JSON.stringify(token) + '}}';
+                obj = JSON.parse(text);
+            } else {
+                //ERROR
+            }
+            fs.writeFileSync(TOKEN_PATH, JSON.stringify(obj));
+        });
+    }
+
+    // start a conversation with the user.
+    bot.startPrivateConversation(message, getIDOfUser);
+
+    bot.reply(message, "Let us authorize you. Kindly continue with slack private conversation with me( Azra ).If you are in slack channel and not in private chat, You can see new chat on left menu bar.");
+});
+controller.hears(['^clear$','^clr$','^end$'],['mention', 'direct_mention'], function(bot,message) {
+    var clearing = function(err, convo){
+        convo.stop();
+    };
+    bot.startConversation(message, clearing);
+
+    bot.reply(message, "Refreshing");
+});
