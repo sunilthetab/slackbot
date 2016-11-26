@@ -502,6 +502,8 @@ var getApproxMeetingDuration = function(err, convo){
                             var thatDayPriority = Array.from(calen[dateDifference]);
 
                             var fromHour = (startDatetime.getHours()-workHours[0] )* split;
+                            
+                            ////  durations of 1.5/ 0.5 should be handled.
 
                             fromHour += Math.floor(startDatetime.getMinutes() * split/60)
 
