@@ -32,8 +32,8 @@ var lastTime;
 
 var SCOPES = ['https://www.googleapis.com/auth/calendar'];
 var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
-    //process.env.USERPROFILE) + '/.credentials/';
-process.env.USERPROFILE) + '/Azra_MeetingBot/Milestone_3_Practise/';
+    process.env.USERPROFILE) + '/.credentials/';
+// process.env.USERPROFILE) + '/Azra_MeetingBot/Milestone_3_Practise/';
 var TOKEN_PATH = TOKEN_DIR + 'store.json';
 
 var MEETING_PATH = TOKEN_DIR + 'meetings.json';
@@ -66,9 +66,9 @@ var controller = Botkit.slackbot({
 
 // connect the bot to a stream of messages
 controller.spawn({
-    // token: process.env.ALTCODETOKEN,
-    //token : 'xoxb-102636740736-2cK5dXthHBoEpvVtnvy9wxZ1',
-    token: 'xoxb-75413084788-LQt1Rejkw8HnkCAO1R1DOXxI',//Azra bot in SunilCorp
+    token: process.env.ALTCODETOKEN,
+    // token : 'xoxb-102636740736-2cK5dXthHBoEpvVtnvy9wxZ1',
+    // token: 'xoxb-75413084788-LQt1Rejkw8HnkCAO1R1DOXxI',//Azra bot in SunilCorp
     //slack bot token here
 }).startRTM()
 
@@ -89,6 +89,7 @@ controller.hears(['^schedule$', '^setup$','^a$'],['mention', 'direct_mention'], 
     // Asks the users and stores.
     var approxMeetingDuration_Hours = 0;
     var approxMeetingDuration_Mins = 0;
+    var approxMeetingDuration_OnlyInMins = 0;
 
     //Contains all email ids
     var users = [];
@@ -216,6 +217,7 @@ var getApproxMeetingDuration = function(err, convo){
             }
 
             approxMeetingDuration = approxMeetingDuration_Hours + approxMeetingDuration_Mins/60;
+            approxMeetingDuration_OnlyInMins = approxMeetingDuration_Hours * 60 + approxMeetingDuration_Mins;
 
             // maximum valid meeting duration can be 3 hours.
             if(approxMeetingDuration > 0 && approxMeetingDuration<3)
@@ -257,7 +259,7 @@ var getApproxMeetingDuration = function(err, convo){
                 if(dateArray[0].match(/[0-9]+/)){//It's a number
                     if(dateArray.length == 1){
                         byDate = parseInt(dateArray[0]);
-                        console.log("bydate "+byDate);
+                        // console.log("bydate "+byDate + " date:" + today.getDate());
                         if(byDate < today.getDate()){
                             convo.say("I can't organize a meeting in the past! Please try again.");
                             getLastDateOrDay(response, convo);
@@ -267,9 +269,9 @@ var getApproxMeetingDuration = function(err, convo){
                     }else if(dateArray.length == 2){
                         byDate = parseInt(dateArray[1]);
                         byMonth = parseInt(dateArray[0]);
-                        console.log("byMonth "+byMonth+" "+today.getMonth());
-                        //if(byMonth < today.getMonth() || byDate < today.getusersDate())
-                        if(byMonth < today.getMonth()){
+                        // console.log("byMonth "+byMonth+" "+today.getMonth());
+                        // console.log("byDate " + byDate + " " + today.getDate());
+                        if(byMonth < today.getMonth() || ((byMonth - 1) >= today.getMonth() && byDate < today.getDate())){
                             convo.say("I can't organize a meeting in the past! Please try again.");
                             getLastDateOrDay(response, convo);
                             convo.next();
@@ -279,7 +281,10 @@ var getApproxMeetingDuration = function(err, convo){
                         byDate = parseInt(dateArray[1]);
                         byMonth = parseInt(dateArray[0]);
                         byYear = parseInt(dateArray[2]) - 1900;
-                        if(byYear < today.getYear() || (byYear === today.getYear() && (byMonth < today.getMonth()) || (byYear === today.getYear() && byMonth === today.getMonth() && byDate < today.getDay()))){
+                        // console.log("byMonth "+byMonth+" "+today.getMonth());
+                        // console.log("byDate " + byDate + " " + today.getDate());
+                        // console.log("byYear " + byYear + " " + today.getYear());
+                        if(byYear < today.getYear() || (byYear === today.getYear() && ((byMonth - 1) < today.getMonth()) || (byYear === today.getYear() && (byMonth - 1) === today.getMonth() && byDate < today.getDate()))){
                             convo.say("I can't organize a meeting in the past! Please try again.");
                             getLastDateOrDay(response, convo);
                             convo.next();
@@ -347,7 +352,7 @@ var getApproxMeetingDuration = function(err, convo){
     // Asks the user whether ther is any time by which the meeting should be organized.
     var getLastTime = function(err, convo){
         convo.ask('OK. By what time (HH:MM or HH) should the meeting be organized (24 Hour format)? Say NA if no such constraint',function(response,convo) {
-            if(response.text.toUpperCase === 'NA')
+            if(response.text.toUpperCase() === 'NA')
             {
                 constraintOnTime=false;
             }else{
@@ -366,6 +371,16 @@ var getApproxMeetingDuration = function(err, convo){
                 if(timeArray.length == 2)
                     byTime_Minute = parseInt(timeArray[1]);
 
+                // Meeting duration is greater than available max time in a day! Ask the user to enter by_time again.
+                var maxValidTimeInADay = (byTime_Hour - 8) * 60 + byTime_Minute;
+                if(maxValidTimeInADay < approxMeetingDuration_OnlyInMins){
+                  convo.say("Meeting duration is greater than available max time in a day! Please increase the time by which I should setup meeting.");
+                  getLastTime(response, convo);
+                  convo.next();
+                  return;
+                }
+
+                // If the user wants to organize a meeting by next day, check if the duration matches the meeting duration.
                 if(byDate === today.getDate() || byDate === today.getDate() + 1){
 
                     var meetingDurationInMin = approxMeetingDuration_Hours * 60 + approxMeetingDuration_Mins;
@@ -396,9 +411,15 @@ var getApproxMeetingDuration = function(err, convo){
 
             calculateFreeTime(users, newMeetingStartDay, approxMeetingDuration_Hours, function()
             {
-              bot.reply(message, 'I found the best time on ' + meetingStartDateTime+ '.');
-              fixMeeting(response, convo);
-              convo.next();
+              if(meetingStartDateTime === null){
+                convo.say("No available duration found. Please try again with a different combination of inputs.");
+                convo.next();
+                return;
+              }else{
+                bot.reply(message, 'I found the best time on ' + meetingStartDateTime+ '.');
+                fixMeeting(response, convo);
+                convo.next();
+              }
             });
         });
     };
