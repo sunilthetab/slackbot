@@ -1,0 +1,18 @@
+{
+  "name": "slackbot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "bot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "botkit": "^0.2.2",
+    "forecast.io": "0.0.9",
+    "google-auth-library": "^0.9.9",
+    "googleapis": "^14.1.0",
+    "slackbots": "^0.5.1"
+  }
+}
