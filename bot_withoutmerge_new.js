@@ -186,7 +186,8 @@ controller.hears(['^schedule$', '^setup$','^a$'],['mention', 'direct_mention'], 
                        }
                        // This user is not a member of this team!
                        // Comment these lines for testing.
-                       if(j === slackTeamMembersEmail.length - 1){client_secretot a member of this team. Please limit to only the members of the team and try again.');
+                        //client_secretot a member of this team. Please limit to only the members of the team and try again.');
+                       if(j === slackTeamMembersEmail.length - 1){
                          convo.next();
                          return;
                        }
