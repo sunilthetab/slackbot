@@ -1136,7 +1136,7 @@ controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,
         var attendeesJSON = JSON.parse('[]');
 
         for(var i = 0 ; i < newUsers.length ; i++){
-          if(newUsers[i] === '-1') continue;
+          //if(newUsers[i] === '-1') continue;
           attendeesJSON.push({'email':newUsers[i]});
         }
 
@@ -1145,12 +1145,12 @@ controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,
           'location': '-------------',
           'description': 'Meeting organized by Azra.',
           'start': {
-            'dateTime': currentMeetingStartTime,
-            'timeZone': 'America/Los_Angeles',
+            'dateTime': currentMeetingStartTime.toISOString(),
+            'timeZone': 'America/New_York',
           },
           'end': {
-            'dateTime': currentMeetingEndTime,
-            'timeZone': 'America/Los_Angeles',
+            'dateTime': currentMeetingEndTime.toISOString(),
+            'timeZone': 'America/New_York',
           },
           'attendees': attendeesJSON,
           'reminders': {
