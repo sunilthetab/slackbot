@@ -32,7 +32,7 @@ var lastTime;
 
 var SCOPES = ['https://www.googleapis.com/auth/calendar'];
 var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
-    //process.env.USERPROFILE) + '/.credentials/';
+   // process.env.USERPROFILE) + '/.credentials/';
  process.env.USERPROFILE) + '/Azra_MeetingBot/';
 var TOKEN_PATH = TOKEN_DIR + 'usersData.json';
 
@@ -68,7 +68,7 @@ var controller = Botkit.slackbot({
 controller.spawn({
     // token: process.env.ALTCODETOKEN,
     //token : 'xoxb-102636740736-2cK5dXthHBoEpvVtnvy9wxZ1',
-    token: 'xoxb-106719905744-tuQJb2dDaJeXj664AZRDoB1L',
+    token: 'xoxb-92027054758-6XcJEyWU3UcfNvjQlw2Pjm3d',//Azra bot in SunilCorp
     //slack bot token here
 }).startRTM()
 
@@ -84,7 +84,7 @@ var meetingStartTime;
 
 
 //coversation to schedule new meeting begins here
-controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], function(bot,message) {
+controller.hears(['^schedule$', '^setup$','^a$'],['mention', 'direct_mention'], function(bot,message) {
 
     // Asks the users and stores.
     var approxMeetingDuration_Hours = 0;
@@ -99,6 +99,11 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
     var newMeetingStartDay;
     var newMeetingStartMonth;
     var newMeetingStartYear;
+
+    var meetingStartDateTime;
+    var meetingEndDateTime;
+
+    var maximalDateTimeNonISO;
 
     // flags to check whether there is any maximum period for meeting to be scheduled.
     var constraintOnDay = true;
@@ -122,9 +127,12 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
     var calendarIDs = [];
 
     // Gets all the ids. If any is invalid, asks again. If succesfull, azra asks about approximate meeting duration.
-    var getIDOfAttendees = function(err, convo){
-        convo.ask('Alright. May I know the email IDs of the attendees, please?',function(response,convo) {
-            var IDofAttendees = response.text;
+    var getIDOfAttendees = function(err, convo)
+    {
+        convo.ask('Alright. May I know the email IDs of the attendees, please?',
+            function(response,convo)
+        {
+            var IDofAttendees = response.text
 
             users = IDofAttendees.split(" ");
             if(IDofAttendees.indexOf(',') > -1){
@@ -146,11 +154,14 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
 
             var slackTeamMembersEmail = [];
 
-            // bot.api.users.list({}, (error, response) => {
-            //     if(error){
+            // bot.api.users.list({}, (error, response) =>
+            // {
+            //     if(error)
+            //     {
             //       console.log('error!');
             //     }
-            //     for(var i = 0, j = 0; i < response.members.length; i++){
+            //     for(var i = 0, j = 0; i < response.members.length; i++)
+            //     {
             //       if(response.members[i].profile.hasOwnProperty('email')){
             //         slackTeamMembersEmail[j] = JSON.stringify(response.members[i].profile.email);
             //         console.log('--' + slackTeamMembersEmail[j]);
@@ -158,10 +169,9 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
             //         j++;
             //       }
             //     }
-
-
-
-            //     for(var i = 0 ; i < users.length ; i++){
+            //
+            //     for(var i = 0 ; i < users.length ; i++)
+            //     {
             //         var user = users[i];
             //         if(!config["users"].hasOwnProperty(user)){
             //             bot.reply(message, 'I am not authorized to access calendar of ' + user +'. Please ask him to give permission to access calendar and try again.');
@@ -169,26 +179,24 @@ controller.hears(['^schedule$', '^setup$'],['mention', 'direct_mention'], functi
             //             return;
             //         }
             //         for(var j = 0 ; j < slackTeamMembersEmail.length ; j++){
-            //             console.log(user + "---"+ slackTeamMembersEmail[j]);
             //           if(user === slackTeamMembersEmail[j]){
             //             break;
             //           }
             //           // This user is not a member of this team!
             //           // Comment these lines for testing.
-            //           else //(j === slackTeamMembersEmail.length - 1)
-            //           {
-            //             bot.reply(message, 'User ' + user + ' is not a member of this team. Please limit to only the members of the team and try again.');
+            //           if(j === slackTeamMembersEmail.length - 1){client_secretot a member of this team. Please limit to only the members of the team and try again.');
             //             convo.next();
             //             return;
             //           }
             //         }
             //     }
-
+            //
             //     getApproxMeetingDuration(response, convo);
             //     convo.next();
             // });
+
             getApproxMeetingDuration(response, convo);
-                convo.next();
+            convo.next();
         });
     };
 
@@ -258,7 +266,8 @@ var getApproxMeetingDuration = function(err, convo){
                     }else if(dateArray.length == 2){
                         byDate = parseInt(dateArray[1]);
                         byMonth = parseInt(dateArray[0]);
-                        if(byMonth < today.getMonth() || byDate < today.getDate()){
+                        if(byMonth < today.getMonth()) //|| byDate < today.getDate())
+                        {
                             convo.say("I can't organize a meeting in the past! Please try again.");
                             getLastDateOrDay(response, convo);
                             convo.next();
@@ -383,124 +392,176 @@ var getApproxMeetingDuration = function(err, convo){
 
             if(approxMeetingDuration_Mins > 0) approxMeetingDuration_Hours++;
 
-            calculateFreeTime(users, newMeetingStartDay, approxMeetingDuration_Hours, function(){
-              bot.reply(message, 'I found the best time on ' + newMeetingStartMonth + '/' + newMeetingStartDay + ' at ' + newMeetingStartHour + ':' + newMeetingStartMinute + '.');
+            calculateFreeTime(users, newMeetingStartDay, approxMeetingDuration_Hours, function()
+            {
+              bot.reply(message, 'I found the best time on ' + meetingStartDateTime.toISOString()+ '.');
               fixMeeting(response, convo);
               convo.next();
             });
         });
     };
 
-    var calculateFreeTime = function(user, onDay, approxMeetingHours, callback){
-        fs.readFile('client_secret.json', function processClientSecrets(err, content) {
+    var calculateFreeTime = function(user, onDay, approxMeetingHours, callback)
+    {
+        fs.readFile('client_secret.json', function processClientSecrets(err, content)
+        {
             if (err) {
                 console.log('Error loading client secret file: ' + err);
                 return;
             }
-            authorize(JSON.parse(content), function(allEventsData){
-              console.log('All Events Data: ' + JSON.stringify(allEventsData));
-              // Find the time here now...
-              // We have all users event data in a JSON object.
-              // userName : [event]
+            authorize(JSON.parse(content), function(allEventsData)
+            {
+                console.log('All Events Data: ' + JSON.stringify(allEventsData));
+                  // Find the time here now...
+                  // We have all users event data in a JSON object.
+                  // userName : [event]
 
-              // var unavailableUser = users[0];
-              // var lastEventNumberExtracted = {};
-              // for(var i = 0 ; i < users.length ; i++){
-              //   lastEventNumberExtracted = _.extend(lastEventNumberExtracted, JSON.parse('{"' + users[i] + '":"0"}'));
-              // }
-              //
-              // var meetingCanBeOrganized = false;
-              // var checkingTime = 0;
-              //
-              // while(!meetingCanBeOrganized){
-              //   console.log('unavailableUser: ' + unavailableUser);
-              //   var lastEventNumber = parseInt(lastEventNumberExtracted[unavailableUser]);
-              //   console.log('LEN: ' + lastEventNumber + ' LLL: ' + allEventsData[unavailableUser].length);
-              //   var availableForHours = -1;
-              //   var startingNextDay = false;
-              //   while (availableForHours < approxMeetingDuration_Hours && !startingNextDay) {
-              //     console.log('--LEN:  ' + lastEventNumber);
-              //     if(lastEventNumber >= allEventsData[unavailableUser].length - 1){
-              //       // Out of time!! Meeting cannot be setup
-              //       console.log('11111cannot schedule');
-              //       meetingCanBeOrganized = false;
-              //       break;
-              //     }else{
-              //       // console.log('checking for unavailable User: ' + unavailableUser);
-              //       // console.log('\tEvent Summary: ' + allEventsData[unavailableUser][lastEventNumber].summary);
-              //       // console.log('\tlastEnd: ' + moment(allEventsData[unavailableUser][lastEventNumber].end.dateTime).format());
-              //       // console.log('\tstartEnd: ' + moment(allEventsData[unavailableUser][lastEventNumber].start.dateTime).format());
-              //
-              //       var startDate = moment(allEventsData[unavailableUser][lastEventNumber + 1].start.dateTime);
-              //       var endDate = moment(allEventsData[unavailableUser][lastEventNumber].end.dateTime);
-              //       console.log('ED: ' + endDate.format());
-              //       availableForHours = moment.duration(startDate.diff(endDate)).asHours();
-              //
-              //       var dateTimeFor5 = moment(new Date(endDate.year(), endDate.month(), endDate.day(), 17, 0, 0, 0));
-              //
-              //       // console.log('\t\t\tAvailable for: ' + availableForHours);
-              //
-              //       if(availableForHours >= approxMeetingDuration_Hours && moment.duration(dateTimeFor5.diff(endDate)).asHours() < (approxMeetingDuration_Hours)){
-              //         var nextDay = endDate;
-              //         nextDay.add(1, 'days');
-              //         nextDay.set('hour', 8);
-              //         availableForHours = moment.duration(startDate.diff(nextDay)).asHours();
-              //         // console.log('ND: ' + nextDay.format());
-              //         // console.log('SD: ' + startDate.format());
-              //         console.log('ED: ' + endDate.format());
-              //         // console.log('\t\t\t\t\tAvailable for: ' + availableForHours);
-              //         if(availableForHours >= approxMeetingDuration_Hours){
-              //           startingNextDay = true;
-              //           break;
-              //         }
-              //       }
-              //       // console.log('\tAvailable for: ' + availableForHours);
-              //       lastEventNumber++;
-              //     }
-              //   }
-              //
-              //   lastEventNumberExtracted[unavailableUser] = lastEventNumber;
-              //
-              //   if(lastEventNumber == 0 || startingNextDay){
-              //     checkingTime = endDate;
-              //   }else{
-              //     checkingTime = moment(new Date(allEventsData[unavailableUser][lastEventNumber - 1].end.dateTime));
-              //   }
-              //
-              //   console.log('CT: ' + checkingTime.format());
-              //
-              //   if(users.length == 1) break;
-              //
-              //   // check if all other users are avaialable at this time.
-              //   for(var userNum in users){
-              //     var user = users[userNum];
-              //     if(user !== unavailableUser){
-              //       // console.log('uname: ' + user + '\n///////////////');
-              //       var lastEventNumberOfThisUser = parseInt(lastEventNumberExtracted[user]);
-              //       // console.log(lastEventNumberOfThisUser);
-              //       if(lastEventNumberOfThisUser < allEventsData[user][lastEventNumberOfThisUser].length - 1){
-              //         // check at this time
-              //         if(moment.duration(moment(allEventsData[user][lastEventNumberOfThisUser].end.dateTime).diff(checkingTime)) >= 0 && moment.duration(checkingTime.diff(moment(allEventsData[user][lastEventNumberOfThisUser + 1].start.dateTime)), 'hours') >= approxMeetingDuration_Hours){
-              //           // free at this checking time.
-              //           continue;
-              //         }else{
-              //           unavailableUser = user;
-              //         }
-              //       }
-              //     }
-              //   }
-              // }
-              // // got the time at which all are available for this duration.
-              // console.log('Got time: ' + checkingTime);
+                //Initializes and array of calendar "calen"
+                // all those variables with comment "user parameter" above them can be changed as per developer's viewpoint
+                //  work hours set from 8AM to 6PM: "user parameter"
+                var workHours =  [8,byTime_Hour];
+                // No weekends: "user parameter"
+                var noWeekends = true;
+                // assigning priority from 8AM to 6PM: "user parameter"
+                var priority = [4,9,8,7,4,5,8,7,6,3];
+                // split time: 30min. 1 Hr = 2 x 30min: "user parameter" or 1 Hr = 4 x 15min
+                var split = 4;
 
-              newMeetingStartYear = 2016;
-              newMeetingStartMonth = 12;
-              newMeetingStartDay = 20;
-              newMeetingStartHour = 11;
-              newMeetingStartMinute = 0;
+                var priorityInADay = [];
+                var k =0;
 
+                var today = new Date();
+                var thisYear = today.getYear()
+                var thisDate = today.getDate();
+                var thisMonth = today.getMonth();//+1; //January is 0!
+                var thisHour = today.getHours();
+
+                for(var i =0; i < priority.length; i++){
+                    for(var j =0; j < split; j++){
+                        priorityInADay[k++] = priority[i];
+                    }
+                }
+
+                // get the number of days upto which we have to compute the calendar optimum time.
+                var dateDifference =  Math.floor(( new Date(maximalDateTimeNonISO.getYear(), maximalDateTimeNonISO.getMonth(), maximalDateTimeNonISO.getDate(),0,0,0,0) -  new Date(today.getYear(), today.getMonth(), today.getDate(),0,0,0,0)) / 86400000);
+                var uptoDays = dateDifference + 1;
+
+                var calen = new Array(uptoDays);
+                for (var i =0; i < uptoDays; i++){
+                    calen[i] = Array.from(priorityInADay);
+                }
+
+                var priorityToday = Array.from(priorityInADay);
+
+                k = 0;
+                for(var i =0; i < thisHour - workHours[0]; i++){
+                    for(var j =0; j < split; j++){
+                        priorityToday[k++] = 0;
+                    }
+                }
+                calen[0] = priorityToday;
+                // change array for weekend into empty array
+                if(noWeekends){
+                    var day = today.getDay();
+                    var _uptoDays = uptoDays;
+
+                    for(var w=0; w < _uptoDays; w++){
+                        if((day+1) % 7 == 0 || day % 7 == 0){
+                            calen[w] = [];
+                        }
+                        day++;
+                    }
+                }
+
+                var allUsersEventsArrayObjects = [];
+                for(var eachUserKey in allEventsData)
+                {
+                    allUsersEventsArrayObjects.push(allEventsData[eachUserKey]);
+                }
+                var allUsersEventsArray = [];
+                var eachUserAllEvents = allUsersEventsArrayObjects[0];
+
+                for(var eachUser in allUsersEventsArrayObjects)//take each user one by one
+                {
+                    var allEventsOfAUser = allUsersEventsArrayObjects[eachUser]
+                    for (var eachEventKey in allEventsOfAUser)//take each events one by one
+                    {
+                        var individualEvent = allEventsOfAUser[eachEventKey];
+
+                        var startDatetime = new Date(individualEvent["start"]["dateTime"]);
+                        var endDatetime = new Date(individualEvent["end"]["dateTime"]);
+
+                        // If not weekend event continue
+                        if(!(startDatetime.getDay() == 6 || startDatetime.getDay() == 7))// If not weekend event continue
+                        {
+                            //gets difference between today and the event date.
+                            var dateDifference =  Math.floor(( new Date(startDatetime.getYear(), startDatetime.getMonth(), startDatetime.getDate(),0,0,0,0)-  new Date(today.getYear(), today.getMonth(), today.getDate(),0,0,0,0)) / 86400000);
+
+                            var thatDayPriority = Array.from(calen[dateDifference]);
+
+                            var fromHour = (startDatetime.getHours()-workHours[0] )* split;
+
+                            ///// TODO: durations of 1.5/ 0.5 should be handled.
+
+                            fromHour += Math.floor(startDatetime.getMinutes() * split/60)
+
+                            var toHour = (endDatetime.getHours()-workHours[0]) * split;
+
+                            toHour += Math.floor(endDatetime.getMinutes() * split/60);
+
+                            for(var i =fromHour; i <= toHour; i++){
+                                thatDayPriority[i] = 0;
+                            }
+                            calen[dateDifference] = Array.from(thatDayPriority);
+                        }
+                    }
+                }
+
+                var optimumFromCalen = Array.from(calen);
+                var max = 0;
+                var optimumDateSlot = 0;
+                var optimumTimeSlot = 0;
+
+                var slotsCount =(split * approxMeetingHours); // 8 = 4 * 2HR
+                for(var i=0; i< optimumFromCalen.length; i++ )
+                {
+                    for(var j=0; j< optimumFromCalen[i].length;j++)
+                    {
+                        if(j > optimumFromCalen[i].length - slotsCount)
+                        {
+                            optimumFromCalen[i][j] = 0;
+                        }
+                        else
+                        {
+                            for(var ij= j; ij < j + slotsCount ; ij++)
+                            {
+                                if(optimumFromCalen[i][ij] == 0 || optimumFromCalen[i][j] == 0)
+                                {
+                                    optimumFromCalen[i][j] = 0;
+                                    break;
+                                }
+                                else
+                                {
+                                    optimumFromCalen[i][j] += optimumFromCalen[i][ij];
+                                    if(optimumFromCalen[i][j] > max)
+                                    {
+                                        max = optimumFromCalen[i][j];
+                                        optimumTimeSlot = j;
+                                        optimumDateSlot = i;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                meetingStartDateTime = new Date(1900 + thisYear, thisMonth,thisDate, workHours[0] + Math.floor(optimumTimeSlot/ split), (optimumTimeSlot % split) * 15, 0, 0);
+                //Final Meeting Start datetime. this is a global variable used while creating the event
+                meetingStartDateTime.setDate(thisDate + optimumDateSlot);
+
+                meetingEndDateTime = new Date(meetingStartDateTime);
+                //Final Meeting End datetime. this is a global variable used while creating the event
+                meetingEndDateTime.setMinutes(meetingStartDateTime.getMinutes() + approxMeetingHours * 60);
               callback();
-
             });
         });
 
@@ -515,10 +576,16 @@ var getApproxMeetingDuration = function(err, convo){
         var oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl);
 
         // Check if we have previously stored a token.
-        fs.readFile(TOKEN_PATH, function(err, fileData) {
-            if (err) {
+        fs.readFile(TOKEN_PATH, function(err, fileData)
+        {
+            if (err)
+            {
 
-            } else {
+                console.log("error while reading usersData.json");
+
+            }
+            else
+            {
                 var allData = JSON.parse(fileData);
                 var allEventsInfo = {};
                 var xxx = 0;
@@ -544,17 +611,18 @@ var getApproxMeetingDuration = function(err, convo){
         var calendar = google.calendar('v3');
         // console.log('getEventsOf ::: bY:' + (byYear + 1900) + ' bM: ' + byMonth + 'bD' + byDate);
         // console.log((new Date(byYear + 1900, byMonth - 1, byDate, byTime_Hour, byTime_Minute, 0, 0)).toISOString());
-
         var maximalDateTime;
-
         if(constraintOnDay){
           if(constraintOnTime){
             // byMonth - 1 because of 0-11 indexes
             // byYear + 1900 because 19000 is offset in JS
-            maximalDateTime = new Date(byYear + 1900, byMonth - 1, byDate, byTime_Hour, byTime_Minute, 0, 0).toISOString();
+              maximalDateTimeNonISO = new Date(byYear + 1900, byMonth - 1, byDate, byTime_Hour, byTime_Minute, 0, 0);
+              maximalDateTime = maximalDateTimeNonISO.toISOString();
+
           }else{
             // default is 6pm; js has 0-23 hour format
-            maximalDateTime = new Date(byYear + 1900, byMonth - 1, byDate, 17, 0, 0, 0).toISOString();
+              maximalDateTimeNonISO = new Date(byYear + 1900, byMonth - 1, byDate, 17, 0, 0, 0);
+              maximalDateTime = maximalDateTimeNonISO.toISOString();
           }
         }else{
           if(constraintOnTime){
@@ -562,11 +630,13 @@ var getApproxMeetingDuration = function(err, convo){
             maximalDateTime.setDate(maximalDateTime + 20);
             maximalDateTime.setHours(byTime_Hour);
             maximalDateTime.setMinutes(byTime_Minute);
+              maximalDateTimeNonISO = maximalDateTime;
           }else{
             maximalDateTime = new Date();
             maximalDateTime.setDate(maximalDateTime + 20);
             maximalDateTime.setHours(17);
             maximalDateTime.setMinutes(0);
+              maximalDateTimeNonISO = maximalDateTime;
           }
         }
 
@@ -614,8 +684,8 @@ var getApproxMeetingDuration = function(err, convo){
 
                 usersInMeeting = users[0];
 
-                meetingStartTime = new Date(newMeetingStartYear, newMeetingStartMonth, newMeetingStartDay, newMeetingStartHour, newMeetingStartMinute, 0, 0).toISOString();
-                meetingEndTime = new Date(newMeetingStartYear, newMeetingStartMonth, newMeetingStartDay, newMeetingStartHour + approxMeetingDuration_Hours, newMeetingStartMinute + approxMeetingDuration_Mins, 0, 0).toISOString();
+                meetingStartTime = meetingStartDateTime; //new Date(newMeetingStartYear, newMeetingStartMonth, newMeetingStartDay, newMeetingStartHour, newMeetingStartMinute, 0, 0).toISOString();
+                meetingEndTime = meetingEndDateTime; //new Date(newMeetingStartYear, newMeetingStartMonth, newMeetingStartDay, newMeetingStartHour + approxMeetingDuration_Hours, newMeetingStartMinute + approxMeetingDuration_Mins, 0, 0).toISOString();
 
                 for(var i = 1 ; i < users.length ; i++)
                     usersInMeeting += ', ' + users[i];
@@ -623,8 +693,8 @@ var getApproxMeetingDuration = function(err, convo){
                 meetingsData["meetings"][newMeetingID] = {};
                 meetingsData["meetings"][newMeetingID]["users"] = usersInMeeting;
                 meetingsData["meetings"][newMeetingID]["summary"] = meetingGoal;
-                meetingsData["meetings"][newMeetingID]["startDateTime"] = new Date(newMeetingStartYear, newMeetingStartMonth, newMeetingStartDay, newMeetingStartHour, newMeetingStartMinute, 0, 0).toISOString();
-                meetingsData["meetings"][newMeetingID]["endDateTime"] = new Date(newMeetingStartYear, newMeetingStartMonth, newMeetingStartDay, newMeetingStartHour + approxMeetingDuration_Hours, newMeetingStartMinute + approxMeetingDuration_Mins, 0, 0).toISOString();
+                meetingsData["meetings"][newMeetingID]["startDateTime"] = meetingStartDateTime; //new Date(newMeetingStartYear, newMeetingStartMonth, newMeetingStartDay, newMeetingStartHour, newMeetingStartMinute, 0, 0).toISOString();
+                meetingsData["meetings"][newMeetingID]["endDateTime"] = meetingEndDateTime; //new Date(newMeetingStartYear, newMeetingStartMonth, newMeetingStartDay, newMeetingStartHour + approxMeetingDuration_Hours, newMeetingStartMinute + approxMeetingDuration_Mins, 0, 0).toISOString();
                 meetingsData["meetings"][newMeetingID]["duration"] = approxMeetingDuration_Hours + ':' + approxMeetingDuration_Mins;
                 meetingsData["meetings"][newMeetingID]["organizer"] = users[0];
 
@@ -680,11 +750,9 @@ var getApproxMeetingDuration = function(err, convo){
 
         var attendeesJSON = JSON.parse('[]');
 
-        console.log(user+"dhhhsdhs");
-
         for(var i = 0 ; i < users.length ; i++){
-          //if(users[i] === user){
-          attendeesJSON.push({'email':users[i]}); //}
+          //if(users[i] === user) continue;
+          attendeesJSON.push({'email':users[i]});
         }
 
         console.log(JSON.stringify(attendeesJSON));
@@ -694,11 +762,11 @@ var getApproxMeetingDuration = function(err, convo){
           'location': '-------------',
           'description': 'Meeting organized by Azra',
           'start': {
-            'dateTime': meetingStartTime,
+            'dateTime': meetingStartTime.toISOString(),
             'timeZone': 'America/New_York',
           },
           'end': {
-            'dateTime': meetingEndTime,
+            'dateTime': meetingEndTime.toISOString(),
             'timeZone': 'America/New_York',
           },
           'attendees': attendeesJSON,
