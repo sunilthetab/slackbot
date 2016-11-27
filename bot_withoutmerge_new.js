@@ -409,9 +409,7 @@ var getApproxMeetingDuration = function(err, convo){
         convo.ask('What is the goal of this meeting?',function(response,convo) {
             meetingGoal = response.text;
 
-            if(approxMeetingDuration_Mins > 0) approxMeetingDuration_Hours++;
-
-            calculateFreeTime(users, newMeetingStartDay, approxMeetingDuration_Hours, function()
+            calculateFreeTime(users, newMeetingStartDay, approxMeetingDuration_Hours, approxMeetingDuration_Mins, function()
             {
               if(meetingStartDateTime === null){
                 convo.say("No available duration found. Please try again with a different combination of inputs.");
@@ -426,7 +424,7 @@ var getApproxMeetingDuration = function(err, convo){
         });
     };
 
-    var calculateFreeTime = function(user, onDay, approxMeetingHours, callback)
+    var calculateFreeTime = function(user, onDay, approxMeetingHours,approxMeetingMins, callback)
     {
         fs.readFile('client_secret.json', function processClientSecrets(err, content)
         {
@@ -459,7 +457,7 @@ var getApproxMeetingDuration = function(err, convo){
                 var today = new Date();
                 var thisYear = today.getYear()
                 var thisDate = today.getDate();
-                var thisMonth = today.getMonth();//+1; //January is 0!
+                var thisMonth = today.getMonth()+1; //January is 0!
                 var thisHour = today.getHours();
                 if(!(typeof byTime_Hour == 'undefined' || !byTime_Hour))
                 {
@@ -563,7 +561,7 @@ var getApproxMeetingDuration = function(err, convo){
                 var optimumDateSlot = 0;
                 var optimumTimeSlot = 0;
 
-                var slotsCount =(split * approxMeetingHours); // 8 = 4 * 2HR
+                var slotsCount =(split * approxMeetingHours) + Math.ceil(split * approxMeetingMins/60); // 8 = 4 * 2HR
                 for(var i=0; i< optimumFromCalen.length; i++ )
                 {
                     for(var j=0; j< optimumFromCalen[i].length;j++)
@@ -603,7 +601,7 @@ var getApproxMeetingDuration = function(err, convo){
 
                 meetingEndDateTime = new Date(meetingStartDateTime);
                 //Final Meeting End datetime. this is a global variable used while creating the event
-                meetingEndDateTime.setMinutes(meetingStartDateTime.getMinutes() + approxMeetingHours * 60);
+                meetingEndDateTime.setMinutes(meetingStartDateTime.getMinutes() + approxMeetingHours * 60 + approxMeetingMins);
                 }
                 else
                 {
