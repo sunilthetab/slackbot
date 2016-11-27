@@ -461,7 +461,10 @@ var getApproxMeetingDuration = function(err, convo){
                 var thisHour = today.getHours();
                 if(!(typeof byTime_Hour == 'undefined' || !byTime_Hour))
                 {
-                     workHours[1] = parseInt(byTime_Hour);
+                     if(parseInt(byTime_Hour) < workHours[1] &&  parseInt(byTime_Hour) >= workHours[0])
+                     {
+                      workHours[1] = parseInt(byTime_Hour);
+                     }
                 }
                  var spread = workHours[1] - workHours[0];
 
