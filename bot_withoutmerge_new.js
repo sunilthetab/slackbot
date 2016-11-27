@@ -457,7 +457,7 @@ var getApproxMeetingDuration = function(err, convo){
                 var today = new Date();
                 var thisYear = today.getYear()
                 var thisDate = today.getDate();
-                var thisMonth = today.getMonth()+1; //January is 0!
+                var thisMonth = today.getMonth(); //January is 0!
                 var thisHour = today.getHours();
                 if(!(typeof byTime_Hour == 'undefined' || !byTime_Hour))
                 {
