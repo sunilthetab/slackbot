@@ -354,7 +354,7 @@ var getApproxMeetingDuration = function(err, convo){
     // Asks the user whether ther is any time by which the meeting should be organized.
     var getLastTime = function(err, convo){
         convo.ask('OK. By what time (HH:MM or HH) should the meeting be organized (24 Hour format)? Say NA if no such constraint',function(response,convo) {
-            if(response.text.toUpperCase() === 'NA')
+            if(response.text=='na'||response.text=='Na'||response.text=='NA')
             {
                 constraintOnTime=false;
             }else{
@@ -450,6 +450,7 @@ var getApproxMeetingDuration = function(err, convo){
                 // assigning priority from 8AM to 6PM: "user parameter"
                 var priority = [4,5,6,7,8,5,8,9,6,3];
                 // split time: 30min. 1 Hr = 2 x 30min: "user parameter" or 1 Hr = 4 x 15min
+                // split [1: 60min, 2: 30min, 4: 15min, 6: 10min]
                 var split = 4;
 
                 var priorityInADay = [];
@@ -460,6 +461,11 @@ var getApproxMeetingDuration = function(err, convo){
                 var thisDate = today.getDate();
                 var thisMonth = today.getMonth();//+1; //January is 0!
                 var thisHour = today.getHours();
+                if(!(typeof byTime_Hour == 'undefined' || !byTime_Hour))
+                {
+                     workHours[1] = parseInt(byTime_Hour);
+                }
+                 var spread = workHours[1] - workHours[0];
 
                 for(var i =0; i < priority.length; i++){
                     for(var j =0; j < split; j++){
@@ -526,11 +532,23 @@ var getApproxMeetingDuration = function(err, convo){
 
                             var fromHour = (startDatetime.getHours()-workHours[0] )* split;
 
-                            fromHour += Math.floor(startDatetime.getMinutes() * split/60)
+                            fromHour += Math.floor(startDatetime.getMinutes() * split/60);
+                            if(fromHour < 0){
+                                fromHour = 0;
+                            }else if(fromHour >= spread * split)
+                            {
+                                fromHour = spread * split;
+                            }
 
                             var toHour = (endDatetime.getHours()-workHours[0]) * split;
 
                             toHour += Math.floor(endDatetime.getMinutes() * split/60);
+                            if(toHour < 0){
+                                toHour = 0;
+                            }else if(toHour >= spread * split)
+                            {
+                                toHour = spread * split -1;
+                            }
 
                             for(var i =fromHour; i <= toHour; i++){
                                 thatDayPriority[i] = 0;
@@ -577,6 +595,8 @@ var getApproxMeetingDuration = function(err, convo){
                         }
                     }
                 }
+                if(max > 0)
+                {
                 meetingStartDateTime = new Date(1900 + thisYear, thisMonth,thisDate, workHours[0] + Math.floor(optimumTimeSlot/ split), (optimumTimeSlot % split) * 15, 0, 0);
                 //Final Meeting Start datetime. this is a global variable used while creating the event
                 meetingStartDateTime.setDate(thisDate + optimumDateSlot);
@@ -584,6 +604,12 @@ var getApproxMeetingDuration = function(err, convo){
                 meetingEndDateTime = new Date(meetingStartDateTime);
                 //Final Meeting End datetime. this is a global variable used while creating the event
                 meetingEndDateTime.setMinutes(meetingStartDateTime.getMinutes() + approxMeetingHours * 60);
+                }
+                else
+                {
+                    meetingStartDateTime = null;
+                    meetingEndDateTime = null;
+                }
               callback();
             });
         });
@@ -644,7 +670,7 @@ var getApproxMeetingDuration = function(err, convo){
 
           }else{
             // default is 6pm; js has 0-23 hour format
-              maximalDateTimeNonISO = new Date(byYear + 1900, byMonth - 1, byDate, 17, 0, 0, 0);
+              maximalDateTimeNonISO = new Date(byYear + 1900, byMonth - 1, byDate, 23, 59, 0, 0);
               maximalDateTime = maximalDateTimeNonISO.toISOString();
           }
         }else{
@@ -657,8 +683,8 @@ var getApproxMeetingDuration = function(err, convo){
           }else{
             maximalDateTime = new Date();
             maximalDateTime.setDate(maximalDateTime + 20);
-            maximalDateTime.setHours(17);
-            maximalDateTime.setMinutes(0);
+            maximalDateTime.setHours(23); 
+            maximalDateTime.setMinutes(59);
               maximalDateTimeNonISO = maximalDateTime;
           }
         }
