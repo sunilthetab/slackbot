@@ -1126,6 +1126,11 @@ controller.hears(['^Authorize$', '^Authorise$','^Auth$'],['mention', 'direct_men
         });
 
         convo.ask('Hi '+user+' , Kindly visit this url : '+authUrl+'  and Enter the code from that page here and then kindly return to channel #general:',function(response,convo) {
+          if(response.text.toUpperCase() === 'QUIT'){
+            bot.reply(message, "Thank you for using Azra. Bye.");
+            convo.next();
+            return;
+          }
             code = response.text;
             console.log(code + 'code here');
             checkAuth(oauth2Client,code,user, err,convo,function(){
@@ -1247,7 +1252,7 @@ var calculateFreeTime = function(users, onDay, approxMeetingHours,approxMeetingM
             }
              var spread = workHours[1] - workHours[0];
 
-            for(var i =0; i < priority.length; i++){
+            for(var i =0; i < spread; i++){
                 for(var j =0; j < split; j++){
                     priorityInADay[k++] = priority[i];
                 }
