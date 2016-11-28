@@ -1,9 +1,11 @@
 /* Please make the files first at the TOKEN_PATH:
- 1. store.json
+ 1. usersData.json
  Content: The authorization tokens of all users.
  Syntax: {'users':{
- "userName":{ tokenDetails }
-  }
+ 'userName':{
+ tokenDetails
+ }
+ }
  }
  2. meetings.json
  Syntax: {'meetings':{
@@ -35,6 +37,7 @@ var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
 var TOKEN_PATH = TOKEN_DIR + 'store.json';
 
 var MEETING_PATH = TOKEN_DIR + 'meetings.json';
+
 
 /**
  * Create an OAuth2 client with the given credentials, and then execute the
@@ -68,6 +71,8 @@ controller.spawn({
     // token: 'xoxb-75413084788-LQt1Rejkw8HnkCAO1R1DOXxI',//Azra bot in SunilCorp
     //slack bot token here
 }).startRTM()
+
+
 
 var config = require(TOKEN_PATH);
 var meetingsData = require(MEETING_PATH);
@@ -128,12 +133,7 @@ controller.hears(['^schedule$', '^setup$','^a$'],['mention', 'direct_mention'], 
         convo.ask('Alright. May I know the email IDs of the attendees, please?',
             function(response,convo)
         {
-            if(response.text.toUpperCase() === 'QUIT'){
-              bot.reply(message, "Thank you for using Azra. Bye.");
-              convo.next();
-              return;
-            }
-            var IDofAttendees = response.text;
+            var IDofAttendees = response.text
 
             users = IDofAttendees.split(" ");
             if(IDofAttendees.indexOf(',') > -1){
@@ -186,7 +186,7 @@ controller.hears(['^schedule$', '^setup$','^a$'],['mention', 'direct_mention'], 
                        }
                        // This user is not a member of this team!
                        // Comment these lines for testing.
-                        // This user is not a member of this team. Please limit to only the members of the team and try again.');
+                        //client_secretot a member of this team. Please limit to only the members of the team and try again.');
                        if(j === slackTeamMembersEmail.length - 1){
                          convo.next();
                          return;
@@ -205,11 +205,6 @@ controller.hears(['^schedule$', '^setup$','^a$'],['mention', 'direct_mention'], 
 
 var getApproxMeetingDuration = function(err, convo){
         convo.ask('OK. What will be the approximate duration of the meeting (HH:MM or HH)?',function(response,convo) {
-          if(response.text.toUpperCase() === 'QUIT'){
-            bot.reply(message, "Thank you for using Azra. Bye.");
-            convo.next();
-            return;
-          }
             var approxMeetingDuration = response.text;
 
             var approxDurationArray = [];
@@ -219,7 +214,7 @@ var getApproxMeetingDuration = function(err, convo){
             }
 
             approxMeetingDuration_Hours = parseInt(approxDurationArray[0]);
-            if(approxDurationArray.length === 2){
+            if(approxDurationArray.length == 2){
                 approxMeetingDuration_Mins = parseInt(approxDurationArray[1]);
             }
 
@@ -244,12 +239,6 @@ var getApproxMeetingDuration = function(err, convo){
     // Asks the user about the date/day by which meeting should be scheduled.
     var getLastDateOrDay = function(err, convo){
         convo.ask('And by what date(MM/DD/YYYY or MM/DD or DD) or day do you want the meeting to be scheduled? Say NA if no such constraint',function(response,convo) {
-          if(response.text.toUpperCase() === 'QUIT'){
-            bot.reply(message, "Thank you for using Azra. Bye.");
-            convo.next();
-            return;
-          }
-
             //today's date and time
             var today = new Date();
 
@@ -270,7 +259,7 @@ var getApproxMeetingDuration = function(err, convo){
                     dateArray = lastDate.split("/");
 
                 if(dateArray[0].match(/[0-9]+/)){//It's a number
-                    if(dateArray.length === 1){
+                    if(dateArray.length == 1){
                         byDate = parseInt(dateArray[0]);
                         // console.log("bydate "+byDate + " date:" + today.getDate());
                         if(byDate < today.getDate()){
@@ -279,7 +268,7 @@ var getApproxMeetingDuration = function(err, convo){
                             convo.next();
                             return;
                         }
-                    }else if(dateArray.length === 2){
+                    }else if(dateArray.length == 2){
                         byDate = parseInt(dateArray[1]);
                         byMonth = parseInt(dateArray[0]);
                         // console.log("byMonth "+byMonth+" "+today.getMonth());
@@ -365,12 +354,6 @@ var getApproxMeetingDuration = function(err, convo){
     // Asks the user whether ther is any time by which the meeting should be organized.
     var getLastTime = function(err, convo){
         convo.ask('OK. By what time (HH:MM or HH) should the meeting be organized (24 Hour format)? Say NA if no such constraint',function(response,convo) {
-          if(response.text.toUpperCase() === 'QUIT'){
-            bot.reply(message, "Thank you for using Azra. Bye.");
-            convo.next();
-            return;
-          }
-
             if(response.text=='na'||response.text=='Na'||response.text=='NA')
             {
                 constraintOnTime=false;
@@ -387,7 +370,7 @@ var getApproxMeetingDuration = function(err, convo){
                 byTime_Hour = parseInt(timeArray[0]);
                 byTime_Minute = 0;
 
-                if(timeArray.length === 2)
+                if(timeArray.length == 2)
                     byTime_Minute = parseInt(timeArray[1]);
 
                 // Meeting duration is greater than available max time in a day! Ask the user to enter by_time again.
@@ -424,12 +407,6 @@ var getApproxMeetingDuration = function(err, convo){
 
     var getAgenda = function(err, convo){
         convo.ask('What is the goal of this meeting?',function(response,convo) {
-          if(response.text.toUpperCase() === 'QUIT'){
-            bot.reply(message, "Thank you for using Azra. Bye.");
-            convo.next();
-            return;
-          }
-
             meetingGoal = response.text;
 
             calculateFreeTime(users, newMeetingStartDay, approxMeetingDuration_Hours, approxMeetingDuration_Mins, function()
@@ -457,7 +434,7 @@ var getApproxMeetingDuration = function(err, convo){
             }
             authorize(JSON.parse(content), function(allEventsData)
             {
-                  // console.log('All Events Data: ' + JSON.stringify(allEventsData));
+                console.log('All Events Data: ' + JSON.stringify(allEventsData));
                   // Find the time here now...
                   // We have all users event data in a JSON object.
                   // userName : [event]
@@ -482,7 +459,7 @@ var getApproxMeetingDuration = function(err, convo){
                 var thisDate = today.getDate();
                 var thisMonth = today.getMonth(); //January is 0!
                 var thisHour = today.getHours();
-                if(!(typeof byTime_Hour === 'undefined' || !byTime_Hour))
+                if(!(typeof byTime_Hour == 'undefined' || !byTime_Hour))
                 {
                      if(parseInt(byTime_Hour) < workHours[1] &&  parseInt(byTime_Hour) >= workHours[0])
                      {
@@ -521,7 +498,7 @@ var getApproxMeetingDuration = function(err, convo){
                     var _uptoDays = uptoDays;
 
                     for(var w=0; w < _uptoDays; w++){
-                        if((day+1) % 7 === 0 || day % 7 === 0){
+                        if((day+1) % 7 == 0 || day % 7 == 0){
                             calen[w] = [];
                         }
                         day++;
@@ -547,7 +524,7 @@ var getApproxMeetingDuration = function(err, convo){
                         var endDatetime = new Date(individualEvent["end"]["dateTime"]);
 
                         // If not weekend event continue
-                        if(!(startDatetime.getDay() === 6 || startDatetime.getDay() === 7))// If not weekend event continue
+                        if(!(startDatetime.getDay() == 6 || startDatetime.getDay() == 7))// If not weekend event continue
                         {
                             //gets difference between today and the event date.
                             var dateDifference =  Math.floor(( new Date(startDatetime.getYear(), startDatetime.getMonth(), startDatetime.getDate(),0,0,0,0)-  new Date(today.getYear(), today.getMonth(), today.getDate(),0,0,0,0)) / 86400000);
@@ -600,7 +577,7 @@ var getApproxMeetingDuration = function(err, convo){
                         {
                             for(var ij= j; ij < j + slotsCount ; ij++)
                             {
-                                if(optimumFromCalen[i][ij] === 0 || optimumFromCalen[i][j] === 0)
+                                if(optimumFromCalen[i][ij] == 0 || optimumFromCalen[i][j] == 0)
                                 {
                                     optimumFromCalen[i][j] = 0;
                                     break;
@@ -666,13 +643,13 @@ var getApproxMeetingDuration = function(err, convo){
                   oauth2Client.credentials = allData.users[users[i]];
                   !function x(j){
                     getEventsOf(oauth2Client, users[j], function(response){
-                      console.log('Fetching events of: ' + users[j]);
+                      console.log('----un: ' + users[j] + ' & xxx: ' + xxx);
                       xxx = xxx + 1;
                       var entry = '{"' + users[j] + '":' + JSON.stringify(response) + '}';
                       // console.log('Entry: ' + entry);
                       allEventsInfo = _.extend(allEventsInfo, JSON.parse(entry));
-                      // if(j === users.length - 1) callback(allEventsInfo);
-                      if(xxx === users.length) callback(allEventsInfo);
+                      // if(j == users.length - 1) callback(allEventsInfo);
+                      if(xxx == users.length) callback(allEventsInfo);
                     });
                   }(i)
                 }
@@ -726,7 +703,7 @@ var getApproxMeetingDuration = function(err, convo){
                 return;
             }
             var events = response.items;
-            if (events.length === 0) {
+            if (events.length == 0) {
                 console.log('No upcoming events found for user: ' + user + '.');
             } else {
                 console.log('Found events for user: ' + user);
@@ -737,10 +714,10 @@ var getApproxMeetingDuration = function(err, convo){
 
     var fixMeeting = function(err, convo){
         convo.ask('Do you want to fix this meeting time? Please reply Yes or No',function(response,convo) {
-            if(response.text.toUpperCase() == 'NO' || response.text.toUpperCase() === 'QUIT'){
-                bot.reply(message, 'The meeting was NOT organized. Thank you for using Azra. Bye.');
+            var answer = response.text;
+            if((answer==='no')||(answer==='No')||(answer==='NO')){
+                bot.reply(message, 'The meeting was NOT organized. Thank you for using Azra.');
                 convo.next();
-                return;
             }else{
                 bot.reply(message, 'I am confirming this meeting/');
 
@@ -901,11 +878,7 @@ controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,
 
     var getIDOfNewAttendees = function(err, convo){
         convo.ask('May I know the email ID(s) of the new attendee(s), please?',function(response,convo) {
-          if(response.text.toUpperCase() === 'QUIT'){
-            bot.reply(message, "Thank you for using Azra. Bye.");
-            convo.next();
-            return;
-          }
+
           var IDofAttendees = response.text;
 
           var indCol = IDofAttendees.indexOf(':');
@@ -1000,11 +973,7 @@ controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,
         }
 
         convo.ask('Please select the ID of the meeting to which you would like to add new attendees.',function(response,convo) {
-          if(response.text.toUpperCase() === 'QUIT'){
-            bot.reply(message, "Thank you for using Azra. Bye.");
-            convo.next();
-            return;
-          }
+
             meetingID = parseInt(response.text);
 
             for(var i = 0 ; i < allIDS.length ; i++){
@@ -1030,11 +999,6 @@ controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,
         allUnAvailableUsers += ', ' + unavailableUsers[i];
       }
         convo.ask("Users " + allUnAvailableUsers + ' are not available at current meeting time. Do you wish to organize the meeting at a new time or continue without these users?',function(response,convo) {
-          if(response.text.toUpperCase() === 'QUIT'){
-            bot.reply(message, "Thank you for using Azra. Bye.");
-            convo.next();
-            return;
-          }
           if(response.text.toUpperCase() === 'continue'){
             // invite only the users which are free.
             if(unavailableUsers.length === newUsers.length){
@@ -1049,8 +1013,6 @@ controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,
             });
           }else{
             // find a new meeting time for all the users. Cancel previous meeting and schedule new one.
-
-
 
           }
           convo.next();
@@ -1093,7 +1055,7 @@ controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,
                         unavailableUsers[xxx] = newUserID;
                       }
                       xxx = xxx + 1;
-                      if(xxx === newUsers.length) callback();
+                      if(xxx == newUsers.length) callback();
                     });
                   }(i)
                 }
@@ -1116,7 +1078,7 @@ controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,
                 return;
             }
             var events = response.items;
-            if (events.length === 0) {
+            if (events.length == 0) {
               // User is free.
               callback(true, user);
             } else {
@@ -1224,6 +1186,96 @@ controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,
     bot.reply(message, "Let us add the new member to the meeting.");
 });
 
+//coversation to remove a member from meeting
+controller.hears(['^remove$'],['mention', 'direct_mention'], function(bot,message) {
+
+    var userRequestingRemoval = message.user;
+
+    var IDOfAttendeesToRemove;
+    var meetingID;
+
+    var getIDOfAttendeeToRemove = function(err, convo){
+        convo.ask('May I know the email ID of the attendee, please?',function(response,convo) {
+            IDOfAttendeesToRemove = response.text.split(' ');
+
+            getIDOfMeeting(response, convo);
+
+            convo.next();
+        })
+    };
+
+    var getIDOfMeeting = function(err, convo){
+        convo.ask('Alright. What is the meeting ID?',function(response,convo) {
+
+            meetingID = parseInt(response.text) ;
+
+            // if(userRequestingRemoval in meeting.getUsers()) //Some type of validaion required here.
+            confirmRemoval(response, convo);
+            // else
+            // convo.say("You are not authorized for this action.");
+
+            convo.next();
+        })
+    };
+
+    var confirmRemoval = function(err, convo){
+        convo.ask('Are you sure you want to remove the member from the meeting?',function(response,convo) {
+            var confirmation = response.text;
+
+            if(confirmation.toUpperCase() === "YES"){
+                removeMembersFromMeeting();
+                var meeting = config["meetings"][meetingID].split("|");
+                convo.say("Members removed.");
+                var display = "Preview: Meeting ID "+ meetingID +" & List of members: " + meeting[2];
+                convo.say(display);
+            }else{
+                convo.say("Members NOT removed.");
+            }
+            convo.next();
+        })
+    };
+
+    var removeMembersFromMeeting = function() {
+        var meeting = config["meetings"][meetingID].split("|");
+        for (var i = 0; i < meeting.length; i++) {
+            meeting[i] = meeting[i].trim();
+        }
+
+        //var meetingday = meeting[0];
+        var meetingAttendees = meeting[2].split(",");
+        //var meetingslot = meeting[3];
+        //var duration = meeting[4];
+
+        var actualRemovedAttendees = [];
+
+        for (var i = 0, iLen = IDOfAttendeesToRemove.length; i < iLen; i++) {
+            if (meetingAttendees.indexOf(IDOfAttendeesToRemove[i]) != -1) {
+                meetingAttendees.splice(meetingAttendees.indexOf(IDOfAttendeesToRemove[i]), 1);
+                actualRemovedAttendees.push(IDOfAttendeesToRemove[i]);
+            }
+        }
+
+
+        config["meetings"][meetingID] = meeting[0] + "|" + meeting[1] + "|" + meetingAttendees + "|" + meeting[3] + "|" + meeting[4];
+
+        for (var i = 0; i < actualRemovedAttendees.length; i++) {
+            var username = actualRemovedAttendees[i];
+            for (var j = 0; j < 16; j++) {
+                if (config["users"][username][meeting[0]][j] == meetingID)
+                    config["users"][username][meeting[0]][j] = 0;
+            }
+        }
+
+        fs = require('fs');
+        var m = JSON.parse(fs.readFileSync('./mock.json').toString());
+        fs.writeFile('./mock.json', JSON.stringify(config));
+    }
+    // start a conversation with the user.
+    bot.startConversation(message, getIDOfAttendeeToRemove);
+
+    bot.reply(message, "Let us remove the member from the meeting.");
+});
+
 //coversation to cancel the meeting
 controller.hears(['^deschedule$', '^cancel$'],['mention', 'direct_mention'], function(bot,message) {
 
@@ -1249,11 +1301,7 @@ controller.hears(['^deschedule$', '^cancel$'],['mention', 'direct_mention'], fun
         }
 
         convo.ask('Please select the ID of the meeting which you would like to deschedule.',function(response,convo) {
-          if(response.text.toUpperCase() === 'QUIT'){
-            bot.reply(message, "Thank you for using Azra. Bye.");
-            convo.next();
-            return;
-          }
+
             meetingID = parseInt(response.text);
 
             for(var i = 0 ; i < allIDS.length ; i++){
@@ -1273,11 +1321,6 @@ controller.hears(['^deschedule$', '^cancel$'],['mention', 'direct_mention'], fun
 
     var confirmCancellation = function(err, convo){
         convo.ask('Are you sure you want to deschedule this meeting?',function(response,convo) {
-          if(response.text.toUpperCase() === 'QUIT'){
-            bot.reply(message, "Thank you for using Azra. Bye.");
-            convo.next();
-            return;
-          }
             var confirmation = response.text;
 
             if(confirmation.toUpperCase() === "YES"){
@@ -1385,9 +1428,9 @@ controller.hears(['^Authorize$', '^Authorise$','^Auth$'],['mention', 'direct_men
             if(error){
                 console.log('error!');
             }
-            // console.log(response.user.profile.email);
-            user=response.user.profile.email;
-            // console.log("user here "+user);
+            console.log(response.user.profile.email);
+        user=response.user.profile.email;
+        console.log("user here "+user);
 
         fs.readFile('client_secret.json', function processClientSecrets(err, content) {
             if (err) {
@@ -1489,7 +1532,7 @@ controller.hears(['^Authorize$', '^Authorise$','^Auth$'],['mention', 'direct_men
 
         //check if file exists
         fs.stat(TOKEN_PATH, function(err, stat) {
-            if(err === null) {//File exists
+            if(err == null) {//File exists
                 console.log('file exists');
                 fileData=fs.readFileSync(TOKEN_PATH);
 
@@ -1500,7 +1543,7 @@ controller.hears(['^Authorize$', '^Authorise$','^Auth$'],['mention', 'direct_men
                 obj.users = _.extend(obj.users, JSON.parse(entry));
                 bot.reply(message,'authorized successfully! you can return to slack channel');
             }
-            else if(err.code === 'ENOENT') {
+            else if(err.code == 'ENOENT') {
                 // file does not exist
                 console.log('file not exists');
                 text = '{"users": {"' + user + '":' + JSON.stringify(token) + '}}';
@@ -1517,3 +1560,48 @@ controller.hears(['^Authorize$', '^Authorise$','^Auth$'],['mention', 'direct_men
 
     bot.reply(message, "Let us authorize you. Kindly continue with slack private conversation with me( Azra ).If you are in slack channel and not in private chat, You can see new chat on left menu bar.");
 });
+
+// //coversation to reschedule the meeting
+// controller.hears(['^reschedule$'],['mention', 'direct_mention'], function(bot,message) {
+//
+//     var rescheduleRequestingUser = message.user;
+//
+//     var meetingID;
+//
+//     var getIDOfMeeting = function(err, convo){
+//         convo.ask('May I know the meeting ID?',function(response,convo) {
+//             meetingID = response.text;
+//
+//             // if(cancellationRequestingUser in meeting.getUsers()) //Some type of validaion required here.
+//             confirmReschedule(response, convo);
+//             // else
+//             // convo.say("You are not authorized for this action.");
+//             convo.next();
+//         })
+//     };
+//
+//     var confirmReschedule = function(err, convo){
+//         convo.ask('Are you sure you want to reschedule the meeting?',function(response,convo) {
+//             var confirmation = response.text;
+//
+//             if(confirmation.toUpperCase() === "YES"){
+//                 cancelMeeting();
+//                 convo.say("Meeting has been rescheduled.");
+//             }else{
+//                 convo.say("Meeting NOT rescheduled.");
+//             }
+//
+//             convo.next();
+//         })
+//     };
+//
+//     var cancelMeeting = function(){
+//         //
+//
+//     };
+//
+//     // start a conversation with the user.
+//     //bot.startConversation(message, getIDOfMeeting);
+//
+//     //bot.reply(message, "Let us cancel the meeting.");
+// });
