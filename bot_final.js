@@ -1247,7 +1247,7 @@ var calculateFreeTime = function(users, onDay, approxMeetingHours,approxMeetingM
             }
              var spread = workHours[1] - workHours[0];
 
-            for(var i =0; i < priority.length; i++){
+            for(var i =0; i < spread; i++){
                 for(var j =0; j < split; j++){
                     priorityInADay[k++] = priority[i];
                 }
