@@ -1110,9 +1110,9 @@ controller.hears(['^Authorize$', '^Authorise$','^Auth$'],['mention', 'direct_men
                 if(error){
                     console.log('error!');
                 }
-                console.log(response.user.profile.email);
+                //console.log(response.user.profile.email);
                 user=response.user.profile.email;
-                 console.log("user here "+user);
+                 //console.log("user here "+user);
 
         fs.readFile('client_secret.json', function processClientSecrets(err, content) {
             if (err) {
@@ -1167,8 +1167,14 @@ controller.hears(['^Authorize$', '^Authorise$','^Auth$'],['mention', 'direct_men
         });
 
         convo.ask('Hi '+user+' , Kindly visit this url : '+authUrl+'  and Enter the code from that page here and then kindly return to channel #general:',function(response,convo) {
+            
             code = response.text;
-            console.log(code + 'code here');
+             if(response.text.toUpperCase() === 'QUIT'){
+             bot.reply(message, "Thank you for using Azra. Bye.");
+             convo.next();
+             return;
+           }
+            //console.log(code + 'code here');
             checkAuth(oauth2Client,code,user, err,convo,function(){
                 //Reply(response, convo);
                 convo.next();
@@ -1215,7 +1221,7 @@ controller.hears(['^Authorize$', '^Authorise$','^Auth$'],['mention', 'direct_men
 
         //check if file exists
         fs.stat(TOKEN_PATH, function(err, stat) {
-            if(err == null) {//File exists
+            if(err === null) {//File exists
                 console.log('file exists');
                 fileData=fs.readFileSync(TOKEN_PATH);
 
@@ -1226,7 +1232,7 @@ controller.hears(['^Authorize$', '^Authorise$','^Auth$'],['mention', 'direct_men
                 obj.users = _.extend(obj.users, JSON.parse(entry));
 
             }
-            else if(err.code == 'ENOENT') {
+            else if(err.code === 'ENOENT') {
                 // file does not exist
                 console.log('file not exists');
                 text = '{"users": {"' + user + '":' + JSON.stringify(token) + '}}';
