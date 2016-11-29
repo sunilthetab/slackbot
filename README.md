@@ -1,18 +1,25 @@
 ## Acceptance Tests
 
+
+### General Instructions before making the meeting
+
+1. The TA's account hasn't authorised access to its calendar. This must be done first, by entering '@azra auth' in the personal chat with 'azra'.
+2. Go to the link provided and enter the secret token from it.
+3. You're authorised now and can go ahead with the usecases.
+
 ### USE CASE 1: Create a new meeting
 
 
 Instructions:
 
 1. Enter '@azra setup' or '@azra schedule' in the channel.
-2. Enter the email IDs of the attendees. (eg: xxxx@gmail.com). Separate the addresses by one space.
+2. Enter the email IDs of the attendees. (eg: azra.mem.one@gmail.com). Separate the addresses by one space.
 3. Provide the approx duration of the meeting. (eg, 1 or 2 or 1:30 etc.)
-4. Provide the max date by which you need the meeting to be made. ( eg: 12/23, 12/23/2016)
-5. Provide the max time in the day by which the meeting should be made. (eg: 18)
+4. Provide the max date by which you need the meeting to be made. ( eg: 12/23, 12/23/2016 or NA)
+5. Provide the max time in the day by which the meeting should be made. (eg: 18 or NA)
 6. The bot would give a suitable response regarding the meeting, either it has found a time or it hasn't.
 7. Provide a 'yes' if you want to confirm the meeting or a 'no' if you don't want it to make the meeting.
-8. You can the meeting created for the members in their google calendars.
+8. You can check the meeting created for the members in their google calendars.
 
 
 ### USE CASE 2: Add a new member to an existing meeting
