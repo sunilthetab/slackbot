@@ -1,7 +1,0 @@
----
-- hosts: all
-  remote_user: ubuntu
-  become: yes
-  tasks:
-    - name: Starting Azra forever...
-      command: forever start ./Azra/bot.js
