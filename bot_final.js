@@ -1090,29 +1090,29 @@ controller.hears(['^Authorize$', '^Authorise$','^Auth$'],['mention', 'direct_men
     var getIDOfUser = function(err, convo){
 
 
-        /*
-         convo.ask('May I know your email ID please?',function(response,convo) {
-         user=response.text;
-         if(user.indexOf('mail') > -1) {
-         bot.reply(message,'Sorry email id is invalid. Please try again.');
-         convo.next();
-         return;
-         }
-         user = user.substring(8);
-         var temp;
-         temp=user.split('|');
-         user=temp[0];
-         console.log("user "+user);*/
-
-        var user;
-
-        bot.api.users.info({user:message.user}, (error, response) => {
-            if(error){
-                console.log('error!');
+       /*
+        convo.ask('May I know your email ID please?',function(response,convo) {
+            user=response.text;
+            if(user.indexOf('mail') > -1) {
+                bot.reply(message,'Sorry email id is invalid. Please try again.');
+                convo.next();
+                return;
             }
-            // console.log(response.user.profile.email);
-            user=response.user.profile.email;
-            // console.log("user here "+user);
+            user = user.substring(8);
+            var temp;
+            temp=user.split('|');
+            user=temp[0];
+            console.log("user "+user);*/
+
+            var user;
+
+            bot.api.users.info({user:message.user}, (error, response) => {
+                if(error){
+                    console.log('error!');
+                }
+                console.log(response.user.profile.email);
+                user=response.user.profile.email;
+                 console.log("user here "+user);
 
         fs.readFile('client_secret.json', function processClientSecrets(err, content) {
             if (err) {
@@ -1127,12 +1127,12 @@ controller.hears(['^Authorize$', '^Authorise$','^Auth$'],['mention', 'direct_men
 
         });
 
-        convo.next();
-    });
+            convo.next();
+        });
 
 
 
-        convo.next();       };
+            convo.next();       };
 
     function authorize(credentials, user,err,convo, callback) {
         var clientSecret = credentials.installed.client_secret;
@@ -1153,7 +1153,8 @@ controller.hears(['^Authorize$', '^Authorise$','^Auth$'],['mention', 'direct_men
                     getNewToken(oauth2Client, user,err,convo, callback);
                 }else{
                     oauth2Client.credentials = allData.users[user];
-                    bot.reply(message,'You are already authorised');
+                    convo.say('You are already authorised');
+                    console.log("here")
                     callback(user, oauth2Client);
                 }
             }
@@ -1166,11 +1167,6 @@ controller.hears(['^Authorize$', '^Authorise$','^Auth$'],['mention', 'direct_men
         });
 
         convo.ask('Hi '+user+' , Kindly visit this url : '+authUrl+'  and Enter the code from that page here and then kindly return to channel #general:',function(response,convo) {
-          if(response.text.toUpperCase() === 'QUIT'){
-            bot.reply(message, "Thank you for using Azra. Bye.");
-            convo.next();
-            return;
-          }
             code = response.text;
             console.log(code + 'code here');
             checkAuth(oauth2Client,code,user, err,convo,function(){
@@ -1188,13 +1184,13 @@ controller.hears(['^Authorize$', '^Authorise$','^Auth$'],['mention', 'direct_men
             console.log('user : '+oauth2Client+'    and token '+token+" anc coe"+code);
             if (err) {
                 console.log('Error while trying to retrieve access token', err);
-                bot.reply(message,'Wrong credentials! Kindly try again ');
+                convo.say('Wrong credentials! Kindly try again ');
                 convo.next();
                 return;
             }
             oauth2Client.credentials = token;
             storeToken(user, token,err,convo,function(){
-                bot.reply(message,"Successfully authorized");
+                convo.say("Successfully authorized");
                 convo.next();
             });
 
@@ -1219,19 +1215,18 @@ controller.hears(['^Authorize$', '^Authorise$','^Auth$'],['mention', 'direct_men
 
         //check if file exists
         fs.stat(TOKEN_PATH, function(err, stat) {
-            if(err === null) {//File exists
+            if(err == null) {//File exists
                 console.log('file exists');
                 fileData=fs.readFileSync(TOKEN_PATH);
 
                 obj = JSON.parse(fileData);
                 console.log("user in storeToken"+user);
-
+                convo.say('authorized successfully! you can return to slack channel');
                 var entry = '{"' + user + '":' + JSON.stringify(token) + '}';
                 obj.users = _.extend(obj.users, JSON.parse(entry));
-                config = obj;
-                bot.reply(message,'authorized successfully! you can return to slack channel');
+
             }
-            else if(err.code === 'ENOENT') {
+            else if(err.code == 'ENOENT') {
                 // file does not exist
                 console.log('file not exists');
                 text = '{"users": {"' + user + '":' + JSON.stringify(token) + '}}';
@@ -1248,6 +1243,11 @@ controller.hears(['^Authorize$', '^Authorise$','^Auth$'],['mention', 'direct_men
 
     bot.reply(message, "Let us authorize you. Kindly continue with slack private conversation with me( Azra ).If you are in slack channel and not in private chat, You can see new chat on left menu bar.");
 });
+
+
+
+
+
 
 var calculateFreeTime = function(users, onDay, approxMeetingHours,approxMeetingMins, callback)
 {
