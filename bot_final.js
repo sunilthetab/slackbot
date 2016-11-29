@@ -646,7 +646,9 @@ controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,
               });
             }else{
               console.log("All can NOT be added");
-              askWhatUserWantsToDo(response, convo);
+              askWhatUserWantsToDo(response, convo, function(){
+                convo.next();
+              });
             }
             convo.next();
           });
@@ -697,7 +699,7 @@ controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,
         })
     };
 
-    var askWhatUserWantsToDo = function(err, convo){
+    var askWhatUserWantsToDo = function(err, convo, callback){
       var allUnAvailableUsers = [unavailableUsers[0]];
       for(var i = 1 ; i < unavailableUsers.length ; i++){
         allUnAvailableUsers += ', ' + unavailableUsers[i];
@@ -705,8 +707,7 @@ controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,
           convo.ask("Users " + allUnAvailableUsers + ' are not available at current meeting time. Do you wish to organize the meeting at a new time or continue without these users?',function(response,convo) {
           if(response.text.toUpperCase() === 'QUIT'){
             bot.reply(message, "Thank you for using Azra. Bye.");
-            convo.next();
-            return;
+            callback();
           }
           if(response.text.toUpperCase() === 'CONTINUE'){
             // invite only the users which are free.
@@ -718,7 +719,7 @@ controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,
               newUsers[newUsers.indexOf(unavailableUsers[i])] = '-1';
             }
             addNewMembers(function(){
-              convo.next();
+              callback();
             });
           }else{
             // find a new meeting time for all the users. Cancel previous meeting and schedule new one.
@@ -737,29 +738,29 @@ controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,
 
             calculateFreeTime(newUsers, newMeetingStartDay, approxMeetingDuration_Hours, approxMeetingDuration_Mins, function()
             {
-              console.log("--------------------------------------------------");
+              // console.log("-------------------------------------------------- + MSDT: " + meetingStartDateTime);
               if(meetingStartDateTime === null){
-                convo.say("No available duration found. Please try again with a different combination of inputs.");
-                convo.next();
-                return;
+                // console.log("NULL__________________-");
+                bot.reply(message, "No available duration found. Please try again with a different combination of inputs.");
+                callback();
               }else{
                 convo.say('I found the new best time on ' + meetingStartDateTime+ '.');
-                fixNewMeeting(response, convo);
-                convo.next();
+                fixNewMeeting(response, convo, function(){
+                  callback();
+                });
               }
+              // console.log("//////////////////////////////");
             });
           }
-          convo.next();
         })
     };
 
-    var fixNewMeeting = function(err, convo){
+    var fixNewMeeting = function(err, convo, callback){
 
         convo.ask('Do you want to fix this meeting time? Please reply Yes or No',function(response,convo) {
             if(response.text.toUpperCase() == 'NO' || response.text.toUpperCase() === 'QUIT'){
                 bot.reply(message, 'The meeting was NOT organized. Thank you for using Azra. Bye.');
-                convo.next();
-                return;
+                callback();
             }else{
                 bot.reply(message, 'I am confirming this meeting/');
 
@@ -824,8 +825,8 @@ controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,
 
                 //sets meeting ID based on incrementing most recent meeting ID from JSON
                 bot.reply(message, 'This is your meeting ID : ' + newMeetingID);
+                callback();
             }
-            convo.next();
         });
     };
 
@@ -1322,6 +1323,8 @@ var calculateFreeTime = function(users, onDay, approxMeetingHours,approxMeetingM
                     priorityToday[k++] = 0;
                 }
             }
+
+
             calen[0] = priorityToday;
             // change array for weekend into empty array
             if(noWeekends){
@@ -1427,6 +1430,7 @@ var calculateFreeTime = function(users, onDay, approxMeetingHours,approxMeetingM
                     }
                 }
             }
+
             if(max > 0)
             {
             meetingStartDateTime = new Date(1900 + thisYear, thisMonth,thisDate, workHours[0] + Math.floor(optimumTimeSlot/ split), (optimumTimeSlot % split) * 15, 0, 0);

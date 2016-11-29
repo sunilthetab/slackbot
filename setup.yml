@@ -1,0 +1,53 @@
+---
+- hosts: all
+  remote_user: ubuntu
+  become: yes
+  tasks:
+    - name: Installing nodejs
+      remote_user: root
+      apt:
+        name: nodejs
+        update_cache: yes
+
+    - name: Changing symlinks
+      file:
+        src: /usr/bin/nodejs
+        dest: /usr/bin/node
+        state: link
+      ignore_errors: yes
+
+    - name: Installing forever using npm
+      npm:
+        name: forever
+        global: yes
+        state: present
+
+    - name: Install moment npm
+      npm:
+        name: moment
+        global: yes
+        state: present
+
+    - name: Install underscore npm
+      npm:
+        name: underscore
+        global: yes
+        state: present
+
+    - name: Install fs npm
+      npm:
+        name: fs
+        global: yes
+        state: present
+
+    - name: Install googleapis npm
+      npm:
+        name: googleapis
+        global: yes
+        state: present
+
+    - name: Install google-auth-library npm
+      npm:
+        name: google-auth-library
+        global: yes
+        state: present
