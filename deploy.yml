@@ -1,0 +1,7 @@
+---
+- hosts: all
+  remote_user: ubuntu
+
+  tasks:
+    - name: Starting Azra...
+      command: forever start ./Azra/bot.js
