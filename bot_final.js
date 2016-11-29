@@ -1590,7 +1590,7 @@ var addEventToOrganizerAndInviteOthers = function (auth, users, callback) {
     var attendeesJSON = JSON.parse('[]');
 
     for(var i = 0 ; i < users.length ; i++){
-      if(users[i] != user)
+      //if(users[i] != user)
       attendeesJSON.push({'email':users[i]});
     }
 
