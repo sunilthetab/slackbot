@@ -9,7 +9,7 @@ https://trello.com/b/4f9QwYmI/se-project Credentials are Username : azrabot@hotm
 
 ### Week 1 : Nov 10 to Nov 17
 
-|   | Deliverable                                                        | Item/Status                                                           | Issues/Tasks                         | Team Members | Estimated Date      | Actual Date |        |
+||   | Deliverable                                                        | Item/Status                                                           | Issues/Tasks                         | Team Members | Estimated Date      | Actual Date |        |
 |---|--------------------------------------------------------------------|-----------------------------------------------------------------------|--------------------------------------|--------------|---------------------|-------------|--------|
 | 1 | Handling edge cases                                                | Brainstorm and list the edge   cases which are possible               | Branstorming and implementation      | #1.1         | Gautam              | 16-Nov      | 16-Nov |
 |   |                                                                    | Plan to handle them                                                   | Brainstorming and implementation     | #1.2         | Ajay, Sohan, Pranav | 16-Nov      | 16-Nov |
@@ -20,7 +20,7 @@ https://trello.com/b/4f9QwYmI/se-project Credentials are Username : azrabot@hotm
 
 ### Week 2 : Nov 18 to Nov 25
 
-|   | Deliverable                    | Item/Status                                            | Issues/Tasks   | Team Members | Estimated Date   | Actual Date |        |
+|  | | Deliverable                    | Item/Status                                            | Issues/Tasks   | Team Members | Estimated Date   | Actual Date |        |
 |---|--------------------------------|--------------------------------------------------------|----------------|--------------|------------------|-------------|--------|
 | 1 | Fix any additional bugs if any | Plan to handle                                         | Brainstorming  | #5           | Sunil, Ajay      | 23-Nov      | 23-Nov |
 | 2 | Plan for deployment            | Brainstorm for possible ways to   deploy bot           |                | #5           | Sunil            | 23-Nov      | 23-Nov |
@@ -32,7 +32,7 @@ https://trello.com/b/4f9QwYmI/se-project Credentials are Username : azrabot@hotm
 
 ## Week 3 : Nov 26 to Nov 28
 
-|   | Deliverable                          | Item/Status                               | Issues/Tasks | Team Members | Estimated Date        | Actual Date |        |
+||   | Deliverable                          | Item/Status                               | Issues/Tasks | Team Members | Estimated Date        | Actual Date |        |
 |---|--------------------------------------|-------------------------------------------|--------------|--------------|-----------------------|-------------|--------|
 | 1 | Write acceptance test scripts        | Testing                                   |              | #5           | Ajay, Sunil           | 28-Nov      | 28-Nov |
 | 2 | Screencast                           | Makng screencast                          |              | #10          | Gautam, Sohan         | 28-Nov      | 28-Nov |
