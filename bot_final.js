@@ -78,8 +78,8 @@ var meetingStartTime;
 //
 
 // Maximum Time by which new Meeting should be organized.
-var byTime_Hour;
-var byTime_Minute;
+var byTime_Hour = 23;
+var byTime_Minute = 59;
 var byDate;
 var byMonth;
 var byYear;
@@ -256,9 +256,14 @@ var getApproxMeetingDuration = function(err, convo){
             byYear = today.getYear();
 
             // If there is no such constraint.
-            if(response.text=='na'||response.text=='Na'||response.text=='NA')
+            if(response.text.toUpperCase() ==='NA')
             {
                 constraintOnDay=false;
+                var defaultDate = new Date();
+                defaultDate.setDate(today.getDate() + 20);
+                byDate = defaultDate.getDate();
+                byMonth = defaultDate.getMonth();
+                byYear = defaultDate.getYear();
             }else{
                 lastDate = response.text;
 
@@ -280,9 +285,9 @@ var getApproxMeetingDuration = function(err, convo){
                     }else if(dateArray.length === 2){
                         byDate = parseInt(dateArray[1]);
                         byMonth = parseInt(dateArray[0]);
-                        // console.log("byMonth "+byMonth+" "+today.getMonth());
-                        // console.log("byDate " + byDate + " " + today.getDate());
-                        if(byMonth < today.getMonth() || ((byMonth - 1) >= today.getMonth() && byDate < today.getDate())){
+                        console.log("byMonth "+byMonth+" "+today.getMonth());
+                        console.log("byDate " + byDate + " " + today.getDate());
+                        if((byMonth - 1) < today.getMonth() || ((byMonth - 1) === today.getMonth() && byDate < today.getDate())){
                             convo.say("I can't organize a meeting in the past! Please try again.");
                             getLastDateOrDay(response, convo);
                             convo.next();
@@ -372,6 +377,7 @@ var getApproxMeetingDuration = function(err, convo){
             if(response.text=='na'||response.text=='Na'||response.text=='NA')
             {
                 constraintOnTime=false;
+
             }else{
                 lastTime = response.text;
                 console.log('igottaby '+lastTime);
@@ -480,6 +486,11 @@ var getApproxMeetingDuration = function(err, convo){
                 meetingsData["meetings"][newMeetingID]["endDateTime"] = meetingEndDateTime; //new Date(newMeetingStartYear, newMeetingStartMonth, newMeetingStartDay, newMeetingStartHour + approxMeetingDuration_Hours, newMeetingStartMinute + approxMeetingDuration_Mins, 0, 0).toISOString();
                 meetingsData["meetings"][newMeetingID]["duration"] = approxMeetingDuration_Hours + ':' + approxMeetingDuration_Mins;
                 meetingsData["meetings"][newMeetingID]["organizer"] = users[0];
+                meetingsData["meetings"][newMeetingID]["byYear"] = byYear;
+                meetingsData["meetings"][newMeetingID]["byMonth"] = byMonth;
+                meetingsData["meetings"][newMeetingID]["byDate"] = byDate;
+                meetingsData["meetings"][newMeetingID]["byTime_Hour"] = byTime_Hour;
+                meetingsData["meetings"][newMeetingID]["byTime_Minute"] = byTime_Minute;
 
 // Add to the calendar of all users.
                 createMeetingAndInviteAll(users, function(eventID){
@@ -629,13 +640,14 @@ controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,
           checkIfAllCanBeAddedAtExistingTime(function(canBeAdded){
             if(canBeAdded){
               // send invite to these users.
+              console.log("All can be added");
               addNewMembers(function(){
                 convo.next();
               });
             }else{
+              console.log("All can NOT be added");
               askWhatUserWantsToDo(response, convo);
             }
-            bot.reply(message, 'Meeting updated.');
             convo.next();
           });
         });
@@ -677,8 +689,8 @@ controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,
               }
             }
 
-            currentMeetingStartTime  = meetingsData.meetings[meetingID].startDateTime;
-            currentMeetingEndTime  = meetingsData.meetings[meetingID].endDateTime;
+            currentMeetingStartTime = meetingsData.meetings[meetingID].startDateTime;
+            currentMeetingEndTime = meetingsData.meetings[meetingID].endDateTime;
 
             getIDOfNewAttendees(response, convo);
             convo.next();
@@ -686,17 +698,17 @@ controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,
     };
 
     var askWhatUserWantsToDo = function(err, convo){
-      var allUnAvailableUsers = unavailableUsers[0];
+      var allUnAvailableUsers = [unavailableUsers[0]];
       for(var i = 1 ; i < unavailableUsers.length ; i++){
         allUnAvailableUsers += ', ' + unavailableUsers[i];
       }
-        convo.ask("Users " + allUnAvailableUsers + ' are not available at current meeting time. Do you wish to organize the meeting at a new time or continue without these users?',function(response,convo) {
+          convo.ask("Users " + allUnAvailableUsers + ' are not available at current meeting time. Do you wish to organize the meeting at a new time or continue without these users?',function(response,convo) {
           if(response.text.toUpperCase() === 'QUIT'){
             bot.reply(message, "Thank you for using Azra. Bye.");
             convo.next();
             return;
           }
-          if(response.text.toUpperCase() === 'continue'){
+          if(response.text.toUpperCase() === 'CONTINUE'){
             // invite only the users which are free.
             if(unavailableUsers.length === newUsers.length){
               bot.reply(message, "No new user can be added. All are unavailable!");
@@ -712,16 +724,26 @@ controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,
             // find a new meeting time for all the users. Cancel previous meeting and schedule new one.
 
             // new users are now all the new users + existing users.
-            newUsers = users.concat(newUsers);
+            newUsers = existingUsers.concat(newUsers);
+
+            meetingStartTime = meetingsData["meetings"][meetingID]["startDateTime"]; //new Date(newMeetingStartYear, newMeetingStartMonth, newMeetingStartDay, newMeetingStartHour, newMeetingStartMinute, 0, 0).toISOString();
+            meetingEndTime = meetingsData["meetings"][meetingID]["endDateTime"]; //new Date(newMeetingStartYear, newMeetingStartMonth, newMeetingStartDay, newMeetingStartHour + approxMeetingDuration_Hours, newMeetingStartMinute + approxMeetingDuration_Mins, 0, 0).toISOString();
+            byYear = parseInt(meetingsData["meetings"][meetingID]["byYear"]);
+            byMonth = parseInt(meetingsData["meetings"][meetingID]["byMonth"]) + 1;
+            byDate = parseInt(meetingsData["meetings"][meetingID]["byDate"]);
+            byTime_Hour = parseInt(meetingsData["meetings"][meetingID]["byTime_Hour"]);
+            byTime_Minute = parseInt(meetingsData["meetings"][meetingID]["byTime_Minute"]);
+            maximalDateTimeNonISO = new Date(byYear + 1900, byMonth - 1, byDate, byTime_Hour, byTime_Minute, 0, 0);
 
             calculateFreeTime(newUsers, newMeetingStartDay, approxMeetingDuration_Hours, approxMeetingDuration_Mins, function()
             {
+              console.log("--------------------------------------------------");
               if(meetingStartDateTime === null){
                 convo.say("No available duration found. Please try again with a different combination of inputs.");
                 convo.next();
                 return;
               }else{
-                bot.reply(message, 'I found the new best time on ' + meetingStartDateTime+ '.');
+                convo.say('I found the new best time on ' + meetingStartDateTime+ '.');
                 fixNewMeeting(response, convo);
                 convo.next();
               }
@@ -732,27 +754,13 @@ controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,
     };
 
     var fixNewMeeting = function(err, convo){
+
         convo.ask('Do you want to fix this meeting time? Please reply Yes or No',function(response,convo) {
             if(response.text.toUpperCase() == 'NO' || response.text.toUpperCase() === 'QUIT'){
                 bot.reply(message, 'The meeting was NOT organized. Thank you for using Azra. Bye.');
                 convo.next();
                 return;
             }else{
-
-              //////////////
-              // cancel previous meeting
-
-              cancelMeeting(meetingID, function(isDeleted){
-                if(isDeleted){
-                  delete meetingsData.meetings[meetingID];
-                  fs.writeFileSync(MEETING_PATH, JSON.stringify(meetingsData)); // Synchronous write.
-                }else{
-                  bot.reply(message, "There was some error while descheduling.");
-                }
-              });
-
-              ///////////
-
                 bot.reply(message, 'I am confirming this meeting/');
 
                 // Azra will store the meeting details in the file meetings.json at MEETING_PATH.
@@ -761,34 +769,61 @@ controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,
                 if(allMeetingKeys.length > 0)
                     newMeetingID = allMeetingKeys[allMeetingKeys.length - 1];
                 newMeetingID++;
-                meetingID = newMeetingID;
-
-                //sets meeting ID based on incrementing most recent meeting ID from JSON
-                bot.reply(message, 'This is your meeting ID : ' + newMeetingID);
 
                 usersInMeeting = newUsers[0];
-
-                meetingStartTime = meetingStartDateTime; //new Date(newMeetingStartYear, newMeetingStartMonth, newMeetingStartDay, newMeetingStartHour, newMeetingStartMinute, 0, 0).toISOString();
-                meetingEndTime = meetingEndDateTime; //new Date(newMeetingStartYear, newMeetingStartMonth, newMeetingStartDay, newMeetingStartHour + approxMeetingDuration_Hours, newMeetingStartMinute + approxMeetingDuration_Mins, 0, 0).toISOString();
 
                 for(var i = 1 ; i < newUsers.length ; i++)
                     usersInMeeting += ', ' + newUsers[i];
 
+                usersInMeeting += ", " + meetingsData["meetings"][meetingID]["users"];
+
                 meetingsData["meetings"][newMeetingID] = {};
                 meetingsData["meetings"][newMeetingID]["users"] = usersInMeeting;
-                meetingsData["meetings"][newMeetingID]["summary"] = meetingGoal;
+                meetingsData["meetings"][newMeetingID]["summary"] = meetingsData["meetings"][meetingID]["summary"];
                 meetingsData["meetings"][newMeetingID]["startDateTime"] = meetingStartDateTime; //new Date(newMeetingStartYear, newMeetingStartMonth, newMeetingStartDay, newMeetingStartHour, newMeetingStartMinute, 0, 0).toISOString();
                 meetingsData["meetings"][newMeetingID]["endDateTime"] = meetingEndDateTime; //new Date(newMeetingStartYear, newMeetingStartMonth, newMeetingStartDay, newMeetingStartHour + approxMeetingDuration_Hours, newMeetingStartMinute + approxMeetingDuration_Mins, 0, 0).toISOString();
-                meetingsData["meetings"][newMeetingID]["duration"] = approxMeetingDuration_Hours + ':' + approxMeetingDuration_Mins;
-                meetingsData["meetings"][newMeetingID]["organizer"] = newUsers[0];
+                meetingsData["meetings"][newMeetingID]["duration"] = meetingsData["meetings"][meetingID]["duration"];
+                meetingsData["meetings"][newMeetingID]["organizer"] = meetingsData["meetings"][meetingID]["organizer"];;
+                meetingsData["meetings"][newMeetingID]["byYear"] = byYear;
+                meetingsData["meetings"][newMeetingID]["byMonth"] = byMonth;
+                meetingsData["meetings"][newMeetingID]["byDate"] = byDate;
+                meetingsData["meetings"][newMeetingID]["byTime_Hour"] = byTime_Hour;
+                meetingsData["meetings"][newMeetingID]["byTime_Minute"] = byTime_Minute;
 
+                try{
+                  createMeetingAndInviteAll(function(eventID){
+                    meetingsData["meetings"][newMeetingID]["eventID"] = eventID;
+                    bot.reply(message, "New meeting was set-up with different time.");
+                    fs.writeFileSync(MEETING_PATH, JSON.stringify(meetingsData)); // synchronous write.
+                    // console.log('Updated the calendar of all users.');
+                  });
+                }catch(ex){
+                  bot.reply(message, "ERROR creating new meeting. I got a time-out error from google-api. Please try again after some time. Thank you for using Azra.");
+                  convo.next();
+                  return;
+                }
 
-                createMeetingAndInviteAll(function(eventID){
-                  meetingsData["meetings"][newMeetingID]["eventID"] = eventID;
-                  fs.writeFile(MEETING_PATH, JSON.stringify(meetingsData)); // asynchronous write.
-                  console.log('Updated the calendar of all users.');
-                });
+                //////////////
+                // cancel previous meeting
+                try{
+                  cancelMeeting(meetingID, function(isDeleted){
+                    if(isDeleted){
+                      delete meetingsData.meetings[meetingID];
+                      fs.writeFileSync(MEETING_PATH, JSON.stringify(meetingsData)); // Synchronous write.
+                    }else{
+                      bot.reply(message, "There was some error while descheduling.");
+                    }
+                  });
+                }catch(ex){
+                  bot.reply(message, "ERROR cancel previous meeting. I got a time-out error from google-api. Please try again after some time. Thank you for using Azra.");
+                  convo.next();
+                  return;
+                }
 
+                ///////////
+
+                //sets meeting ID based on incrementing most recent meeting ID from JSON
+                bot.reply(message, 'This is your meeting ID : ' + newMeetingID);
             }
             convo.next();
         });
@@ -828,7 +863,7 @@ controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,
                   !function x(j){
                     checkEventsOf(oauth2Client, newUsers[j], function(isThisUserFreeAtCurrentMeetingTime, newUserID){
                       if(!isThisUserFreeAtCurrentMeetingTime){
-                        unavailableUsers[xxx] = newUserID;
+                        unavailableUsers[j] = newUserID;
                       }
                       xxx = xxx + 1;
                       if(xxx === newUsers.length) callback();
@@ -841,11 +876,13 @@ controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,
 
     function checkEventsOf(auth, user, callback) {
         var calendar = google.calendar('v3');
+        console.log("CMST: " + currentMeetingStartTime + " CMET: " + currentMeetingEndTime);
+        console.log("CEOF: " + user);
         calendar.events.list({
             auth: auth,
             calendarId: 'primary',
-            timeMin: currentMeetingStartTime,
-            timeMax: currentMeetingEndTime,
+            timeMin: new Date(currentMeetingStartTime).toISOString(),
+            timeMax: new Date(currentMeetingEndTime).toISOString(),
             singleEvents: true,
             orderBy: 'startTime'
         }, function(err, response) {
@@ -878,8 +915,9 @@ controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,
                 }
               }
               meetingsData["meetings"][meetingID]["users"] = usersInMeeting;
-              console.log('New users in meeting: ' + usersInMeeting);
-              fs.writeFile(MEETING_PATH, JSON.stringify(meetingsData)); // asynchronous write.
+              // console.log('New users in meeting: ' + usersInMeeting);
+              bot.reply(message, 'Meeting updated.');
+              fs.writeFileSync(MEETING_PATH, JSON.stringify(meetingsData)); // synchronous write.
           });
       });
     }
@@ -911,9 +949,11 @@ controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,
 
         var attendeesJSON = JSON.parse('[]');
 
-        for(var i = 0 ; i < newUsers.length ; i++){
-          //if(newUsers[i] === '-1') continue;
-          attendeesJSON.push({'email':newUsers[i]});
+        var allUsers = newUsers.concat(existingUsers);
+
+        for(var i = 0 ; i < allUsers.length ; i++){
+          if(allUsers[i] === '-1') continue;
+          attendeesJSON.push({'email':allUsers[i]});
         }
 
         var event = {
@@ -921,11 +961,11 @@ controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,
           'location': '-------------',
           'description': 'Meeting organized by Azra.',
           'start': {
-            'dateTime': currentMeetingStartTime,
+            'dateTime': new Date(currentMeetingStartTime).toISOString(),
             'timeZone': 'America/New_York',
           },
           'end': {
-            'dateTime': currentMeetingEndTime,
+            'dateTime': new Date(currentMeetingEndTime).toISOString(),
             'timeZone': 'America/New_York',
           },
           'attendees': attendeesJSON,
@@ -1050,29 +1090,29 @@ controller.hears(['^Authorize$', '^Authorise$','^Auth$'],['mention', 'direct_men
     var getIDOfUser = function(err, convo){
 
 
-       /*
-        convo.ask('May I know your email ID please?',function(response,convo) {
-            user=response.text;
-            if(user.indexOf('mail') > -1) {
-                bot.reply(message,'Sorry email id is invalid. Please try again.');
-                convo.next();
-                return;
+        /*
+         convo.ask('May I know your email ID please?',function(response,convo) {
+         user=response.text;
+         if(user.indexOf('mail') > -1) {
+         bot.reply(message,'Sorry email id is invalid. Please try again.');
+         convo.next();
+         return;
+         }
+         user = user.substring(8);
+         var temp;
+         temp=user.split('|');
+         user=temp[0];
+         console.log("user "+user);*/
+
+        var user;
+
+        bot.api.users.info({user:message.user}, (error, response) => {
+            if(error){
+                console.log('error!');
             }
-            user = user.substring(8);
-            var temp;
-            temp=user.split('|');
-            user=temp[0];
-            console.log("user "+user);*/
-
-            var user;
-
-            bot.api.users.info({user:message.user}, (error, response) => {
-                if(error){
-                    console.log('error!');
-                }
-                console.log(response.user.profile.email);
-                user=response.user.profile.email;
-                 console.log("user here "+user);
+            // console.log(response.user.profile.email);
+            user=response.user.profile.email;
+            // console.log("user here "+user);
 
         fs.readFile('client_secret.json', function processClientSecrets(err, content) {
             if (err) {
@@ -1087,12 +1127,12 @@ controller.hears(['^Authorize$', '^Authorise$','^Auth$'],['mention', 'direct_men
 
         });
 
-            convo.next();
-        });
+        convo.next();
+    });
 
 
 
-            convo.next();       };
+        convo.next();       };
 
     function authorize(credentials, user,err,convo, callback) {
         var clientSecret = credentials.installed.client_secret;
@@ -1113,8 +1153,7 @@ controller.hears(['^Authorize$', '^Authorise$','^Auth$'],['mention', 'direct_men
                     getNewToken(oauth2Client, user,err,convo, callback);
                 }else{
                     oauth2Client.credentials = allData.users[user];
-                    convo.say('You are already authorised');
-                    console.log("here")
+                    bot.reply(message,'You are already authorised');
                     callback(user, oauth2Client);
                 }
             }
@@ -1127,6 +1166,11 @@ controller.hears(['^Authorize$', '^Authorise$','^Auth$'],['mention', 'direct_men
         });
 
         convo.ask('Hi '+user+' , Kindly visit this url : '+authUrl+'  and Enter the code from that page here and then kindly return to channel #general:',function(response,convo) {
+          if(response.text.toUpperCase() === 'QUIT'){
+            bot.reply(message, "Thank you for using Azra. Bye.");
+            convo.next();
+            return;
+          }
             code = response.text;
             console.log(code + 'code here');
             checkAuth(oauth2Client,code,user, err,convo,function(){
@@ -1144,13 +1188,13 @@ controller.hears(['^Authorize$', '^Authorise$','^Auth$'],['mention', 'direct_men
             console.log('user : '+oauth2Client+'    and token '+token+" anc coe"+code);
             if (err) {
                 console.log('Error while trying to retrieve access token', err);
-                convo.say('Wrong credentials! Kindly try again ');
+                bot.reply(message,'Wrong credentials! Kindly try again ');
                 convo.next();
                 return;
             }
             oauth2Client.credentials = token;
             storeToken(user, token,err,convo,function(){
-                convo.say("Successfully authorized");
+                bot.reply(message,"Successfully authorized");
                 convo.next();
             });
 
@@ -1175,18 +1219,19 @@ controller.hears(['^Authorize$', '^Authorise$','^Auth$'],['mention', 'direct_men
 
         //check if file exists
         fs.stat(TOKEN_PATH, function(err, stat) {
-            if(err == null) {//File exists
+            if(err === null) {//File exists
                 console.log('file exists');
                 fileData=fs.readFileSync(TOKEN_PATH);
 
                 obj = JSON.parse(fileData);
                 console.log("user in storeToken"+user);
-                convo.say('authorized successfully! you can return to slack channel');
+
                 var entry = '{"' + user + '":' + JSON.stringify(token) + '}';
                 obj.users = _.extend(obj.users, JSON.parse(entry));
-
+                config = obj;
+                bot.reply(message,'authorized successfully! you can return to slack channel');
             }
-            else if(err.code == 'ENOENT') {
+            else if(err.code === 'ENOENT') {
                 // file does not exist
                 console.log('file not exists');
                 text = '{"users": {"' + user + '":' + JSON.stringify(token) + '}}';
@@ -1204,12 +1249,10 @@ controller.hears(['^Authorize$', '^Authorise$','^Auth$'],['mention', 'direct_men
     bot.reply(message, "Let us authorize you. Kindly continue with slack private conversation with me( Azra ).If you are in slack channel and not in private chat, You can see new chat on left menu bar.");
 });
 
-
-
-
-
 var calculateFreeTime = function(users, onDay, approxMeetingHours,approxMeetingMins, callback)
 {
+  console.log("calculating for users: " + users);
+
     fs.readFile('client_secret.json', function processClientSecrets(err, content)
     {
         if (err) {
@@ -1258,9 +1301,13 @@ var calculateFreeTime = function(users, onDay, approxMeetingHours,approxMeetingM
                 }
             }
 
+            console.log("MDTNISO: " + maximalDateTimeNonISO);
+
             // get the number of days upto which we have to compute the calendar optimum time.
             var dateDifference =  Math.floor(( new Date(maximalDateTimeNonISO.getYear(), maximalDateTimeNonISO.getMonth(), maximalDateTimeNonISO.getDate(),0,0,0,0) -  new Date(today.getYear(), today.getMonth(), today.getDate(),0,0,0,0)) / 86400000);
             var uptoDays = dateDifference + 1;
+
+            console.log("==> DD: " + dateDifference);
 
             var calen = new Array(uptoDays);
             for (var i =0; i < uptoDays; i++){
@@ -1443,8 +1490,9 @@ function authorize(credentials, users, callback) {
 
 function getEventsOf(auth, user, callback) {
     var calendar = google.calendar('v3');
-    // console.log('getEventsOf ::: bY:' + (byYear + 1900) + ' bM: ' + byMonth + 'bD' + byDate);
-    // console.log((new Date(byYear + 1900, byMonth - 1, byDate, byTime_Hour, byTime_Minute, 0, 0)).toISOString());
+    console.log('getEventsOf ::: bY:' + (byYear + 1900) + ' bM: ' + byMonth + 'bD' + byDate);
+    console.log('byTime_Hour: ' + byTime_Hour + ' byTime_Minute: ' + byTime_Minute);
+    // console.log("--->" + (new Date(byYear + 1900, byMonth - 1, byDate, byTime_Hour, byTime_Minute, 0, 0)).toISOString());
     var maximalDateTime;
     if(constraintOnDay){
       if(constraintOnTime){
@@ -1542,7 +1590,7 @@ var addEventToOrganizerAndInviteOthers = function (auth, users, callback) {
     var attendeesJSON = JSON.parse('[]');
 
     for(var i = 0 ; i < users.length ; i++){
-      //if(users[i] === user)
+      if(users[i] != user)
       attendeesJSON.push({'email':users[i]});
     }
 
