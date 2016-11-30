@@ -81,7 +81,7 @@ H. You can check the meeting created for the members in their google calendars.
 
 Instructions:
 
-A. Enter '@azra add' in the channel.
+A. Enter '@azra_bot add' in the channel.
 
 ![image](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/images/add1.png "five")
 
