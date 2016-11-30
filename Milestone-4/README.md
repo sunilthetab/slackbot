@@ -107,7 +107,3 @@ C. Enter the meeting ID to be deleted.<br>
 D. Answer if you'd surely like to delete the meeting.<br>
 E. The bot will provide a suitable response.
 
-![image](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/images/Screen%20Shot%202016-11-29%20at%207.21.48%20PM.png "eight")
-
-
-
