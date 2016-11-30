@@ -575,7 +575,7 @@ var schedule = function(bot,message) {
                 convo.next();
                 return;
             }else{
-                bot.reply(message, 'I am confirming this meeting/');
+                bot.reply(message, 'I am confirming this meeting');
 
                 // Azra will store the meeting details in the file meetings.json at MEETING_PATH.
                 var allMeetingKeys = Object.keys(meetingsData["meetings"]);
@@ -883,7 +883,7 @@ var addNew = function(bot,message) {
                 bot.reply(message, 'The meeting was NOT organized. Thank you for using Azra. Bye.');
                 callback();
             }else{
-                bot.reply(message, 'I am confirming this meeting/');
+                bot.reply(message, 'I am confirming this meeting');
 
                 // Azra will store the meeting details in the file meetings.json at MEETING_PATH.
                 var allMeetingKeys = Object.keys(meetingsData["meetings"]);
