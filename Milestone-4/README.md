@@ -1,7 +1,49 @@
+
+
+## Deployment scripts:
+
+We have deployed Azra-bot to Amazon-EC2 instance and for this we have used following deployment scripts:
+
+#### [setup.yml](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/Milestone-4/setup.yml)
+#### [startbot.yml](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/Milestone-4/startBot.yml)
+
+
+## Screencast Videos:
+  
+  Please find the deployment to Amazon EC2 in following video: 
+###   [Deployment video](https://www.youtube.com/watch?v=nfDORZ-Zbnw)
+
+ Please find the bot interaction when bot is running in following video: 
+###   [Bot video](https://www.youtube.com/watch?v=c-sT3V_JcFI)
+
+
+## Task Tracking :
+
+  Please find the task tracking at 
+      [WORKSHEET](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/Milestone-4/WORKSHEET.md)
+
+
 ## Acceptance Tests
 
+Purpose of bot: Purpose of bot is to find optimal timing for meeting among the users in the slack group. For a person to use this functionality, she/he must be slack team member and her/his calendar details are taken from her email-id used for signing up slack team through Google OAuth.
 
-### General Instructions before making the meeting
+We have deployed the chat bot to slack channel- this https://azrabot.slack.com/
+We have made 3 dummy users :
+
+      1.UserID: azra.mem.one@gmail.com Password: azra1234  Slack_Username: dummy.one
+      
+      2.UserID: azra.mem.two@gmail.com Password: azra1234  Slack_Username: dummy.two
+      
+      3.UserID: azra.mem.one@gmail.com Password: azra1234  Slack_Username: dummy.three
+      
+      1.UserID: azra.ta.one@gmail.com Password: azra1234  Slack_Username: ta.one
+
+Kindly log in to this channel using any of the above credentials. And one can check the calendars of these dummy users through the same userid and passwords. 
+Please find google-calendars at https://calendar.google.com/
+
+
+
+## General Instructions before making the meeting
 
 A. The TA's account hasn't authorised access to its calendar. This must be done first, by entering '@azra_bot auth' in the personal chat with 'azra_bot'.
 
@@ -14,58 +56,58 @@ B. Go to the link provided and enter the secret token from it.
 C. You're authorised now and can go ahead with the usecases.
 
 
-### USE CASE 1: Create a new meeting
+## USE CASE 1: Create a new meeting
 
 
 Instructions:
 
-1. Enter '@azra setup' or '@azra schedule' in the channel.
-2. Enter the email IDs of the attendees. (eg: azra.mem.one@gmail.com). Separate the addresses by one space.
-3. Provide the approx duration of the meeting. (eg, 1 or 2 or 1:30 etc.)
-4. Provide the max date by which you need the meeting to be made. ( eg: 12/23, 12/23/2016 or NA)
-5. Provide the max time in the day by which the meeting should be made. (eg: 18 or NA)
+A. Enter '@azra setup' or '@azra schedule' in the channel.
+B. Enter the email IDs of the attendees. (eg: azra.mem.one@gmail.com). Separate the addresses by one space.
+C. Provide the approx duration of the meeting. (eg, 1 or 2 or 1:30 etc.)
+D. Provide the max date by which you need the meeting to be made. ( eg: 12/23, 12/23/2016 or NA)
+E. Provide the max time in the day by which the meeting should be made. (eg: 18 or NA)
 
 ![image](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/images/Screen%20Shot%202016-11-29%20at%207.19.55%20PM.png "three")
 
-6. The bot would give a suitable response regarding the meeting, either it has found a time or it hasn't.
+F. The bot would give a suitable response regarding the meeting, either it has found a time or it hasn't.
 
 ![image](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/images/Screen%20Shot%202016-11-29%20at%207.20.20%20PM.png "four")
 
-7. Provide a 'yes' if you want to confirm the meeting or a 'no' if you don't want it to make the meeting.
-8. You can check the meeting created for the members in their google calendars.
+G. Provide a 'yes' if you want to confirm the meeting or a 'no' if you don't want it to make the meeting.
+H. You can check the meeting created for the members in their google calendars.
 
 
 ### USE CASE 2: Add a new member to an existing meeting
 
 Instructions:
 
-1. Enter '@azra add' in the channel.
+A. Enter '@azra add' in the channel.
 
-![image](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/images/Screen%20Shot%202016-11-29%20at%207.20.42%20PM.png "five")
+![image](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/images/add1.png "five")
 
-2. This will provide the list of meetings to choose from.
+B. This will provide the list of meetings to choose from.
 
-![image](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/images/Screen%20Shot%202016-11-29%20at%207.21.03%20PM.png "six")
+![image](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/images/add2.png "six")
 
-3. Enter the meeting ID to be updated. (0,1, or 2 etc.)
-4. Enter the new attendee(s) email ID.
-5. The bot will provide a suitable response.
+C. Enter the meeting ID to be updated. (0,1, or 2 etc.)
+D. Enter the new attendee(s) email ID.
+E. The bot will provide a suitable response.
 
 
 ### USE CASE 3: Cancel a meeting
 
 Instructions:
 
-1. Enter '@azra cancel' or '@azra deschedule' in the channel.
+A. Enter '@azra cancel' or '@azra deschedule' in the channel.
 
-![image](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/images/Screen%20Shot%202016-11-29%20at%207.21.28%20PM.png "seven")
+![image](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/images/del1.png "seven")
 
-2. This will provide the list of meetings to choose from.
-3. Enter the meeting ID to be deleted.
-4. Answer if you'd surely like to delete the meeting.
+B. This will provide the list of meetings to choose from.<br>
+C. Enter the meeting ID to be deleted.<br>
+D. Answer if you'd surely like to delete the meeting.<br>
+E. The bot will provide a suitable response.
 
 ![image](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/images/Screen%20Shot%202016-11-29%20at%207.21.48%20PM.png "eight")
 
-5. The bot will provide a suitable response.
 
 
