@@ -64,8 +64,8 @@ Instructions:
 A. Enter '@azra setup' or '@azra schedule' in the channel.
 B. Enter the email IDs of the attendees. (eg: azra.mem.one@gmail.com). Separate the addresses by one space.
 C. Provide the approx duration of the meeting. (eg, 1 or 2 or 1:30 etc.)
-D. Provide the max date by which you need the meeting to be made. ( eg: 12/23, 12/23/2016 or NA)
-E. Provide the max time in the day by which the meeting should be made. (eg: 18 or NA)
+D. Provide the max date by which you need the meeting to be made. ( eg: 12/23, 12/23/2016 or NA if, not applicable)
+E. Provide the max time in the day by which the meeting should be made. (eg: 18 or NA if, not applicable)
 
 ![image](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/images/Screen%20Shot%202016-11-29%20at%207.19.55%20PM.png "three")
 
@@ -89,9 +89,9 @@ B. This will provide the list of meetings to choose from.
 
 ![image](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/images/add2.png "six")
 
-C. Enter the meeting ID to be updated. (0,1, or 2 etc.)
-D. Enter the new attendee(s) email ID.
-E. The bot will provide a suitable response.
+C. Enter ONLY the meeting ID to be updated. (0,1, or 2 etc.)
+D. Enter the new attendee(s) email ID. (eg: azra.mem.one@gmail.com). Separate the addresses by one space.
+E. The bot will either add the members to the meeting or say that the new members are busy. You can continue without the users or you can create a meeting with them.
 
 
 ### USE CASE 3: Cancel a meeting
@@ -103,7 +103,7 @@ A. Enter '@azra cancel' or '@azra deschedule' in the channel.
 ![image](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/images/del1.png "seven")
 
 B. This will provide the list of meetings to choose from.<br>
-C. Enter the meeting ID to be deleted.<br>
+C. Enter ONLY the meeting ID to be deleted. (0, OR 1, OR 2 etc.)<br>
 D. Answer if you'd surely like to delete the meeting.<br>
 E. The bot will provide a suitable response.
 
