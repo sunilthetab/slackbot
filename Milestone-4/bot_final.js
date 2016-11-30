@@ -1228,9 +1228,11 @@ controller.hears(['^Authorize$', '^Authorise$','^Auth$'],['mention', 'direct_men
 
                 obj = JSON.parse(fileData);
                 console.log("user in storeToken"+user);
-                convo.say('authorized successfully! you can return to slack channel');
+                
                 var entry = '{"' + user + '":' + JSON.stringify(token) + '}';
                 obj.users = _.extend(obj.users, JSON.parse(entry));
+                config = obj;
+                convo.say('authorized successfully! you can return to slack channel');
 
             }
             else if(err.code === 'ENOENT') {
