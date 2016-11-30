@@ -3,15 +3,15 @@
 
 ### General Instructions before making the meeting
 
-1. The TA's account hasn't authorised access to its calendar. This must be done first, by entering '@azra_bot auth' in the personal chat with 'azra_bot'.
+A. The TA's account hasn't authorised access to its calendar. This must be done first, by entering '@azra_bot auth' in the personal chat with 'azra_bot'.
 
 ![image](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/images/Screen%20Shot%202016-11-29%20at%207.18.51%20PM.png "one")
 
-2. Go to the link provided and enter the secret token from it.
+B. Go to the link provided and enter the secret token from it.
 
 ![image](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/images/Screen%20Shot%202016-11-29%20at%207.19.12%20PM.png "two")
 
-3. You're authorised now and can go ahead with the usecases.
+C. You're authorised now and can go ahead with the usecases.
 
 
 ### USE CASE 1: Create a new meeting
