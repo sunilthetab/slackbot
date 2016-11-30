@@ -63,10 +63,7 @@ var controller = Botkit.slackbot({
 
 // connect the bot to a stream of messages
 controller.spawn({
-    // token: process.env.ALTCODETOKEN,
-    token: 'xoxb-110402826451-9oyykh4S6xoSuwceZl77xCFX',
-    // token : 'xoxb-102636740736-2cK5dXthHBoEpvVtnvy9wxZ1',
-    // token: 'xoxb-75413084788-LQt1Rejkw8HnkCAO1R1DOXxI',//Azra bot in SunilCorp
+    token: process.env.ALTCODETOKEN,
     //slack bot token here
 }).startRTM()
 
