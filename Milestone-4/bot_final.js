@@ -63,7 +63,8 @@ var controller = Botkit.slackbot({
 
 // connect the bot to a stream of messages
 controller.spawn({
-    token: process.env.ALTCODETOKEN,
+    // token: process.env.ALTCODETOKEN,
+    token: 'xoxb-110402826451-9oyykh4S6xoSuwceZl77xCFX',
     // token : 'xoxb-102636740736-2cK5dXthHBoEpvVtnvy9wxZ1',
     // token: 'xoxb-75413084788-LQt1Rejkw8HnkCAO1R1DOXxI',//Azra bot in SunilCorp
     //slack bot token here
@@ -577,7 +578,7 @@ var schedule = function(bot,message) {
                 convo.next();
                 return;
             }else{
-                bot.reply(message, 'I am confirming this meeting');
+                bot.reply(message, 'I am confirming this meeting/');
 
                 // Azra will store the meeting details in the file meetings.json at MEETING_PATH.
                 var allMeetingKeys = Object.keys(meetingsData["meetings"]);
@@ -885,7 +886,7 @@ var addNew = function(bot,message) {
                 bot.reply(message, 'The meeting was NOT organized. Thank you for using Azra. Bye.');
                 callback();
             }else{
-                bot.reply(message, 'I am confirming this meeting');
+                bot.reply(message, 'I am confirming this meeting/');
 
                 // Azra will store the meeting details in the file meetings.json at MEETING_PATH.
                 var allMeetingKeys = Object.keys(meetingsData["meetings"]);
@@ -1132,27 +1133,32 @@ var cancel = function(bot,message) {
     var meetingID;
     var organizer;
 
+    var allIDS = [];
+    var i = 0;
+    var allMeetingsInfo = "";
+
+    if(meetingsData.meetings.length == 0){
+      bot.reply(message, "There are no meetings currently scheduled.");
+      return;
+    }
+
+    bot.reply(message, "Here are the meetings organized by me:");
+    for(var meetingNum in meetingsData.meetings){
+        allIDS[i] = meetingNum;
+        i++;
+        var meeting = '\nID: ' + meetingNum + '\n\tSummary: ' + meetingsData.meetings[meetingNum].summary +
+            '\n\tParticipants: ' + meetingsData.meetings[meetingNum].users +
+            '\n\tAt time: ' + new Date(meetingsData.meetings[meetingNum].startDateTime)+
+            '\n\tDuration: ' + meetingsData.meetings[meetingNum].duration + '\n';
+
+        allMeetingsInfo += meeting;
+    }
+    bot.reply(message, allMeetingsInfo);
+
     var getIDOfMeeting = function(err, convo){
         // Enlist the meetings organized by Azra.
 
-        bot.reply(message, "Here are the meetings organized by me:");
-
         var meetingsInformation;
-
-        var allIDS = [];
-        var i = 0;
-        var allMeetingsInfo = "";
-        for(var meetingNum in meetingsData.meetings){
-            allIDS[i] = meetingNum;
-            i++;
-            var meeting = '\nID: ' + meetingNum + '\n\tSummary: ' + meetingsData.meetings[meetingNum].summary +
-                '\n\tParticipants: ' + meetingsData.meetings[meetingNum].users +
-                '\n\tAt time: ' + new Date(meetingsData.meetings[meetingNum].startDateTime)+
-                '\n\tDuration: ' + meetingsData.meetings[meetingNum].duration + '\n';
-
-            allMeetingsInfo += meeting;
-        }
-        bot.reply(message, allMeetingsInfo);
 
         convo.ask('Please select the ID of the meeting which you would like to deschedule.',function(response,convo) {
             if(response.text == "QUIT" || response.text == "quit" || response.text == "Quit"){
@@ -1162,13 +1168,19 @@ var cancel = function(bot,message) {
           }
             meetingID = parseInt(response.text);
 
+            var validMeetingIDEntered = false;
+
             for(var i = 0 ; i < allIDS.length ; i++){
-              if(allIDS[i] === meetingID){
-                bot.reply(message, 'Invalid meeting ID selected! Please try again.');
-                getIDOfMeeting(response, convo);
-                convo.next();
-                return;
+              console.log(allIDS[i] + " " + meetingID);
+              if(parseInt(allIDS[i]) === meetingID){
+                validMeetingIDEntered = true;
+                continue;
               }
+            }
+            if(!validMeetingIDEntered){
+              bot.reply(message, "You selected an invalid meeting ID! Please select a valid meeting ID.");
+              convo.next();
+              return;
             }
 
             confirmCancellation(response, convo);
@@ -1208,8 +1220,6 @@ var cancel = function(bot,message) {
 
     // start a conversation with the user.
     bot.startConversation(message, getIDOfMeeting);
-
-    bot.reply(message, "Let us cancel the meeting.");
 };
 
 var authAuthorize = function(bot,message) {
@@ -1295,7 +1305,7 @@ var authAuthorize = function(bot,message) {
         });
 
         convo.ask('Hi '+user+' , Kindly visit this url : '+authUrl+'  and Enter the code from that page here and then kindly return to channel #general:',function(response,convo) {
-            
+
             code = response.text;
             if(response.text == "QUIT" || response.text == "quit" || response.text == "Quit"){
              bot.reply(message, "Thank you for using Azra. Bye.");
@@ -1355,7 +1365,7 @@ var authAuthorize = function(bot,message) {
 
                 obj = JSON.parse(fileData);
                 console.log("user in storeToken"+user);
-                
+
                 var entry = '{"' + user + '":' + JSON.stringify(token) + '}';
                 obj.users = _.extend(obj.users, JSON.parse(entry));
                 config = obj;
