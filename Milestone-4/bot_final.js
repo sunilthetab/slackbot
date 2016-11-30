@@ -117,8 +117,49 @@ var meetingEndTime;
 
 var calendarIDs = [];
 
+controller.hears('','direct_message,direct_mention,mention',function(bot,message) {
+
+
+    if(message.text == "setup" || message.text == "schedule" || message.text == "Setup" || message.text == "Schedule" || message.text == "SETUP" || message.text == "SCHEDULE" || message.text == "SetUp")
+    {
+        schedule(bot, message);
+    }
+    else if(message.text == "CANCEL" || message.text == "cancel" || message.text == "Cancel" || message.text == "deschedule" || message.text == "DeSchedule" || message.text == "DESCHEDULE" || message.text == "Deschedule")
+    {
+        cancel(bot, message);
+    }
+    else if(message.text == "AUTH" || message.text == "auth" || message.text == "Auth" || message.text == "Authorize" || message.text == "Authorise" || message.text == "AUTHORIZE" || message.text == "AUTHORISE"|| message.text == "authorize" || message.text == "authorise")
+    {
+        authAuthorize(bot, message);
+    }
+    else if(message.text == "ADD" || message.text == "Add" || message.text == "add" || message.text == "NEW" || message.text == "new" || message.text == "New" )
+    {
+        addNew(bot, message);
+    }
+    else if(message.text == "QUIT" || message.text == "quit" || message.text == "Quit")
+    {
+
+        bot.reply(message, "Thank you for using Azra. Bye.");
+        return;
+    }
+    else if(message.text=="HELP"||message.text=="help"||message.text=="Help")
+    {
+        bot.reply(message, "Use '@azra Setup' / '@azra schedule' to create a meeting");
+        bot.reply(message, "Use '@azra add'/'@azra new' to add a new member to an already existing meeting");
+        bot.reply(message, "Use '@azra cancel'/'@azra deschedule' to delete an already existing meeting");
+        return;
+    }
+    else
+    {
+        bot.reply(message, "The trigger used was wrong ");
+        bot.reply(message, "Please use @azra help for more information");
+
+        return;
+    }
+});
+
 //coversation to schedule new meeting begins here
-controller.hears(['^schedule$', '^setup$','^a$'],['mention', 'direct_mention'], function(bot,message) {
+var schedule = function(bot,message) {
 
     // Gets all the ids. If any is invalid, asks again. If succesfull, azra asks about approximate meeting duration.
     var getIDOfAttendees = function(err, convo)
@@ -126,7 +167,7 @@ controller.hears(['^schedule$', '^setup$','^a$'],['mention', 'direct_mention'], 
         convo.ask('Alright. May I know the email IDs of the attendees, please?',
             function(response,convo)
         {
-            if(response.text.toUpperCase() === 'QUIT'){
+            if(response.text == "QUIT" || response.text == "quit" || response.text == "Quit"){
               bot.reply(message, "Thank you for using Azra. Bye.");
               convo.next();
               return;
@@ -201,13 +242,14 @@ controller.hears(['^schedule$', '^setup$','^a$'],['mention', 'direct_mention'], 
         });
     };
 
-var getApproxMeetingDuration = function(err, convo){
+    var getApproxMeetingDuration = function(err, convo){
         convo.ask('OK. What will be the approximate duration of the meeting (HH:MM or HH)?',function(response,convo) {
-          if(response.text.toUpperCase() === 'QUIT'){
-            bot.reply(message, "Thank you for using Azra. Bye.");
-            convo.next();
-            return;
-          }
+            if(response.text == "QUIT" || response.text == "quit" || response.text == "Quit")
+            {
+                bot.reply(message, "Thank you for using Azra. Bye.");
+                convo.next();
+                return;
+            }
             var approxMeetingDuration = response.text;
 
             var approxDurationArray = [];
@@ -215,10 +257,46 @@ var getApproxMeetingDuration = function(err, convo){
             if(approxMeetingDuration.indexOf(":") > -1){
                 approxDurationArray = approxMeetingDuration.split(":");
             }
+            else if(approxMeetingDuration.indexOf(".") > -1)
+            {
+                approxDurationArray = approxMeetingDuration.split(".");
+                if(approxDurationArray[1])
+                {
+                    if(parseInt(approxDurationArray[1]) < 10)
+                    {
+                        approxDurationArray[1] = Math.ceil(approxDurationArray[1] * 6);
+                    }
+                }
+                else
+                {
+                    approxDurationArray[1] = 0;
+                }
+            }
 
             approxMeetingDuration_Hours = parseInt(approxDurationArray[0]);
-            if(approxDurationArray.length === 2){
+            if(isNaN(approxMeetingDuration_Hours))
+            {
+                bot.reply(message, 'Input hour format is improper. Enter a number');
+                getApproxMeetingDuration(response, convo);
+                convo.next();
+                return;
+            }
+
+            if(approxDurationArray.length >= 2)
+            {
                 approxMeetingDuration_Mins = parseInt(approxDurationArray[1]);
+                if(isNaN(approxMeetingDuration_Mins))
+                {
+                    bot.reply(message, 'Input minute format is improper. Enter a number');
+                    getApproxMeetingDuration(response, convo);
+                    convo.next();
+                    return;
+                }
+                if(approxMeetingDuration_Mins >= 60)
+                {
+                    approxMeetingDuration_Hours += Math.floor(approxMeetingDuration_Mins / 60);
+                    approxMeetingDuration_Mins = approxMeetingDuration_Mins % 60;
+                }
             }
 
             approxMeetingDuration = approxMeetingDuration_Hours + approxMeetingDuration_Mins/60;
@@ -242,11 +320,11 @@ var getApproxMeetingDuration = function(err, convo){
     // Asks the user about the date/day by which meeting should be scheduled.
     var getLastDateOrDay = function(err, convo){
         convo.ask('And by what date(MM/DD/YYYY or MM/DD or DD) or day do you want the meeting to be scheduled? Say NA if no such constraint',function(response,convo) {
-          if(response.text.toUpperCase() === 'QUIT'){
-            bot.reply(message, "Thank you for using Azra. Bye.");
-            convo.next();
-            return;
-          }
+            if(response.text == "QUIT" || response.text == "quit" || response.text == "Quit"){
+                bot.reply(message, "Thank you for using Azra. Bye.");
+                convo.next();
+                return;
+            }
 
             //today's date and time
             var today = new Date();
@@ -255,16 +333,16 @@ var getApproxMeetingDuration = function(err, convo){
             byMonth = today.getMonth();
             byYear = today.getYear();
 
-            // If there is no such constraint.
-            if(response.text.toUpperCase() ==='NA')
+
+            constraintOnDay=false;
+            var defaultDate = new Date();
+            defaultDate.setDate(today.getDate() + 20);
+            byDate = defaultDate.getDate();
+            byMonth = defaultDate.getMonth();
+            byYear = defaultDate.getYear();
+
+            if(!(response.text =='NA' || response.text =='Na' ||response.text =='na'))
             {
-                constraintOnDay=false;
-                var defaultDate = new Date();
-                defaultDate.setDate(today.getDate() + 20);
-                byDate = defaultDate.getDate();
-                byMonth = defaultDate.getMonth();
-                byYear = defaultDate.getYear();
-            }else{
                 lastDate = response.text;
 
                 //user's specified date
@@ -368,39 +446,80 @@ var getApproxMeetingDuration = function(err, convo){
     // Asks the user whether ther is any time by which the meeting should be organized.
     var getLastTime = function(err, convo){
         convo.ask('OK. By what time (HH:MM or HH) should the meeting be organized (24 Hour format)? Say NA if no such constraint',function(response,convo) {
-          if(response.text.toUpperCase() === 'QUIT'){
-            bot.reply(message, "Thank you for using Azra. Bye.");
-            convo.next();
-            return;
-          }
+            if(response.text == "QUIT" || response.text == "quit" || response.text == "Quit"){
+                bot.reply(message, "Thank you for using Azra. Bye.");
+                convo.next();
+                return;
+            }
 
             if(response.text=='na'||response.text=='Na'||response.text=='NA')
             {
                 constraintOnTime=false;
 
-            }else{
+            }
+            else
+            {
                 lastTime = response.text;
                 console.log('igottaby '+lastTime);
                 //today's date and time
                 var today = new Date();
                 //user's specified date
+                if(lastTime.indexOf(":") > -1 && lastTime.indexOf(" ") > -1 || lastTime.indexOf(".") > -1 && lastTime.indexOf(" ") > -1)
+                {
+                    bot.reply(message, 'Input format is improper. Say NA if no such constraint');
+                    getLastTime(response, convo);
+                    convo.next();
+                    return;
+                }
+
                 var timeArray = lastTime.split(" ");
                 if(lastTime.indexOf(":") > -1)
                     timeArray = lastTime.split(":");
+                else if(lastTime.indexOf(".") > -1)
+                    timeArray = lastTime.split(".");
 
                 byTime_Hour = parseInt(timeArray[0]);
+                if(isNaN(byTime_Hour))
+                {
+                    bot.reply(message, 'Input hour format is improper. Say NA if no such constraint');
+                    getLastTime(response, convo);
+                    convo.next();
+                    return;
+                }
                 byTime_Minute = 0;
 
-                if(timeArray.length === 2)
+                if(timeArray.length >= 2)
+                {
                     byTime_Minute = parseInt(timeArray[1]);
+                    if(byTime_Minute > 59)
+                    {
+                        byTime_Hour = Math.floor(byTime_Minute / 60) + byTime_Hour;
+                        byTime_Minute = byTime_Minute % 60;
+                    }
+
+                    if(isNaN(byTime_Minute))
+                    {
+                        bot.reply(message, 'Input minute format is improper. Say NA if no such constraint');
+                        getLastTime(response, convo);
+                        convo.next();
+                        return;
+                    }
+
+                }
+
+                if(byTime_Hour >= 24)
+                {
+                    byTime_Hour = 23;
+                    byTime_Minute = 59;
+                }
 
                 // Meeting duration is greater than available max time in a day! Ask the user to enter by_time again.
                 var maxValidTimeInADay = (byTime_Hour - 8) * 60 + byTime_Minute;
                 if(maxValidTimeInADay < approxMeetingDuration_OnlyInMins){
-                  convo.say("Meeting duration is greater than available max time in a day! Please increase the time by which I should setup meeting.");
-                  getLastTime(response, convo);
-                  convo.next();
-                  return;
+                    convo.say("Meeting duration is greater than available max time in a day! Please increase the time by which I should setup meeting.");
+                    getLastTime(response, convo);
+                    convo.next();
+                    return;
                 }
 
                 // If the user wants to organize a meeting by next day, check if the duration matches the meeting duration.
@@ -428,7 +547,7 @@ var getApproxMeetingDuration = function(err, convo){
 
     var getAgenda = function(err, convo){
         convo.ask('What is the goal of this meeting?',function(response,convo) {
-          if(response.text.toUpperCase() === 'QUIT'){
+            if(response.text == "QUIT" || response.text == "quit" || response.text == "Quit"){
             bot.reply(message, "Thank you for using Azra. Bye.");
             convo.next();
             return;
@@ -453,7 +572,7 @@ var getApproxMeetingDuration = function(err, convo){
 
     var fixMeeting = function(err, convo){
         convo.ask('Do you want to fix this meeting time? Please reply Yes or No',function(response,convo) {
-            if(response.text.toUpperCase() == 'NO' || response.text.toUpperCase() === 'QUIT'){
+            if(response.text == "QUIT" || response.text == "quit" || response.text == "Quit" || response.text == "no" || response.text == "No" || response.text == "NO"){
                 bot.reply(message, 'The meeting was NOT organized. Thank you for using Azra. Bye.');
                 convo.next();
                 return;
@@ -527,10 +646,10 @@ var getApproxMeetingDuration = function(err, convo){
 
     bot.reply(message, "Let us organize a new meeting.");
 
-});
+};
 
 //coversation to add new member to a meeting
-controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,message) {
+var addNew = function(bot,message) {
     var meetingID;
     var currentMeetingStartTime;
     var currentMeetingEndTime;
@@ -540,7 +659,7 @@ controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,
 
     var getIDOfNewAttendees = function(err, convo){
         convo.ask('May I know the email ID(s) of the new attendee(s), please?',function(response,convo) {
-          if(response.text.toUpperCase() === 'QUIT'){
+            if(response.text == "QUIT" || response.text == "quit" || response.text == "Quit"){
             bot.reply(message, "Thank you for using Azra. Bye.");
             convo.next();
             return;
@@ -665,17 +784,21 @@ controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,
 
         var allIDS = [];
         var i = 0;
+        var allMeetingsInfo = "";
         for(var meetingNum in meetingsData.meetings){
-          allIDS[i] = meetingNum;
-          i++;
-          bot.reply(message, 'ID: ' + meetingNum + '\nSummary: ' + meetingsData.meetings[meetingNum].summary);
-          bot.reply(message, 'Participants: ' + meetingsData.meetings[meetingNum].users);
-          bot.reply(message, 'At time: ' + new Date(meetingsData.meetings[meetingNum].startDateTime));
-          bot.reply(message, 'Duration: ' + meetingsData.meetings[meetingNum].duration + '\n');
+            allIDS[i] = meetingNum;
+            i++;
+            var meeting = '\nID: ' + meetingNum + '\n\tSummary: ' + meetingsData.meetings[meetingNum].summary +
+                '\n\tParticipants: ' + meetingsData.meetings[meetingNum].users +
+                '\n\tAt time: ' + new Date(meetingsData.meetings[meetingNum].startDateTime)+
+                '\n\tDuration: ' + meetingsData.meetings[meetingNum].duration + '\n';
+
+            allMeetingsInfo += meeting;
         }
+        bot.reply(message, allMeetingsInfo);
 
         convo.ask('Please select the ID of the meeting to which you would like to add new attendees.',function(response,convo) {
-          if(response.text.toUpperCase() === 'QUIT'){
+            if(response.text == "QUIT" || response.text == "quit" || response.text == "Quit"){
             bot.reply(message, "Thank you for using Azra. Bye.");
             convo.next();
             return;
@@ -705,11 +828,11 @@ controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,
         allUnAvailableUsers += ', ' + unavailableUsers[i];
       }
           convo.ask("Users " + allUnAvailableUsers + ' are not available at current meeting time. Do you wish to organize the meeting at a new time or continue without these users?',function(response,convo) {
-          if(response.text.toUpperCase() === 'QUIT'){
+              if(response.text == "QUIT" || response.text == "quit" || response.text == "Quit"){
             bot.reply(message, "Thank you for using Azra. Bye.");
             callback();
           }
-          if(response.text.toUpperCase() === 'CONTINUE'){
+          if(response.text == "continue" || response.text == "Continue" || response.text == "CONTINUE"){
             // invite only the users which are free.
             if(unavailableUsers.length === newUsers.length){
               bot.reply(message, "No new user can be added. All are unavailable!");
@@ -758,7 +881,7 @@ controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,
     var fixNewMeeting = function(err, convo, callback){
 
         convo.ask('Do you want to fix this meeting time? Please reply Yes or No',function(response,convo) {
-            if(response.text.toUpperCase() == 'NO' || response.text.toUpperCase() === 'QUIT'){
+            if(response.text == "QUIT" || response.text == "quit" || response.text == "Quit" || response.text == "no" || response.text == "No" || response.text == "NO"){
                 bot.reply(message, 'The meeting was NOT organized. Thank you for using Azra. Bye.');
                 callback();
             }else{
@@ -1001,10 +1124,10 @@ controller.hears(['^Add$', '^new$'],['mention', 'direct_mention'], function(bot,
     bot.startConversation(message, getIDOfMeeting);
 
     bot.reply(message, "Let us add the new member to the meeting.");
-});
+};
 
 //coversation to cancel the meeting
-controller.hears(['^deschedule$', '^cancel$'],['mention', 'direct_mention'], function(bot,message) {
+var cancel = function(bot,message) {
 
     var meetingID;
     var organizer;
@@ -1018,17 +1141,21 @@ controller.hears(['^deschedule$', '^cancel$'],['mention', 'direct_mention'], fun
 
         var allIDS = [];
         var i = 0;
+        var allMeetingsInfo = "";
         for(var meetingNum in meetingsData.meetings){
-          allIDS[i] = meetingNum;
-          i++;
-          bot.reply(message, 'ID: ' + meetingNum + '\nSummary: ' + meetingsData.meetings[meetingNum].summary);
-          bot.reply(message, 'Participants: ' + meetingsData.meetings[meetingNum].users);
-          bot.reply(message, 'At time: ' + new Date(meetingsData.meetings[meetingNum].startDateTime));
-          bot.reply(message, 'Duration: ' + meetingsData.meetings[meetingNum].duration + '\n');
+            allIDS[i] = meetingNum;
+            i++;
+            var meeting = '\nID: ' + meetingNum + '\n\tSummary: ' + meetingsData.meetings[meetingNum].summary +
+                '\n\tParticipants: ' + meetingsData.meetings[meetingNum].users +
+                '\n\tAt time: ' + new Date(meetingsData.meetings[meetingNum].startDateTime)+
+                '\n\tDuration: ' + meetingsData.meetings[meetingNum].duration + '\n';
+
+            allMeetingsInfo += meeting;
         }
+        bot.reply(message, allMeetingsInfo);
 
         convo.ask('Please select the ID of the meeting which you would like to deschedule.',function(response,convo) {
-          if(response.text.toUpperCase() === 'QUIT'){
+            if(response.text == "QUIT" || response.text == "quit" || response.text == "Quit"){
             bot.reply(message, "Thank you for using Azra. Bye.");
             convo.next();
             return;
@@ -1052,7 +1179,7 @@ controller.hears(['^deschedule$', '^cancel$'],['mention', 'direct_mention'], fun
 
     var confirmCancellation = function(err, convo){
         convo.ask('Are you sure you want to deschedule this meeting?',function(response,convo) {
-          if(response.text.toUpperCase() === 'QUIT'){
+            if(response.text == "QUIT" || response.text == "quit" || response.text == "Quit"){
             bot.reply(message, "Thank you for using Azra. Bye.");
             convo.next();
             return;
@@ -1083,9 +1210,9 @@ controller.hears(['^deschedule$', '^cancel$'],['mention', 'direct_mention'], fun
     bot.startConversation(message, getIDOfMeeting);
 
     bot.reply(message, "Let us cancel the meeting.");
-});
+};
 
-controller.hears(['^Authorize$', '^Authorise$','^Auth$'],['mention', 'direct_mention','direct_message'], function(bot,message) {
+var authAuthorize = function(bot,message) {
     var user;
     var code;
     var getIDOfUser = function(err, convo){
@@ -1170,7 +1297,7 @@ controller.hears(['^Authorize$', '^Authorise$','^Auth$'],['mention', 'direct_men
         convo.ask('Hi '+user+' , Kindly visit this url : '+authUrl+'  and Enter the code from that page here and then kindly return to channel #general:',function(response,convo) {
             
             code = response.text;
-             if(response.text.toUpperCase() === 'QUIT'){
+            if(response.text == "QUIT" || response.text == "quit" || response.text == "Quit"){
              bot.reply(message, "Thank you for using Azra. Bye.");
              convo.next();
              return;
@@ -1251,7 +1378,7 @@ controller.hears(['^Authorize$', '^Authorise$','^Auth$'],['mention', 'direct_men
     bot.startPrivateConversation(message, getIDOfUser);
 
     bot.reply(message, "Let us authorize you. Kindly continue with slack private conversation with me( Azra ).If you are in slack channel and not in private chat, You can see new chat on left menu bar.");
-});
+};
 
 
 
