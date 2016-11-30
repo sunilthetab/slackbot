@@ -83,11 +83,11 @@ Instructions:
 
 A. Enter '@azra add' in the channel.
 
-![image](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/images/Screen%20Shot%202016-11-29%20at%207.20.42%20PM.png "five")
+![image](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/images/add1.png "five")
 
 B. This will provide the list of meetings to choose from.
 
-![image](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/images/Screen%20Shot%202016-11-29%20at%207.21.03%20PM.png "six")
+![image](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/images/add2.png "six")
 
 C. Enter the meeting ID to be updated. (0,1, or 2 etc.)
 D. Enter the new attendee(s) email ID.
@@ -100,7 +100,7 @@ Instructions:
 
 A. Enter '@azra cancel' or '@azra deschedule' in the channel.
 
-![image](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/images/Screen%20Shot%202016-11-29%20at%207.21.28%20PM.png "seven")
+![image](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/images/del1.png "seven")
 
 B. This will provide the list of meetings to choose from.<br>
 C. Enter the meeting ID to be deleted.<br>
