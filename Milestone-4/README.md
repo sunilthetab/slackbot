@@ -45,7 +45,7 @@ Please find google-calendars at https://calendar.google.com/
 
 ## General Instructions before making the meeting
 
-A. The TA's account hasn't authorised access to its calendar. This must be done first, by entering '@azra_bot auth' in the personal chat with 'azra_bot'.
+A. The TA's account hasn't authorised access to its calendar. This must be done first, by entering '@azra auth' in the personal chat with 'azra'.
 
 ![image](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/images/Screen%20Shot%202016-11-29%20at%207.18.51%20PM.png "one")
 
@@ -61,7 +61,7 @@ C. You're authorised now and can go ahead with the usecases.
 
 Instructions:
 
-A. Enter '@azra_bot setup' or '@azra_bot schedule' in the channel.
+A. Enter '@azra setup' or '@azra schedule' in the channel.
 B. Enter the email IDs of the attendees. (eg: azra.mem.one@gmail.com). Separate the addresses by one space.
 C. Provide the approx duration of the meeting. (eg, 1 or 2 or 1:30 etc.)
 D. Provide the max date by which you need the meeting to be made. ( eg: 12/23, 12/23/2016 or NA if, not applicable)
@@ -81,7 +81,7 @@ H. You can check the meeting created for the members in their google calendars.
 
 Instructions:
 
-A. Enter '@azra_bot add' in the channel.
+A. Enter '@azra add' in the channel.
 
 ![image](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/images/add1.png "five")
 
@@ -98,7 +98,7 @@ E. The bot will either add the members to the meeting or say that the new member
 
 Instructions:
 
-A. Enter '@azra_bot cancel' or '@azra_bot deschedule' in the channel.
+A. Enter '@azra cancel' or '@azra deschedule' in the channel.
 
 ![image](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/images/del1.png "seven")
 
