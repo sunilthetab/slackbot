@@ -34,7 +34,7 @@ We have made 3 dummy users :
       
       2.UserID: azra.mem.two@gmail.com Password: azra1234  Slack_Username: dummy.two
       
-      3.UserID: azra.mem.one@gmail.com Password: azra1234  Slack_Username: dummy.three
+      3.UserID: azra.mem.three@gmail.com Password: azra1234  Slack_Username: dummy.three
       
       1.UserID: azra.ta.one@gmail.com Password: azra1234  Slack_Username: ta.one
 
