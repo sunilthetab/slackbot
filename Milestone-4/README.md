@@ -45,7 +45,7 @@ Please find google-calendars at https://calendar.google.com/
 
 ## General Instructions before making the meeting
 
-A. The TA's account hasn't authorised access to its calendar. This must be done first, by entering '@azra_bot auth' in the personal chat with 'azra_bot'.
+A. The TA's account hasn't authorised access to its calendar. This must be done first, by entering '@azra auth' in the personal chat with 'azra'.
 
 ![image](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/images/Screen%20Shot%202016-11-29%20at%207.18.51%20PM.png "one")
 
