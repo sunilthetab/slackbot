@@ -49,7 +49,7 @@ The bot can cancel a meeting with the trigger '@azra cancel'. The bot asks for t
 ![image](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/images/del1.png "seven")
 
 <br>
-####Your reflection on the development process and project
+###Our reflection on the bot development process 
 
 As part, of course requirement for Software Engineering course we needed to build a slack bot to address any software engineering issue.
 It is always good to work on new technologies and tools. Slack is one such tool which is gaining tremendous popularity among tech companies. Clearly developing a slack bot became our preferred choice. We started our project journey with milestone design where we need to come up with one software engineering problem and the possible solution by developing a slack bot application.<br>
@@ -66,7 +66,7 @@ Overall, it’s been a great journey with lot of learning during each of the mil
 <br>
 In contrast to the projects we did in our respective companies which had hierarchy structure, where mostly a lead decides and others follow but in this project, each member had flexibility of putting their idea upfront and taking the lead to make it work. We had opportunity to rotate roles and experience a developments process in 
 every perspective.<br>
-#### Limitations and future work
+### Limitations and future work
 
 1. Currently only google calendar is supported, going ahead the bot can be made to support outlook calendar and 
 other such calendars used in professional business.
