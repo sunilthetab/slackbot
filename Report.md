@@ -1,3 +1,8 @@
+## Team Info
+
+You can find the team info [here](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/Team%20Info.md)
+
+
 ### Project Presentation [link] (https://www.youtube.com/watch?v=OQJ8dXM8lkA)
 
 #### Primary Features
