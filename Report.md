@@ -8,7 +8,7 @@ other such calendars used in professional business.
 time effectiveness of team meetings. We can expose some functionality for the business system admins or managers so that
 they have some flexibility over deciding which time frame can be suitable to conduct meeting as per their choice.
 
-3. All meeting may not have similar priority. In our current impelementation a meeting which is organized earlier gets 
+3. All meeting may not have similar priority. In our current implementation a meeting which is organized earlier gets 
 high priority. But it may arise that in business a highly critical meeting has to be setup tomorrow and time which is
 available is not at all favourable. So we can come up with some huristics and take intelligent decision based on the other
 visible factors such who is organizing the meeting, how important are the attendees for the business, what does the 
