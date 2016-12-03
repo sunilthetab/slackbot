@@ -83,8 +83,7 @@ goal of the meeting says etc.
 
 4. Not all the appointments of a person will be visible in their calendar. There are some personal commitments that a person 
 may be occupied with which will be not put in calendar for some reasons. We can put an additional functionality to the bot,
-which the user can notify the bot personally that he or she is busy on this particular day, for example it may be like a
-a doctor's apointment and ther person is busy Thursday morning entirely. Others doesn't have to know about such
+which the user can notify the bot personally that he or she is busy on this particular day, for example it may be like a doctor's apointment and the person is busy Thursday morning entirely. Others doesn't have to know about such
 personal commitments but still important for business.
 
 
