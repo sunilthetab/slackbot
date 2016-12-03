@@ -1,3 +1,5 @@
+##### Project Presentation [link] (https://www.youtube.com/watch?v=OQJ8dXM8lkA)
+
 #### Primary Features
 
 The bot has three main features: it can create, update and delete meetings for a Slack team. The organizor has options of providing constraints on the max time, and date on the meeting. The bot then looks up the Google calendars of the meeting attendees and provides a suitable meeting time for them. 
