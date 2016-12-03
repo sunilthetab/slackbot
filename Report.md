@@ -1,5 +1,49 @@
+#### Primary Features
 
-####Limitations and future work
+The bot has three main features: it can create, update and delete meetings for a Slack team. The organizor has options of providing constraints on the max time, and date on the meeting. The bot then looks up the Google calendars of the meeting attendees and provides a suitable meeting time for them. 
+
+##### Priority feature
+
+Currently, the bot decides the meeting time based on two main constraints: the availability of attendees and the higher priorities that we have given to times around 10-11 am and after 2 pm, the time slots which have been found to be the most productive for software engineers. 
+
+##### Functionalities
+
+1. Google Calendar API authorization
+
+Every user on the Slack team needs to authorize the access to his/her Calendar for Azra. This is done by entering '@azra auth' on any channel. This provides a link for the user on the personal chat with azra where he needs to give the private access token. This way, the user gives Calendar access to Azra.
+
+![image](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/images/Screen%20Shot%202016-11-29%20at%207.18.51%20PM.png "one")
+<br>
+![image](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/images/Screen%20Shot%202016-11-29%20at%207.19.12%20PM.png "two")
+
+
+2. Setting up meeting
+
+The bot can create a meeting for a list of attendees whose calendars it has authorization to. The triggers are '@azra setup' or '@azra schedule'. The bot takes the emails of attendees, the duration, and the constraints on date and time, if any, as inputs. The bot then returns the suitable time for the team to have the meeting. The organizer can either accept or decline the meeting suggestion.
+
+![image](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/images/Screen%20Shot%202016-11-29%20at%207.19.55%20PM.png "three")
+
+<br>
+![image](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/images/Screen%20Shot%202016-11-29%20at%207.20.20%20PM.png "four")
+
+3. Adding a new member to a meeting
+
+The bot can add a new member to an existing meeting. The trigger is '@azra add'. The bot asks for the new member email ID and the meeting ID to which the member has to be added to. The bot answers by either saying that the meeting has been updated or it can't add the new member because he was busy.
+
+![image](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/images/add1.png "five")
+<br>
+
+![image](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/images/add2.png "six")
+
+4. Canceling a meeting
+
+The bot can cancel a meeting with the trigger '@azra cancel'. The bot asks for the meeting ID to be cancelled. Then cancels its from the calendars of the members of the meeting.
+
+![image](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/images/del1.png "seven")
+
+<br>
+
+#### Limitations and future work
 
 1. Currently only google calendar is supported, going ahead the bot can be made to support outlook calendar and 
 other such calendars used in professional business.
