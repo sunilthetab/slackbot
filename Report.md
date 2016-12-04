@@ -21,7 +21,7 @@
 </br>
 ### Project Presentation
 * [Screencast] (https://www.youtube.com/watch?v=OQJ8dXM8lkA)
-* [PPT] (https://www.youtube.com/watch?v=OQJ8dXM8lkA)
+
 
 # REPORT
 
