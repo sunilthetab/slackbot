@@ -25,7 +25,7 @@
 
 # REPORT
 
-## The problem your bot solved
+## 1. The problem your bot solved
 
 The challenge here was to schedule the meetings efficiently so as there will be the optimal timing and full attendance of team members is guaranteed. According to the empirical software analysis, the effectiveness of scrum meetings in today’s agile era depends on collaboration and contribution of each and every team mate. For solving the problem of No-shows or bad-time meetings we developed a slack chat bot which returns the most convenient time for team members and thereby assuring their availability.
 
@@ -58,7 +58,7 @@ To summarize, Azra bot solves challenges in:
 	Cancelling or updating meetings directly into google calendars of team members. (Automation of updating meetings)
 
 
-#### Primary Features
+## 2. Primary Features
 
 The bot has three main features: it can create, update and delete meetings for a Slack team. The organizor has options of providing constraints on the max time, and date on the meeting. The bot then looks up the Google calendars of the meeting attendees and provides a suitable meeting time for them. 
 
@@ -102,7 +102,7 @@ The bot can cancel a meeting with the trigger '@azra cancel'. The bot asks for t
 ![image](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/images/del1.png "seven")
 
 <br>
-###Our reflection on the bot development process 
+## 3. Our reflection on the bot development process 
 
 As part, of course requirement for Software Engineering course we needed to build a slack bot to address any software engineering issue.
 It is always good to work on new technologies and tools. Slack is one such tool which is gaining tremendous popularity among tech companies. Clearly developing a slack bot became our preferred choice. We started our project journey with milestone design where we need to come up with one software engineering problem and the possible solution by developing a slack bot application.<br>
@@ -119,7 +119,7 @@ Overall, it’s been a great journey with lot of learning during each of the mil
 <br>
 In contrast to the projects we did in our respective companies which had hierarchy structure, where mostly a lead decides and others follow but in this project, each member had flexibility of putting their idea upfront and taking the lead to make it work. We had opportunity to rotate roles and experience a developments process in 
 every perspective.<br>
-### Limitations and future work
+## 4.  Limitations and future work
 
 1. Currently only google calendar is supported, going ahead the bot can be made to support outlook calendar and 
 other such calendars used in professional business.
