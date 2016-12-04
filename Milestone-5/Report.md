@@ -114,13 +114,13 @@ After initially brainstorming sessions and discussions with professor we decided
 For milestone-1 design, we described the problem statement for a bot along with the architecture design that we were planning to use for the development process. It was a challenging task to decide what kind of design pattern can be utilized for this project since our future strategy was dependent on it. Initially, we planned to use MVC architecture design pattern but after giving much thought we decided to stick to MVVM model which perfectly suits the requirement of our project. Also, we had to decide the technology stack which was one of the important part of project.
 
 
-During this phase of the milestone, we understood various aspects about the initial part for the project i.e. requirement gathering for designing a bot, understanding the problem statement and coming up with design patterns for the development of the bot etc.
+During this phase of the milestone, we understood various aspects about the initial part for the project i.e. requirement gathering for designing a bot, understanding the problem statement and coming up with design patterns for the development of the bot etc.
 
 
-For milestone-2 bot, we came up with the implementation logic for bot where we used Nodejs for writing the business logic for the application and created mock json file to render mock data consisting of calendar data to slack bot. To smoothen the development process, we used trello cards to track and manage task assigned to each person.
+For milestone-2 bot, we came up with the implementation logic for bot where we used Nodejs for writing the business logic of the application and created mock json file to render mock data consisting of calendar data to slack bot. To smoothen the development process, we used trello cards to track and manage tasks assigned to each person.
 
 
-In milestone-3 Services, we implemented the service part of bot i.e. integrating google API for fetching the meeting details of the person. One of the challenges of this milestone was to integrate google calendar with the existing application. Initially we struggled with this part but eventually after doing some proof of concept, we implemented it without any issues. Also, it was important to handle the client secret and access tokens carefully. We made sure that they were not accessible and viewable to any unauthorized user. 
+In milestone-3 Services, we implemented the service part of bot i.e. integrating google API for fetching the meeting details of the person. One of the challenges of this milestone was to integrate google calendar with the existing application. Initially we struggled with this part but eventually after doing some proof of concept, we implemented it without any issues. Also, it was important to handle the client secret and access tokens carefully. We made sure that they were not accessible and viewable to any unauthorized user. 
 
 
 For milestone-4 Deploy, we deployed the application on Amazon EC-2 to make the bot forever running. We used ansible server script to deploy this application along with all the dependent packages required to make bot run on Amazon EC2.
