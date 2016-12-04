@@ -141,11 +141,11 @@ other such calendars used in professional environment(s).
 3. All meetings may not have similar priority. In our current implementation a meeting which is organized earlier gets 
 high priority. But it may arise that in business a highly critical meeting has to be setup tomorrow and time which is
 available is not at all favourable. So we can come up with some heuristics and take intelligent decision based on the other
-visible factors such who is organizing the meeting, how important are the attendees for the business, what does the 
+visible factors such as who is organizing the meeting, how important are the attendees for the business, what does the 
 goal of the meeting says etc.
 
 4. Not all the appointments of a person will be visible in their calendar. There are some personal commitments that a person 
-may be occupied with which will be not put in calendar for some reasons. We can put an additional functionality to the bot,
+may be occupied with which can not be captured in calendar for some reasons. We can put an additional functionality to the bot,
 which the user can notify the bot personally that he or she is busy on this particular day, for example it may be like a doctor's apointment and the person is busy Thursday morning entirely. Others don't have to know about such personal commitments but still important for business.
 
 
