@@ -10,7 +10,7 @@ var controller = Botkit.slackbot({
 // connect the bot to a stream of messages
 controller.spawn({
   // token: process.env.ALTCODETOKEN,
-  token: 'xoxb-87992197655-kXagRYyH1SjcDuxei4u9Utpq',
+  token: 'xoxoxo-tokenhere',
   //slack bot token here
 }).startRTM()
 
