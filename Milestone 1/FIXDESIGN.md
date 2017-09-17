@@ -43,17 +43,17 @@ Below storyboard will describe the story about the meeting bot which will schedu
 ![alt text](https://github.com/suniltheta/slackbot/blob/master/Milestone%201/Storyboard_New.png)
 
 ####Wireframe
-![alt text](https://github.com/suniltheta/slackbot/Azra_MeetingBot/blob/master/Milestone%201/output_HfRQ3w.gif)
+![alt text](https://github.com/suniltheta/slackbot/blob/master/Milestone%201/output_HfRQ3w.gif)
 
 
 ###Architecture Design
 Meeting bot must be connected with the calendar of every person with whom the meeting is to be scheduled and with the main user (Meeting organizer) for the purpose of getting details of meeting and delivering suitable meeting timing solutions. For this functionality, the best-suited architecture would be **Call and Return architecture with Object Oriented approach**.
 
 ####Components in architecture
-![alt text](https://github.com/suniltheta/slackbot/Azra_MeetingBot/blob/master/Milestone%201/arch1.png)
+![alt text](https://github.com/suniltheta/slackbot/blob/master/Milestone%201/arch1.png)
 Here as solution to our problem is to have a slack bot that can schedule a meeting, we have basically 3 things to consider namely a meeting coordinator, Slackbot and calendars of team members. Team coordinator requests to schedule a meeting to bot and bot replies with asking for team members to consider for this meeting. Then bot will ask for time limit to consider for this meeting and suggest a time for meeting accordingly and confirm it with team coordinator. So this is how bot will be designed.
 
-![alt text](https://github.com/suniltheta/slackbot/Azra_MeetingBot/blob/master/Milestone%201/componenet_architecture.png)
+![alt text](https://github.com/suniltheta/slackbot/blob/master/Milestone%201/componenet_architecture.png)
 
 This project involves the usage of following components:
 * **Slack** - users will chat through slack;
