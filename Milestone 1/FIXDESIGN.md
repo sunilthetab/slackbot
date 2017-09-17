@@ -40,27 +40,27 @@ A storyboard is a graphic organizer in the form of illustrations or images displ
 Below storyboard will describe the story about the meeting bot which will schedule a meeting by taking into consideration all the factors (project cost, work efficiency and productivity of the employees).
 
 
-![alt text](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/Milestone%201/Storyboard_New.png)
+![alt text](https://github.com/suniltheta/slackbot/blob/master/Milestone%201/Storyboard_New.png)
 
 ####Wireframe
-![alt text](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/Milestone%201/output_HfRQ3w.gif)
+![alt text](https://github.com/suniltheta/slackbot/Azra_MeetingBot/blob/master/Milestone%201/output_HfRQ3w.gif)
 
 
 ###Architecture Design
 Meeting bot must be connected with the calendar of every person with whom the meeting is to be scheduled and with the main user (Meeting organizer) for the purpose of getting details of meeting and delivering suitable meeting timing solutions. For this functionality, the best-suited architecture would be **Call and Return architecture with Object Oriented approach**.
 
 ####Components in architecture
-![alt text](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/Milestone%201/arch1.png)
+![alt text](https://github.com/suniltheta/slackbot/Azra_MeetingBot/blob/master/Milestone%201/arch1.png)
 Here as solution to our problem is to have a slack bot that can schedule a meeting, we have basically 3 things to consider namely a meeting coordinator, Slackbot and calendars of team members. Team coordinator requests to schedule a meeting to bot and bot replies with asking for team members to consider for this meeting. Then bot will ask for time limit to consider for this meeting and suggest a time for meeting accordingly and confirm it with team coordinator. So this is how bot will be designed.
 
-![alt text](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/Milestone%201/componenet_architecture.png)
+![alt text](https://github.com/suniltheta/slackbot/Azra_MeetingBot/blob/master/Milestone%201/componenet_architecture.png)
 
 This project involves the usage of following components:
 * **Slack** - users will chat through slack;
 * **Meeting Bot and Google Calendar** - the bot will get information from the calendars of team members. The main user will ask the bot to schedule a meeting which would include the name (id) of attendees, and the data/time by which the meeting is to be organized. The meeting bot will chat with the main user for any further assistance related to organizing/scheduling the meeting. It will look-up the calendars of all the attendees. These calendars will basically be the Google calendars synchronized with slack.The meeting bot will search for available (idle) time slots of attendees and would find a time when all of them are available. It will also take into consideration any specific instruction by the main user, try to find an optimistic time and location for all the team members, and minimize the cost of organizing meeting to the company. The meeting bot will then notify the main user with the details about the meeting and ask him for an approval to set-up the meeting. So, the platform for using the meeting bot will be slack, and the bot will use third-party services from google calendar.
 
 ####Class Diagram
-![alt text](https://github.ncsu.edu/gverma/Azra_MeetingBot/blob/master/Milestone%201/class_diagram.png)
+![alt text](https://github.com/suniltheta/slackbot/blob/master/Milestone%201/class_diagram.png)
 
 ### Design Patterns
 #### Space Reactor
